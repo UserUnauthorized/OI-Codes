@@ -71,7 +71,6 @@ public:
             number.pop_back();
         if (number.empty())
             return;
-
         auto iter = number.begin();
         for (; next(iter) != number.end(); ++iter) {
             vector<int>::iterator nextIter;
@@ -107,11 +106,11 @@ public:
 
     bigNum operator+(bigNum other) {
         if (this->positive != other.positive) {
-            this->positive = other.positive;
+            other.positive = !other.positive;
             return *this - other;
         }
         other.number.resize(max(other.number.size(), this->number.size()), 0);
-        number.resize(max(other.number.size(), this->number.size()), 0);
+        //number.resize(max(other.number.size(), this->number.size()), 0);
         for (int i = 0; i < this->number.size(); ++i)
             other.number[i] += this->number[i];
         other.carry();
@@ -120,13 +119,13 @@ public:
 
     bigNum operator-(bigNum other) {
         if (this->positive != other.positive) {
-            this->positive = other.positive;
+            other.positive = !other.positive;
             return *this + other;
         }
         other.number.resize(max(other.number.size(), this->number.size()), 0);
-        number.resize(other.number.size(), 0);
+        //number.resize(other.number.size(), 0);
         for (int i = 0; i < this->number.size(); ++i)
-            other.number[i] -= this->number[i];
+            other.number[i] = this->number[i] - other.number[i];
         other.carry();
         return other;
     }
@@ -226,7 +225,7 @@ public:
         this->carry();
         return;
     }
-
+	
     bool operator<=(bigNum other) {
         return (*this < other || *this == other);
     }
@@ -260,10 +259,12 @@ private:
 };
 
 int main() {
-    bigNum a, b;
+    bigNum a,b;
     a.scan();
-    b.scan();
-    a = a / b;
+    b.positive=true;
+    b.number.push_back(1); 
+    b.put();
+    a+=b;
     a.put();
     return 0;
 }
