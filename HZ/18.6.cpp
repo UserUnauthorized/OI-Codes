@@ -22,10 +22,6 @@ int main(){
 	for(int i=0;i<m;++i){
 		int x,y;
 		scanf("%d%d",&x,&y);
-		/*if(l==r){
-			printf("%d %d %d\n",l,r,a[l]);
-			continue;
-		}*/
 		Tree ans = query(1,x,y);
 		printf("%d %d %d\n",ans.ml,ans.mr,ans.ms);
 	}
@@ -103,7 +99,6 @@ void pushUp(int id){
 }
 
 Tree query(int id,int l,int r){
-	//if(id>n)return None;
 	if(l <= tree[id].l && tree[id].r <= r){
 		return tree[id];
 	}
