@@ -8,19 +8,26 @@ struct Tree{
 	int ln,ls;
 	int rn,rs; 
 }tree[MAXN<<2];
+Tree None;
 int n,m,a[MAXN];
 void init();
 void build(int,int,int);
 Tree query(int,int,int);
 void pushUp(int);
 int main(){
+	//None.ln=n;
+	//None.rn=n;
 	init();
 	build(1,1,n);
 	for(int i=0;i<m;++i){
-		int l,r;
-		scanf("%d%d",&l,&r);
-		Tree x = query(1,l,r);
-		printf("%d %d %d\n",x.ml,x.mr,x.ms);
+		int x,y;
+		scanf("%d%d",&x,&y);
+		/*if(l==r){
+			printf("%d %d %d\n",l,r,a[l]);
+			continue;
+		}*/
+		Tree ans = query(1,x,y);
+		printf("%d %d %d\n",ans.ml,ans.mr,ans.ms);
 	}
 	return 0;
 }
@@ -37,8 +44,8 @@ void build(int id,int l,int r){
 	tree[id].r=r;
 	
 	if(l==r){
-		tree[id].sum=tree[id].ls=tree[id].rs=tree[id].ms=a[l];
-		tree[id].ln=tree[id].rn=tree[id].ml=tree[id].mr=l;
+		tree[id].sum = tree[id].ls = tree[id].rs = tree[id].ms = a[r];
+		tree[id].ln = tree[id].rn = tree[id].ml = tree[id].mr = l;
 		return;
 	}
 	
@@ -88,7 +95,7 @@ void pushUp(int id){
 	if(tree[id].ml < tree[id<<1].rn) return;
 	if(tree[id].ml > tree[id<<1].rn){
 		tree[id].ml = tree[id<<1].rn;
-		tree[id].mr=tree[id<<1|1].ln;
+		tree[id].mr = tree[id<<1|1].ln;
 		return;
 	}
 	
@@ -96,18 +103,22 @@ void pushUp(int id){
 }
 
 Tree query(int id,int l,int r){
+	//if(id>n)return None;
 	if(l <= tree[id].l && tree[id].r <= r){
 		return tree[id];
 	}
 	
-	int mid = (l+r)>>1;
+	int mid = (tree[id].l + tree[id].r)>>1;
 	if(r<=mid) return query(id<<1,l,r);
-	else if(l>mid) return query(id<<1|1,l,r);
+	if(l>mid) return query(id<<1|1,l,r);
 	
 	Tree x,y,z;
 	x = query(id<<1,l,r);
 	y = query(id<<1|1,l,r);
 	
+	z.l = x.l;
+	z.r = y.r;
+	z.sum = x.sum + y.sum;
 	if(x.ls >= x.sum + y.ls){
 		z.ls = x.ls;
 		z.ln = x.ln;
@@ -116,7 +127,7 @@ Tree query(int id,int l,int r){
 		z.ln = y.ln;
 	}
 	
-	if(y.rs > y.sum + x.rs){
+	if(y.rs >= y.sum + x.rs){
 		z.rs = y.rs;
 		z.rn = y.rn;
 	}else{
@@ -145,7 +156,7 @@ Tree query(int id,int l,int r){
 	if(z.ml < x.rn) return z;
 	if(z.ml > x.rn){
 		z.ml = x.rn;
-		z.mr=y.ln;
+		z.mr = y.ln;
 		return z;
 	}
 	
