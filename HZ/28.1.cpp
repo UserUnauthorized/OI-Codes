@@ -10,7 +10,9 @@ void tarjan(int);
 void init();
 int main(){
 	init();
-	tarjan(1);
+	for(int i=1;i<=n;++i)
+		if(!dfn[i])
+			tarjan(i);
 	printf("%d",ans);
 }
 void init(){
@@ -36,8 +38,8 @@ void tarjan(int x){
 		low[x] = min(low[x],dfn[edge[x]]);
 	}
 	
-	if(low[x] == dfn[x]){
-		int t,y;
+	if(dfn[x] == low[x]){
+		int t(0),y;
 		do{
 			y = st.top();
 			st.pop();
@@ -45,6 +47,6 @@ void tarjan(int x){
 			++t;
 		} while(y != x);
 		
-		ans = min(ans,t);
+		if(t > 1) ans = min(ans,t);
 	}
 }
