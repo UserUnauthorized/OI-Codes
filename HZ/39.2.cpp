@@ -35,9 +35,9 @@ int main(){
 			scanf("%d%d",&pos,&key);
 			insert(1,dfn[pos],last[pos],key);
 		}else if(order == 2){
-			int t;
-			scanf("%d",&t);
-			printf("%lld\n",query(1,dfn[t],last[t]));
+			int pos;
+			scanf("%d",&pos);
+			printf("%lld\n",query(1,dfn[pos],last[pos]));
 		}
 	}
 	return 0;
@@ -147,7 +147,7 @@ void insert(int id,int l,int r,int key){
 	
 	int mid = (tree[id].l + tree[id].r)>>1;
 	if(l<=mid) insert(id<<1,l,r,key);
-	if(r>=mid) insert(id<<1|1,l,r,key);
+	if(r>mid) insert(id<<1|1,l,r,key);
 	
 	tree[id].sum=tree[id<<1].sum + tree[id<<1|1].sum;
 }
