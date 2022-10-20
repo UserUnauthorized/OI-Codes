@@ -120,12 +120,15 @@ public:
             other.positive = !other.positive;
             return *this + other;
         }
+        bigNum temp = *this,result;
+        result.positive = this->positive;
         other.number.resize(max(other.number.size(), this->number.size()), 0);
-        //number.resize(other.number.size(), 0);
-        for (int i = 0; i < this->number.size(); ++i)
-            other.number[i] = this->number[i] - other.number[i];
-        other.carry();
-        return other;
+        temp.number.resize(other.number.size(), 0);
+        result.number.resize(other.number.size(), 0);
+        for (int i = 0; i < temp.number.size(); ++i)
+            result.number[i] = temp.number[i] - other.number[i];
+        result.carry();
+        return result;
     }
 
     bigNum operator*(bigNum other)const {
@@ -261,6 +264,6 @@ int main() {
     bigNum a,b;
     a.scan();
 	b.scan();
-    (a/b).put();
+    (a-b).put();
     return 0;
 }
