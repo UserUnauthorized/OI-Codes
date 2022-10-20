@@ -1,4 +1,4 @@
-//arbitraryPrecisionArithmetic(封装高精度模板)
+//arbitraryPrecisionArithmetic
 #include <bits/stdc++.h>
 
 using namespace std;
@@ -6,12 +6,12 @@ using namespace std;
 class bigNum {
 public:
     vector<int> number;
-    bool positive;//记录数据的正负
+    bool positive;
 
-    //构造函数 - Begin
     bigNum() {
-        positive = true;//默认为正数
+        positive = true;
     }
+
 
     bigNum(int x) {
         if (x < 0)x = -x, positive = false;
@@ -34,9 +34,8 @@ public:
         for (; x; x /= 10)
             number.push_back(x % 10);
     }
-    //构造函数 - End
 
-    //输入输出 - Begin
+
     void scan() {
         char ch = getchar();
         while (ch != '-' && (ch < '0' || ch > '9'))
@@ -64,9 +63,8 @@ public:
             printf("%d", *iter);
         return;
     }
-    //输入输出 - End
 
-    void carry() {//处理进位
+    void carry() {
         while (number.size() && number.back() == 0)
             number.pop_back();
         if (number.empty())
@@ -104,7 +102,7 @@ public:
         positive = other.positive;
     }
 
-    bigNum operator+(bigNum other) {
+    bigNum operator+(bigNum other)const {
         if (this->positive != other.positive) {
             other.positive = !other.positive;
             return *this - other;
@@ -117,7 +115,7 @@ public:
         return other;
     }
 
-    bigNum operator-(bigNum other) {
+    bigNum operator-(bigNum other)const {
         if (this->positive != other.positive) {
             other.positive = !other.positive;
             return *this + other;
@@ -130,7 +128,7 @@ public:
         return other;
     }
 
-    bigNum operator*(bigNum other) {
+    bigNum operator*(bigNum other)const {
         bigNum result;
         result.positive = (other.positive == this->positive);
         result.number.resize(this->number.size() + other.number.size());
@@ -143,17 +141,18 @@ public:
 
     bigNum operator/(bigNum other) {
         if (this->number.size() < other.number.size())
-            return bigNum{0};
+            return bigNum(0);
         bigNum result, temp;
         temp = *this;
         result.positive = (other.positive == this->positive);
-        result.number.resize(number.size() - other.number.size() + 1);
+        result.number.resize(this->number.size() - other.number.size() + 1);
         for (int i = temp.number.size() - 1; i >= 0; --i) {
             while (getSubNum(temp, i, temp.number.size() - 1) >= other) {
                 subtraction(temp, other, i);
                 ++result.number[i];
             }
         }
+        result.carry();
         return result;
     }
 
@@ -246,7 +245,7 @@ private:
     bigNum getSubNum(const bigNum &temp, const int &l, const int &r) {
         bigNum result;
         result.positive = temp.positive;
-        for (int i = r; i >= l; --i)
+        for (int i = l; i <= r; ++i)
             result.number.push_back(temp.number[i]);
         return result;
     }
@@ -261,10 +260,7 @@ private:
 int main() {
     bigNum a,b;
     a.scan();
-    b.positive=true;
-    b.number.push_back(1); 
-    b.put();
-    a+=b;
-    a.put();
+	b.scan();
+    (a/b).put();
     return 0;
 }
