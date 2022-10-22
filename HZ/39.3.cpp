@@ -1,7 +1,9 @@
 //HZ - 39.3
 #include <bits/stdc++.h>
+//#include <D:\OI\OI-Codes\Template\debug.h>
 
 using namespace std;
+//using namespace DEBUG;
 
 constexpr int maxn = 100005;
 
@@ -27,6 +29,40 @@ long long query(int, int, int);
 int main() {
     init();
     dfs(root, 0);
+    build(1, 1, n);
+
+    for (; Q > 0; --Q) {
+        char order = getchar();
+        while (order != 'V' && order != 'E' && order != 'Q')
+            order = getchar();
+        if (order == 'V') {
+            int x;
+            long long y;
+            scanf("%d%lld", &x, &y);
+            //debug(order, x, y, in[x]);
+            update(1, in[x], y);
+        } else if (order == 'E') {
+            int x;
+            scanf("%d", &x);
+            root = x;
+        } else {
+            int x;
+            scanf("%d", &x);
+            //debug(order, x);
+            if (x == root) {
+                printf("%lld\n", tree[1].min);
+            } else if (in[x] <= in[root] && out[root] <= out[x]) {
+                int y = root, d = dep[root] - dep[x] - 1;
+                for (int i = 0; i <= 16; ++i) {
+                    if (bin[i] & d) y = fa[y][i];
+                }
+                printf("%lld\n", min(query(1, 1, in[y] - 1), query(1, out[y] + 1, n)));
+            } else {
+                printf("%lld\n", query(1, in[x], out[x]));
+            }
+        }
+    }
+    return 0;
 }
 
 void init() {
@@ -49,7 +85,10 @@ void init() {
     for (int i = 1; i <= n; ++i) {
         int f;
         scanf("%d%d", &f, value + i);
-        if (f == 0)root = i;
+        if (f == 0) {
+            root = i;
+            continue;
+        }
         addEdge(f, i);
     }
 
@@ -68,7 +107,8 @@ void dfs(int x, int f) {
     dep[x] = dep[f] + 1;
     fa[x][0] = f;
     for (int i = 1; i <= 16; ++i) {
-        fa[x][i] = fa[fa[x][i - 1]][i - 1];
+        if (bin[i] <= dep[x])fa[x][i] = fa[fa[x][i - 1]][i - 1];
+        else break;
     }
     for (int i = head[x]; i; i = edge[i].next) {
         dfs(edge[i].to, x);
@@ -95,16 +135,21 @@ void build(int id, int l, int r) {
 void update(int id, int pos, long long key) {
     if (tree[id].l == tree[id].r) {
         tree[id].min = key;
+        //debug(id, tree[id].min, key, tree[id].l, tree[id].r, pos);
         return;
     }
 
     int mid = (tree[id].l + tree[id].r) >> 1;
     if (pos <= mid)update(id << 1, pos, key);
+    else update(id << 1 | 1, pos, key);
 
     tree[id].min = min(tree[id << 1].min, tree[id << 1 | 1].min);
 }
 
 long long query(int id, int l, int r) {
+    if (l > r)
+        return LONG_LONG_MAX;
+
     if (l <= tree[id].l && tree[id].r <= r) {
         return tree[id].min;
     }
@@ -112,5 +157,5 @@ long long query(int id, int l, int r) {
     int mid = (tree[id].l + tree[id].r) >> 1;
     if (l > mid)return query(id << 1 | 1, l, r);
     else if (r <= mid)return query(id << 1, l, r);
-    else return min(query(id << 1 | 1, l, r),query(id << 1, l, r));
+    else return min(query(id << 1 | 1, l, r), query(id << 1, l, r));
 }
