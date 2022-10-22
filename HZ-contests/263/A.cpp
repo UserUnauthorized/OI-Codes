@@ -6,7 +6,7 @@ using namespace std;
 int T, n, m, ans;
 
 void init();
-inline int read(int &);
+inline void read(int &);
 
 int main() {
     read(T);
@@ -20,14 +20,14 @@ int main() {
             continue;
         }
         for (int x = 0; x * m <= n; ++x)
-            if ((n - x * m) % (m * (m - 1) / 2) == 0)
+            if (((n - x * m) % (m * (m - 1) / 2)) == 0)
                 ++ans;
         printf("%d\n",ans);
     }
     return 0;
 }
 
-inline int read(int &x) {
+inline void read(int &x) {
     char ch(0);
     while (ch < '0' || ch > '9')ch = getchar();
     while (ch >= '0' && ch <= '9') {

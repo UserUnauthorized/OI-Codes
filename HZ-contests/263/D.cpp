@@ -58,7 +58,7 @@ int main() {
     for (int i = 1; i <= n; ++i) {
         sum += source[i];
         if (source[i] < k - 1)value[i] = 1;
-        else value[i] = -source[i];
+        else value[i] = -k + 1;
     }
     build(1, 1, n);
     printf("%lld", sum + max({tree[1].sum, tree[1].Lmax, tree[1].Rmax, tree[1].Pmax,
