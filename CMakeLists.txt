@@ -3,6 +3,8 @@ project(OI-Codes)
 set(CMAKE_CXX_STANDARD 11)
 
 add_executable(39.3 HZ/39.3.cpp)
+add_executable(C_2 HZ-contests/263/C_2.cpp)
+add_executable(Temp HZ-contests/263/Temp.cpp)
 add_executable(C HZ-contests/263/C.cpp)
 add_executable(D HZ-contests/263/D.cpp)
 add_executable(A HZ-contests/263/A.cpp)
