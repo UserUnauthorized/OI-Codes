@@ -2,7 +2,11 @@
 <project version="4">
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/../Downloads/lca_题解/bzoj3306.cpp" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/../Downloads/lca_题解/hdu 2586 How far 在线.cpp" charset="GBK" />
     <file url="file://$PROJECT_DIR$/../Downloads/lca_题解/lca问题/dfs序/bzoj3306.cpp" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/../Downloads/lca_题解/lca问题/lca/hdu2586在线.cpp" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/../Downloads/lca_题解/poj1330.cpp" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/../Downloads/lca_题解/poj3321dfs序 - 线段树 - 树上倍增.cpp" charset="GBK" />
     <file url="file://$PROJECT_DIR$/HZ-contests/263/B.cpp" charset="GBK" />
   </component>
 </project>
