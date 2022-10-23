@@ -21,7 +21,7 @@ int main() {
         v.pop_back();
         v.push_back(max(a, b) - min(a, b));
     }
-    printf("%d",v.at(0));
+    printf("%d", v.at(0));
     return 0;
 }
 

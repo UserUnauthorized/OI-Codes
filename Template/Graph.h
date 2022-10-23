@@ -5,7 +5,7 @@
 
 class Graph {
 public:
-    Graph(bool _directed,int _weightType):directed(_directed),weightType(_weightType){};
+    Graph(bool _directed, int _weightType) : directed(_directed), weightType(_weightType) {};
 private:
     //Base Information - Begin
     bool directed;

@@ -102,7 +102,7 @@ public:
         positive = other.positive;
     }
 
-    bigNum operator+(bigNum other)const {
+    bigNum operator+(bigNum other) const {
         if (this->positive != other.positive) {
             other.positive = !other.positive;
             return *this - other;
@@ -115,12 +115,12 @@ public:
         return other;
     }
 
-    bigNum operator-(bigNum other)const {
+    bigNum operator-(bigNum other) const {
         if (this->positive != other.positive) {
             other.positive = !other.positive;
             return *this + other;
         }
-        bigNum temp = *this,result;
+        bigNum temp = *this, result;
         result.positive = this->positive;
         other.number.resize(max(other.number.size(), this->number.size()), 0);
         temp.number.resize(other.number.size(), 0);
@@ -131,7 +131,7 @@ public:
         return result;
     }
 
-    bigNum operator*(bigNum other)const {
+    bigNum operator*(bigNum other) const {
         bigNum result;
         result.positive = (other.positive == this->positive);
         result.number.resize(this->number.size() + other.number.size());
@@ -227,7 +227,7 @@ public:
         this->carry();
         return;
     }
-	
+
     bool operator<=(bigNum other) {
         return (*this < other || *this == other);
     }
@@ -235,12 +235,14 @@ public:
     bool operator>=(bigNum other) {
         return (*this > other || *this == other);
     }
-    friend bigNum max(bigNum a,bigNum b){
-        if(a>b)return a;
+
+    friend bigNum max(bigNum a, bigNum b) {
+        if (a > b)return a;
         else return b;
     }
-    friend bigNum min(bigNum a,bigNum b){
-        if(a<b)return a;
+
+    friend bigNum min(bigNum a, bigNum b) {
+        if (a < b)return a;
         else return b;
     }
 
@@ -261,9 +263,9 @@ private:
 };
 
 int main() {
-    bigNum a,b;
+    bigNum a, b;
     a.scan();
-	b.scan();
-    (a-b).put();
+    b.scan();
+    (a - b).put();
     return 0;
 }

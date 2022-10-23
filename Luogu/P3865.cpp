@@ -2,6 +2,7 @@
 #include <bits/stdc++.h>
 
 using namespace std;
+
 int N, M, sourceNumber[100010], sparseTable[100010][20], lg[100010];
 
 inline int read();
@@ -16,8 +17,8 @@ int main() {
     init();
     build();
     for (int i = 1; i <= M; ++i) {
-        int l(read()),r(read());
-        printf("%d\n", query(l,r));
+        int l(read()), r(read());
+        printf("%d\n", query(l, r));
     }
     return 0;
 }
@@ -47,7 +48,7 @@ void build() {
 int query(const int &l, const int &r) {
     int n = 1;
     while ((n << 1) <= r - l + 1)n <<= 1;
-    return max(sparseTable[l][lg[n]],sparseTable[r-n+1][lg[n]]);
+    return max(sparseTable[l][lg[n]], sparseTable[r - n + 1][lg[n]]);
 }
 
 inline int read() {

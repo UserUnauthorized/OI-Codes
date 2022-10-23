@@ -55,9 +55,9 @@ bool check(int x) {
     //debug(dp[0], dp[1], dp[2]);
     for (int i = 2; i <= n; ++i) {
         for (int j = n; j >= 1; --j)
-            if (j < (x+1)>>1) {
+            if (j < (x + 1) >> 1) {
                 dp[j] = (p[i] * 0.5 * dp[j - 1]) + (1 - p[i] * 0.5) * dp[j];
-            } else if ((double) j ==  ((double)x / 2.0))
+            } else if ((double) j == ((double) x / 2.0))
                 dp[j] = (p[i] * 0.5 * dp[j - 1]) + ((1 - p[i]) * dp[j]);
             else {
                 dp[j] = (p[i] * dp[j - 1]) + (1 - p[i]) * dp[j];

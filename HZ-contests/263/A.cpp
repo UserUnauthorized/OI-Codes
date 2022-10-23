@@ -22,7 +22,7 @@ int main() {
         for (int x = 0; x * m <= n; ++x)
             if (((n - x * m) % (m * (m - 1) / 2)) == 0)
                 ++ans;
-        printf("%d\n",ans);
+        printf("%d\n", ans);
     }
     return 0;
 }

@@ -32,7 +32,7 @@ inline bool find_(int zb)//zb代表指标
         }
     }
     for (int i = 0; i <= n; ++i) {
-        cerr<<i<<"\t"<<dp[i]<<endl;
+        cerr << i << "\t" << dp[i] << endl;
     }
     double num = 0;
     for (int i = 0; i < zb; i++) {
