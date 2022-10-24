@@ -10,8 +10,11 @@ int h[400005], n, l[400005], r[400005];
 long long ans;
 
 void init();
+
 void getR();
+
 void getL();
+
 void getA();
 
 int main() {

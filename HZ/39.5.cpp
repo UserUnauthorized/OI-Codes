@@ -10,6 +10,7 @@ constexpr int maxp = 16;
 int n, p, Q, source[maxn], Max[maxn][maxp], Min[maxn][maxp];
 
 void init();
+
 int RMQ(int, int);
 
 int main() {

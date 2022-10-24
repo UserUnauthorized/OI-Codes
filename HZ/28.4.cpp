@@ -13,7 +13,9 @@ struct EDGE {
 vector<int> ans;
 
 inline void init();
+
 inline void addEdge(int, int);
+
 void tarjan(int);
 
 int main() {

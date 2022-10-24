@@ -18,9 +18,13 @@ bool vis[maxn];
 stack<int> st;
 
 void init();
+
 void tarjan(int);
+
 void build();
+
 void addEdge(int, int);
+
 void depthFirstSearch(int);
 
 int main() {

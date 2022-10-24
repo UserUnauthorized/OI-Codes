@@ -14,6 +14,7 @@ int n, ans = 0x7fffffff, cnt;
 stack<int> st;
 
 void tarjan(int);
+
 void init();
 
 int main() {

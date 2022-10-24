@@ -14,10 +14,15 @@ struct Query {
 int num[1000005], pos = 1, n, m, c[1000005], lastPos[1000005], result[1000005];
 
 void init();
+
 inline int read();
+
 inline int lowbit(int);
+
 bool cmp_r(const Query &a, const Query &b);
+
 int sum(int);
+
 void insert(int, int);
 
 int main() {

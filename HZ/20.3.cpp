@@ -13,9 +13,13 @@ long long partialSum[100005];
 long long ans;
 
 void getR();
+
 void getL();
+
 void getLR();
+
 void getA();
+
 void init();
 
 int main() {

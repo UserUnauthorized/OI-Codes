@@ -14,9 +14,13 @@ struct EDGE {
 int n, m, Q, cnt = 0, head[maxn], st[maxn << 1][18], source[maxn << 1], dfn[maxn], dep[maxn], len[maxn];
 
 void init();
+
 void addEdge(int, int, int);
+
 void dfs(int, int);
+
 int MIN(const int &, const int &);
+
 int LCA(int, int);
 
 int main() {

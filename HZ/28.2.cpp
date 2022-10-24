@@ -18,7 +18,9 @@ bool vis[10004];
 stack<int> st;
 
 void tarjan(int);
+
 inline void find(int);
+
 inline void init();
 
 int main() {

@@ -21,11 +21,16 @@ struct EDGE {
 int n, m, root, cnt = 0, value[maxn], seg[maxn], head[maxn], dfn[maxn], last[maxn];
 
 void init();
+
 void build(int, int, int);
+
 void addEdge(int, int);
+
 //void update(int,int,int);
 void insert(int, int, int, long long);
+
 long long query(int, int, int);
+
 void dfs(int, int);
 
 int main() {

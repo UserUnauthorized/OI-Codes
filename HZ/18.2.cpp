@@ -13,7 +13,9 @@ struct Tree {
 int n, q, mount[MAXN];
 
 void init();
+
 void build(int, int, int);
+
 int query(int, int, int);
 
 int main() {

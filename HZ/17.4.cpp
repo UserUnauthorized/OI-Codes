@@ -6,10 +6,15 @@ using namespace std;
 int n, m, cl[50005], cr[50005];
 
 void init();
+
 int lowbit(int);
+
 int sum_l(int);
+
 void insert_l(int);
+
 int sum_r(int);
+
 void insert_r(int);
 
 int main() {

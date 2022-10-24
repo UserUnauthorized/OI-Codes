@@ -20,10 +20,15 @@ struct EDGE {
 int n, Q, root, cnt = 0, bin[20], head[maxn], value[maxn], source[maxn], fa[maxn][18], dep[maxn], in[maxn], out[maxn];
 
 void dfs(int, int);
+
 inline void addEdge(int, int);
+
 void init();
+
 void build(int, int, int);
+
 void update(int, int, long long);
+
 long long query(int, int, int);
 
 int main() {

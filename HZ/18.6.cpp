@@ -17,8 +17,11 @@ Tree None;
 int n, m, a[MAXN];
 
 void init();
+
 void build(int, int, int);
+
 Tree query(int, int, int);
+
 void pushUp(int);
 
 int main() {

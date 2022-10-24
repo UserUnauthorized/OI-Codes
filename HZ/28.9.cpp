@@ -51,8 +51,11 @@ vector<unsigned long long> ans;
 stack<int> st;
 
 bool init();
+
 void addEdge(int, int);
+
 void tarjan(int, int);
+
 void out();
 
 int main() {

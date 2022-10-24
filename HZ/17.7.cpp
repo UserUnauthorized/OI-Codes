@@ -6,8 +6,11 @@ using namespace std;
 int s[302][302][102], f[302][302], n, m, q;
 
 void init();
+
 inline int lowbit(int);
+
 void update(int, int, int);
+
 int sum(int, int, int);
 
 int main() {

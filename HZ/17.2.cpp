@@ -5,8 +5,11 @@ using namespace std;
 int n, c[92011], d[95011];
 
 int lowbit(const int x);
+
 int getSum(int x);
+
 void add(int x);
+
 void init();
 
 int main() {

@@ -22,9 +22,13 @@ int n, Q, p, head[maxn], queryHead[maxn], parent[maxn], deep[maxn], father[maxp]
 bool visited[maxn];
 
 void init();
+
 void dfs(int, int);
+
 void tarjan(int);
+
 int getWay(int, int);
+
 int find(int);
 
 int main() {

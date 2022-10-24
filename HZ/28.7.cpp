@@ -18,9 +18,13 @@ struct EDGE {
 } edge[maxn << 2];
 
 void init();
+
 void tarjan(int, int);
+
 void tarjan(int);
+
 void addEdge(int, int);
+
 void delEdge(int);
 
 vector<EDGE> mp;
