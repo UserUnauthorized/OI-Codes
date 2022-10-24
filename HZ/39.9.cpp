@@ -1,4 +1,5 @@
 //HZ - 39.9
+//Luogu - P2245
 #include <bits/stdc++.h>
 
 using namespace std;
@@ -6,8 +7,8 @@ using namespace std;
 constexpr int maxn = 100005, maxm = 300005, maxQ = 100005, maxp = 20;
 
 struct EDGE {
-    int from;
     int next;
+    int from;
     int to;
     int weight;
     int LCA;
