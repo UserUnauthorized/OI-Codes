@@ -1,10 +1,9 @@
-//HZ - 39.7
-//Luogu - P1967
+//HZ - 39.9
 #include <bits/stdc++.h>
 
 using namespace std;
 
-constexpr int maxn = 10004, maxm = 50004, maxQ = 30004, maxp = 18;
+constexpr int maxn = 100005, maxm = 300005, maxQ = 100005, maxp = 20;
 
 struct EDGE {
     int from;
@@ -20,7 +19,7 @@ struct EDGE {
     EDGE(int _next, int _from, int _to, int _weight) : next(_next), from(_from), to(_to), weight(_weight), LCA(-1) {};
 
     bool operator<(const EDGE &object) {
-        return this->weight > object.weight;
+        return this->weight < object.weight;
     }
 } edge[maxn << 1], sourceEdge[maxm << 1], queryEdge[maxQ << 1];
 
@@ -49,7 +48,7 @@ int main() {
 
     for (int i = 1; i <= p; ++i)
         for (int j = 1; j <= n; ++j)
-            way[i][j] = min(way[i - 1][j], way[i - 1][fa[i - 1][j]]);
+            way[i][j] = max(way[i - 1][j], way[i - 1][fa[i - 1][j]]);
 
     for (int i = 1; i <= n; ++i)
         if (!visited[i])
@@ -57,9 +56,9 @@ int main() {
 
     for (int i = 1; i <= Q; ++i) {
         if (queryEdge[i << 1].LCA == -1)
-            printf("%d\n", -1);
+            printf("impossible\n");
         else
-            printf("%d\n", min(maxWeight(queryEdge[i << 1].LCA, queryEdge[i << 1].from),
+            printf("%d\n", max(maxWeight(queryEdge[i << 1].LCA, queryEdge[i << 1].from),
                                maxWeight(queryEdge[i << 1].LCA, queryEdge[i << 1].to)));
     }
     return 0;
@@ -145,9 +144,9 @@ void tarjan(int x) {
 
 int maxWeight(int up, int down) {
     if (deep[up] >= deep[down])
-        return INT_MAX;
+        return INT_MIN;
     int tk = log2(deep[down] - deep[up]);
-    return min(way[tk][down], maxWeight(up, fa[tk][down]));
+    return max(way[tk][down], maxWeight(up, fa[tk][down]));
 }
 
 void build() {
