@@ -10,6 +10,7 @@ int n, A, B, ans = INT_MAX, source[maxn], dpA[maxn], dpB[maxn], white[maxn];
 deque<int> que;
 
 void init();
+
 void dp();
 
 int main() {
@@ -20,7 +21,7 @@ int main() {
         if (dpA[i] == -1 || dpB[i] == -1)
             continue;
         else
-            ans = min(ans, white[i] - white[min(dpA[i], dpB[i])]);
+            ans = min(ans, white[i] - white[min(dpA[i], dpB[i]) - 1]);
     printf("%d", ans);
     return 0;
 }
@@ -39,30 +40,42 @@ void init() {
 
 void dp() {
     //A
-    for (int i = 1; i <= n; ++i) {
-        if (source[i] == 1)
-            que.push_back(i);
-        while (!que.empty() && que.size() > A) {
-            que.pop_front();
+    if (A != 0) {
+        for (int i = 1; i <= n; ++i) {
+            if (source[i] == 1)
+                que.push_back(i);
+            while (!que.empty() && que.size() > A) {
+                que.pop_front();
+            }
+            if (!que.empty() && que.size() == A)
+                dpA[i] = que.front();
+            else
+                dpA[i] = -1;
         }
-        if (!que.empty() && que.size() == A)
-            dpA[i] = que.front();
-        else
-            dpA[i] = -1;
+    } else {
+        for (int i = 1; i <= n; ++i) {
+            dpA[i] = i;
+        }
     }
 
     que.clear();
 
     //B
-    for (int i = 1; i <= n; ++i) {
-        if (source[i] == 2)
-            que.push_back(i);
-        while (!que.empty() && que.size() > B)
-            que.pop_front();
-        if (!que.empty() && que.size() == B)
-            dpB[i] = que.front();
-        else
-            dpB[i] = -1;
+    if (B != 0) {
+        for (int i = 1; i <= n; ++i) {
+            if (source[i] == 2)
+                que.push_back(i);
+            while (!que.empty() && que.size() > B)
+                que.pop_front();
+            if (!que.empty() && que.size() == B)
+                dpB[i] = que.front();
+            else
+                dpB[i] = -1;
+        }
+    } else {
+        for (int i = 1; i <= n; ++i) {
+            dpB[i] = i;
+        }
     }
 
     //white

@@ -25,14 +25,22 @@ void SPFA(int);
 
 void init();
 
+void carry(int);
+
 int main() {
     init();
     SPFA(1);
     for (int i = 1; i <= n; ++i)
         insert(getPos(-dis[i]), require[i]);
+    for (int i = 0; i <= 20000; ++i)
+        carry(i);
+    while (ans[h + 1] != 0)
+        ++h;
     for (int i = h; i >= 0; --i)
         printf("%d", ans[i]);
     putchar('.');
+    if (ans[10007] > 4)
+        ++ans[10006];
     for (int i = 10001; i <= 10006; ++i)
         printf("%d", ans[i]);
     return 0;
@@ -94,7 +102,30 @@ void insert(int pos, int key) {
             ans[pos - 1] += ans[pos] / 10;
             ans[pos] %= 10;
         }
-        pos = 0;
+        if (pos == 10001) {
+            ans[0] += ans[pos] / 10;
+            ans[pos] %= 10;
+            pos = 0;
+        }
+    }
+    for (; ans[pos] > 9; ++pos) {
+        ans[pos + 1] += ans[pos] / 10;
+        ans[pos] %= 10;
+        h = max(h, pos + 1);
+    }
+}
+
+void carry(int pos) {
+    if (pos > 10000) {
+        for (; ans[pos] > 9 && pos > 10001; --pos) {
+            ans[pos - 1] += ans[pos] / 10;
+            ans[pos] %= 10;
+        }
+        if (pos == 10001) {
+            ans[0] += ans[pos] / 10;
+            ans[pos] %= 10;
+            pos = 0;
+        }
     }
     for (; ans[pos] > 9; ++pos) {
         ans[pos + 1] += ans[pos] / 10;
