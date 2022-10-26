@@ -11,46 +11,47 @@ inline bool cmp(const int &, const int &);
 
 void init();
 
-constexpr int maxn = 100005, maxm = 1e9 + 7,
-        P = 1e9 + 7;
+constexpr int maxn = 100005, P = 1e9 + 7;
 int n, m, x, y;
 long long source[maxn];
-long long ans, a(1), b(1);
+long long ans;
 
 int main() {
-    //freopen("xin.in", "r", stdin);
-    //freopen("xin.out", "w", stdout);
+    freopen("xin.in", "r", stdin);
+    freopen("xin.out", "w", stdout);
     init();
-    for (int i = 1; i <= m; ++i) {
-        a *= 3;
-        b *= 2;
-        a %= P;
-        b %= P;
-        for (int j = 1; j <= x; ++j) {
-            ans += source[j] * a;
-            ans %= P;
-        }
-        for (int j = x + 1; j <= x + y && j <= n; ++j) {
-            ans += source[j] * b;
-            ans %= P;
-        }
+    sort(source + 1, source + n + 1, cmp);
+    long long A = fastPower(3, m) % P;
+    long long B = fastPower(2, m) % P;
+
+    for (int i = 1; i <= x && i <= n; ++i) {
+        ans += source[i] * A % P;
+        ans %= P;
     }
-    printf("%lld", ans);
-    //fclose(stdin);
-    //fclose(stdout);
+    for (int i = x + 1; i <= x + y && i <= n; ++i) {
+        ans += source[i] * B % P;
+        ans %= P;
+    }
+    for (int i = min(x + y + 1, n + 1); i <= n && m < 2; ++i) {
+        ans += source[i];
+        ans %= P;
+    }
+
+    printf("%lld", ans % P);
+    fclose(stdin);
+    fclose(stdout);
     return 0;
 }
 
 void init() {
+    memset(source, 0, sizeof(source));
     n = read();
     m = read();
     x = read();
     y = read();
 
-    memset(source, 0, sizeof(source));
     for (int i = 1; i <= n; ++i)
         source[i] = read();
-    sort(source + 1, source + n + 1, cmp);
 }
 
 inline bool cmp(const int &a, const int &b) {
@@ -58,15 +59,15 @@ inline bool cmp(const int &a, const int &b) {
 }
 
 inline long long fastPower(long long a, long long b) {
-    long long res(1);
+    long long result(1);
     while (b > 0) {
-        if (b & 1) res *= a;
-        res %= P;
+        if (b & 1) result *= a;
+        result %= P;
         a *= a;
         a %= P;
         b >>= 1;
     }
-    return res;
+    return result;
 }
 
 inline int read() {
