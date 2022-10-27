@@ -33,7 +33,9 @@ struct STATUS {
     vector<CARD> P[5];
     int N[5];
 
-    STATUS() : prevPlayer(-1), clockToward(true) {};
+    STATUS() : prevPlayer(-1), clockToward(true) {
+        memset(N, 0, sizeof(N));
+    };
 
     ~STATUS() {
         P[1].clear();
@@ -43,8 +45,8 @@ struct STATUS {
 };
 
 int main() {
-    //freopen("zhu.in", "r", stdin);
-    //freopen("zhu.out", "w", stdout);
+    freopen("zhu.in", "r", stdin);
+    freopen("zhu.out", "w", stdout);
     T = read();
     while (T--) {
         STATUS source;
@@ -54,8 +56,8 @@ int main() {
         else
             cout << "N" << endl;
     }
-    //fclose(stdin);
-    //fclose(stdout);
+    fclose(stdin);
+    fclose(stdout);
     return 0;
 }
 
@@ -94,15 +96,16 @@ inline void write(int *result) {
 bool dfs(STATUS status) {
     if (status.prevPlayer == -1) {
         status.prevPlayer = 1;
-        //const STATUS bak = status;
-        for (CARD &card: status.P[1]) {
-            ++status.N[1];
-            card.used = true;
-            status.prevCard = card;
-            if (card.type == 11)
-                status.clockToward = !status.clockToward;
+            //const STATUS bak = status;
+            for (CARD &card: status.P[1]) {
+                ++status.N[1];
+                card.used = true;
+                status.prevCard = card;
+                if (card.type == 11)
+                    status.clockToward = !status.clockToward;
             if (dfs(status))
                 return true;
+
             status.clockToward = !status.clockToward;
             if (dfs(status))
                 return true;
@@ -156,7 +159,7 @@ inline int nextPlayer(const STATUS &status) {
     if (result > 3)result -= 3;
     else if (result < 1)result += 3;
 
-    while (status.N[result] == n) {
+    if (status.N[result] == n) {
         result += status.clockToward ? 1 : -1;
         if (result > 3)result -= 3;
         else if (result < 1)result += 3;
