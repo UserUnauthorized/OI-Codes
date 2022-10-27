@@ -148,6 +148,7 @@ public:
         bigNum result, temp;
         temp = *this;
         result.positive = (other.positive == this->positive);
+        temp.positive = other.positive = true;
         result.number.resize(this->number.size() - other.number.size() + 1);
         for (int i = temp.number.size() - 1; i >= 0; --i) {
             while (getSubNum(temp, i, temp.number.size() - 1) >= other) {
@@ -266,6 +267,6 @@ int main() {
     bigNum a, b;
     a.scan();
     b.scan();
-    (a - b).put();
+    (a + b).put();
     return 0;
 }
