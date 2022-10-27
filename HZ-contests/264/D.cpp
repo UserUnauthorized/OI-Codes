@@ -10,9 +10,9 @@ bool dfs(STATUS);
 
 inline int read();
 
-inline void write(int &);
-
 inline void write(int *);
+
+inline int nextPlayer(const STATUS &status);
 
 int T, n;
 
@@ -23,22 +23,22 @@ struct CARD {
 
     CARD() : color(-1), type(-1), used(false) {};
 
-    CARD(int _color, int _type) : color(_color), type(_type), used(false) {};
+    CARD(int _type, int _color) : color(_color), type(_type), used(false) {};
 };
 
 struct STATUS {
     int prevPlayer;
     CARD prevCard;
     bool clockToward;
-    vector<CARD> P1, P2, P3;
-    int N1, N2, N3;
+    vector<CARD> P[5];
+    int N[5];
 
     STATUS() : prevPlayer(-1), clockToward(true) {};
 
     ~STATUS() {
-        P1.clear();
-        P2.clear();
-        P3.clear();
+        P[1].clear();
+        P[2].clear();
+        P[3].clear();
     }
 };
 
@@ -60,17 +60,14 @@ int main() {
 }
 
 void init(STATUS &source) {
-    n = 0;
-    write(n);
+    n = read();
     source.prevPlayer = -1;
     source.clockToward = true;
-    source.N1 = source.N2 = source.N3 = 0;
-    for (int i = 1; i <= n; ++i)
-        source.P1.emplace_back(read(), read());
-    for (int i = 1; i <= n; ++i)
-        source.P2.emplace_back(read(), read());
-    for (int i = 1; i <= n; ++i)
-        source.P3.emplace_back(read(), read());
+    source.N[1] = source.N[2] = source.N[3] = 0;
+    for (int i = 1; i <= 3; ++i)
+        for (int j = 0; j < n; ++j)
+            source.P[i].emplace_back(read(), read());
+
 }
 
 inline int read() {
@@ -82,16 +79,6 @@ inline int read() {
         ch = getchar();
     }
     return result;
-}
-
-inline void write(int &result) {
-    int ch(getchar());
-    while (ch < '0' || ch > '9')
-        ch = getchar();
-    while (ch >= '0' && ch <= '9') {
-        result = (result << 3) + (result << 1) + (ch ^ 48);
-        ch = getchar();
-    }
 }
 
 inline void write(int *result) {
@@ -107,9 +94,9 @@ inline void write(int *result) {
 bool dfs(STATUS status) {
     if (status.prevPlayer == -1) {
         status.prevPlayer = 1;
-        const STATUS bak = status;
-        for (CARD &card: status.P1) {
-            ++status.N1;
+        //const STATUS bak = status;
+        for (CARD &card: status.P[1]) {
+            ++status.N[1];
             card.used = true;
             status.prevCard = card;
             if (card.type == 11)
@@ -119,129 +106,61 @@ bool dfs(STATUS status) {
             status.clockToward = !status.clockToward;
             if (dfs(status))
                 return true;
-            status = bak;
+
+
+            status.clockToward = true;
+            --status.N[1];
+            card.used = false;
+        }
+        return false;
+    }
+
+    if (status.N[1] == n && status.N[2] == n && status.N[3] == n)
+        return true;
+
+    const int nextP = nextPlayer(status);
+    status.prevPlayer = nextP;
+    //const STATUS bak = status;
+    const CARD preCard = status.prevCard;
+    for (CARD &card: status.P[nextP]) {
+        if (!card.used &&
+            (card.color == preCard.color || card.type == preCard.type || card.color == 4 ||
+             preCard.color == 4)) {
+            ++status.N[nextP];
+            /*if (status.N[1] == n && status.N[2] == n && status.N[3] == n)
+                return true;*/
+            card.used = true;
+            status.prevCard = card;
+            if (card.type == 11)
+                status.clockToward = !status.clockToward;
+            if (dfs(status))
+                return true;
+
+            --status.N[nextP];
+            card.used = false;
+            if (card.type == 11)
+                status.clockToward = !status.clockToward;
         }
     }
 
-    if ((status.clockToward && status.prevCard.type != 10) || (!status.clockToward && status.prevCard.type == 10)) {
-        if (status.prevPlayer == 1) {
-            status.prevPlayer = 2;
-            const STATUS bak = status;
-            for (CARD &card: status.P2) {
-                if (!card.used &&
-                    (card.color == status.prevCard.color || card.type == status.prevCard.type || card.color == 4 ||
-                     status.prevCard.color == 4)) {
-                    ++status.N2;
-                    if (status.N1 == n && status.N2 == n && status.N3 == n)
-                        return true;
-                    card.used = true;
-                    status.prevCard = card;
-                    if (card.type == 11)
-                        status.clockToward = !status.clockToward;
-                    if (dfs(status))
-                        return true;
-                }
-                status = bak;
-            }
-        } else if (status.prevPlayer == 2) {
-            status.prevPlayer = 3;
-            const STATUS bak = status;
-            for (CARD &card: status.P3) {
-                if (!card.used &&
-                    (card.color == status.prevCard.color || card.type == status.prevCard.type || card.color == 4 ||
-                     status.prevCard.color == 4)) {
-                    ++status.N3;
-                    if (status.N1 == n && status.N2 == n && status.N3 == n)
-                        return true;
-                    card.used = true;
-                    status.prevCard = card;
-                    if (card.type == 11)
-                        status.clockToward = !status.clockToward;
-                    if (dfs(status))
-                        return true;
-                }
-                status = bak;
-            }
-        } else if (status.prevPlayer == 3) {
-            status.prevPlayer = 1;
-            const STATUS bak = status;
-            for (CARD &card: status.P1) {
-                if (!card.used &&
-                    (card.color == status.prevCard.color || card.type == status.prevCard.type || card.color == 4 ||
-                     status.prevCard.color == 4)) {
-                    ++status.N1;
-                    if (status.N1 == n && status.N2 == n && status.N3 == n)
-                        return true;
-                    card.used = true;
-                    status.prevCard = card;
-                    if (card.type == 11)
-                        status.clockToward = !status.clockToward;
-                    if (dfs(status))
-                        return true;
-                }
-                status = bak;
-            }
-        }
-    } else {
-        if (status.prevPlayer == 1) {
-            status.prevPlayer = 3;
-            const STATUS bak = status;
-            for (CARD &card: status.P3) {
-                if (!card.used &&
-                    (card.color == status.prevCard.color || card.type == status.prevCard.type || card.color == 4 ||
-                     status.prevCard.color == 4)) {
-                    ++status.N3;
-                    if (status.N1 == n && status.N2 == n && status.N3 == n)
-                        return true;
-                    card.used = true;
-                    status.prevCard = card;
-                    if (card.type == 11)
-                        status.clockToward = !status.clockToward;
-                    if (dfs(status))
-                        return true;
-                }
-                status = bak;
-            }
-        } else if (status.prevPlayer == 2) {
-            status.prevPlayer = 1;
-            const STATUS bak = status;
-            for (CARD &card: status.P1) {
-                if (!card.used &&
-                    (card.color == status.prevCard.color || card.type == status.prevCard.type || card.color == 4 ||
-                     status.prevCard.color == 4)) {
-                    ++status.N1;
-                    if (status.N1 == n && status.N2 == n && status.N3 == n)
-                        return true;
-                    card.used = true;
-                    status.prevCard = card;
-                    if (card.type == 11)
-                        status.clockToward = !status.clockToward;
-                    if (dfs(status))
-                        return true;
-
-                }
-                status = bak;
-            }
-        } else if (status.prevPlayer == 3) {
-            status.prevPlayer = 2;
-            const STATUS bak = status;
-            for (CARD &card: status.P2) {
-                if (!card.used &&
-                    (card.color == status.prevCard.color || card.type == status.prevCard.type || card.color == 4 ||
-                     status.prevCard.color == 4)) {
-                    ++status.N2;
-                    if (status.N1 == n && status.N2 == n && status.N3 == n)
-                        return true;
-                    card.used = true;
-                    status.prevCard = card;
-                    if (card.type == 11)
-                        status.clockToward = !status.clockToward;
-                    if (dfs(status))
-                        return true;
-                }
-                status = bak;
-            }
-        }
-    }
     return false;
+}
+
+inline int nextPlayer(const STATUS &status) {
+    int result;
+    if ((status.clockToward && status.prevCard.type != 10) || (!status.clockToward && status.prevCard.type == 10))
+        result = status.prevPlayer + 1;
+    else
+        result = status.prevPlayer - 1;
+
+    if (result > 3)result -= 3;
+    else if (result < 1)result += 3;
+
+    while (status.N[result] == n) {
+        result += status.clockToward ? 1 : -1;
+        if (result > 3)result -= 3;
+        else if (result < 1)result += 3;
+    }
+
+    return result;
 }
