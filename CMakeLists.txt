@@ -5,4 +5,5 @@ set(CMAKE_CXX_STANDARD 11)
 MATH(EXPR stack_size "64*1024*1024")
 set(CMAKE_EXE_LINKER_FLAGS "-Wl,--stack,${stack_size}")
 
-add_executable(P1072 Luogu/P1072.cpp)
+add_executable(P1082 Luogu/P1082.cpp)
+add_executable(P1516 Luogu/P1516.cpp)
