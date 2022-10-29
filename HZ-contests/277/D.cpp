@@ -23,8 +23,8 @@ void dfs(int);
 int n, k, q, ans = 0;
 
 int main() {
-//    freopen("scratch_21.txt", "w", stdout);
-//    freopen("ex_coc2.in", "r", stdin);
+    freopen("scratch_21.txt", "w", stdout);
+    freopen("ex_coc3.in", "r", stdin);
 
     init();
     dfs(1);
@@ -34,8 +34,8 @@ int main() {
             ++ans;
 
     printf("%d", ans);
-//    fclose(stdin);
-//    fclose(stdout);
+    fclose(stdin);
+    fclose(stdout);
     return 0;
 }
 
