@@ -103,6 +103,8 @@ namespace segTree {
             _insert(id << 1 | 1, pos, data);
         else
             _insert(id << 1, pos, data);
+
+        node.at(id).data = merge(node.at(id << 1).data, node.at(id << 1 | 1).data);
     }
 
     template<class nodeData, class addData>
@@ -130,6 +132,8 @@ namespace segTree {
             _update(id << 1, l, r, data);
         if (r > mid)
             _update(id << 1 | 1, l, r, data);
+
+        node.at(id).data = merge(node.at(id << 1).data, node.at(id << 1 | 1).data);
     }
 
     template<class nodeData, class addData>
