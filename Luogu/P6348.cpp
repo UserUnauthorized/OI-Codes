@@ -8,7 +8,7 @@ inline int read();
 
 struct TREE {
     int l, r;
-} inTree[maxn << 2], outTree[maxn << 2];
+} inTree[maxn << 4], outTree[maxn << 4];
 
 struct EDGE {
     int next;
@@ -27,9 +27,9 @@ void init();
 
 void build(int &inId, int &outId, int l, int r);
 
-void line2Point(int inId, int outId, int l, int r, int to, int weight);
+void line2Point(int outId, int l, int r, int to, int weight);
 
-void point2Line(int inId, int outId, int l, int r, int pos, int weight);
+void point2Line(int inId, int l, int r, int pos, int weight);
 
 int main() {
     init();
@@ -44,6 +44,12 @@ void init() {
 
 
     build(inRoot, outRoot, 1, n);
+
+    while (m--) {
+        int a(read()), b(read()), c(read()), d(read());
+        line2Point(inRoot, a, b, ++cnt, 0);
+        point2Line(outRoot, c, d, cnt, 1);
+    }
 }
 
 inline int read(/*ONLY FOR POSITIVE NUMBER*/) {
@@ -67,20 +73,28 @@ void build(int &inId, int &outId, int l, int r) {
     inTree[inId].l = outTree[outId].l = l;
     inTree[inId].r = outTree[outId].r = r;
 
-    if (l == r)
+    if (l == r) {
+        inId = outId = r;
         return;
+    }
 
     int mid((l + r) >> 1);
     build(leftSon[inId], leftSon[outId], l, mid);
     build(rightSon[inId], rightSon[outId], mid + 1, r);
 
-    edge[++edgeCount] = EDGE(head[outId],leftSon[outId],0);
+    edge[++edgeCount] = EDGE(head[outId], leftSon[outId], 0);
     head[outId] = edgeCount;
-    edge[++edgeCount] = EDGE(head[outId],rightSon[outId],0);
+    edge[++edgeCount] = EDGE(head[outId], rightSon[outId], 0);
     head[outId] = edgeCount;
 
-    edge[++edgeCount] = EDGE(head[leftSon[inId]],inId,0);
+    edge[++edgeCount] = EDGE(head[leftSon[inId]], inId, 0);
     head[leftSon[inId]] = edgeCount;
-    edge[++edgeCount] = EDGE(head[rightSon[inId]],inId,0);
+    edge[++edgeCount] = EDGE(head[rightSon[inId]], inId, 0);
     head[rightSon[inId]] = edgeCount;
 }
+
+void line2Point(int outId, int l, int r, int to, int weight) {
+    if (outTree)
+}
+
+
