@@ -4,11 +4,11 @@
 using namespace std;
 constexpr int maxn = 500005;
 
-namespace segTree {
+/*namespace segTree {
     template<class nodeData, class addData>
-    class TREE {
+    class _____TREE {
     public:
-        explicit TREE(nodeData (*_merge)(const nodeData &, const nodeData &));
+        explicit _____TREE(nodeData (*_merge)(const nodeData &, const nodeData &));
 
         template<typename sourceType>
         void build(const sourceType _source[], int _sourceSize);
@@ -49,13 +49,13 @@ namespace segTree {
     };
 
     template<class nodeData, class addData>
-    TREE<nodeData, addData>::TREE(nodeData (*_merge)(const nodeData &, const nodeData &)):sourceSize(0) {
+    _____TREE<nodeData, addData>::_____TREE(nodeData (*_merge)(const nodeData &, const nodeData &)):sourceSize(0) {
         this->merge = _merge;
     }
 
     template<class nodeData, class addData>
     template<typename sourceType>
-    void TREE<nodeData, addData>::build(const sourceType *source, int _sourceSize) {
+    void _____TREE<nodeData, addData>::build(const sourceType *source, int _sourceSize) {
         this->sourceSize = _sourceSize;
         this->node.resize(_sourceSize << 2);
         _build(1, source, source + _sourceSize - 1, source);
@@ -63,7 +63,7 @@ namespace segTree {
 
     template<class nodeData, class addData>
     template<typename randomAccessIterator>
-    void TREE<nodeData, addData>::build(randomAccessIterator begin, randomAccessIterator end) {
+    void _____TREE<nodeData, addData>::build(randomAccessIterator begin, randomAccessIterator end) {
         this->sourceSize = std::distance(begin, end);
         this->node.resize(this->sourceSize << 2);
         _build(1, begin, end - 1, begin);
@@ -71,7 +71,7 @@ namespace segTree {
 
     template<class nodeData, class addData>
     template<typename randomAccessIterator>
-    void TREE<nodeData, addData>::_build(int id, randomAccessIterator left, randomAccessIterator right,
+    void _____TREE<nodeData, addData>::_build(int id, randomAccessIterator left, randomAccessIterator right,
                                          const randomAccessIterator &begin) {
         node.at(id).l = std::distance(begin, left);
         node.at(id).r = std::distance(begin, right);
@@ -90,7 +90,7 @@ namespace segTree {
     }
 
     template<class nodeData, class addData>
-    void TREE<nodeData, addData>::_insert(int id, int pos, const addData &data) {
+    void _____TREE<nodeData, addData>::_insert(int id, int pos, const addData &data) {
         if (node.at(id).l == node.at(id).r) {
             node.at(id).data.addon(data);
             return;
@@ -107,12 +107,12 @@ namespace segTree {
     }
 
     template<class nodeData, class addData>
-    void TREE<nodeData, addData>::insert(int pos, addData data) {
+    void _____TREE<nodeData, addData>::insert(int pos, addData data) {
         _insert(1, pos, data);
     }
 
     template<class nodeData, class addData>
-    void TREE<nodeData, addData>::_update(int id, int l, int r, const addData &data) {
+    void _____TREE<nodeData, addData>::_update(int id, int l, int r, const addData &data) {
         if (l <= node.at(id).l && node.at(id).r <= r) {
             node.at(id).data.addLazy(data);
             node.at(id).lazy += data;
@@ -136,7 +136,7 @@ namespace segTree {
     }
 
     template<class nodeData, class addData>
-    nodeData TREE<nodeData, addData>::_query(int id, int l, int r) {
+    nodeData _____TREE<nodeData, addData>::_query(int id, int l, int r) {
         if (l <= node.at(id).l && node.at(id).r <= r)
             return node.at(id).data;
 
@@ -156,12 +156,12 @@ namespace segTree {
     }
 
     template<class nodeData, class addData>
-    void TREE<nodeData, addData>::update(int l, int r, addData data) {
+    void _____TREE<nodeData, addData>::update(int l, int r, addData data) {
         _update(1, l, r, data);
     }
 
     template<class nodeData, class addData>
-    nodeData TREE<nodeData, addData>::query(int l, int r) {
+    nodeData _____TREE<nodeData, addData>::query(int l, int r) {
         return _query(1, l, r);
     }
 
@@ -273,13 +273,13 @@ namespace segTree {
             return SUM<nodeType>(left.sum + right.sum, left.size + right.size);
         }
     }
-}
+}*/
 
 inline int read();
 
 struct TREE {
     int l, r;
-} tree[maxn << 4];
+} tree[maxn << 3];
 
 struct EDGE {
     int next;
@@ -289,13 +289,14 @@ struct EDGE {
     EDGE() : next(-1), to(-1), weight(-1) {};
 
     EDGE(int _next, int _to, int _weight) : next(_next), to(_to), weight(_weight) {};
-} edge[maxn << 4];
+};
 
-int n, m, P, cnt, edgeCount(0), inRoot, outRoot, head[maxn << 4], leftSon[maxn << 4], rightSon[maxn << 4];
+int n, m, P, cnt, edgeCount(-1), inRoot, outRoot, head[maxn * 10], leftSon[maxn << 3], rightSon[maxn << 3];
 vector<int> dis;
+vector<EDGE> edge;
 
-segTree::TREE<segTree::stdNodeData::MIN<int>, int>
-        dijkstraTree(segTree::stdNodeData::mergeForMin);
+/*segTree::_____TREE<segTree::stdNodeData::MIN<int>, int>
+        dijkstraTree(segTree::stdNodeData::mergeForMin);*/
 
 void init();
 
@@ -305,10 +306,9 @@ void build(int &inId, int &outId, int l, int r);
 
 void line2Point(int id, int l, int r, int to, int weight);
 
-void point2Line(int id, int l, int r, int pos, int weight);
-
 int main() {
     init();
+    return 0;
     dijkstra(P);
     return 0;
 }
@@ -322,14 +322,19 @@ void init() {
     m = read();
     P = read();
 
-
     build(inRoot, outRoot, 1, n);
 
     while (m--) {
         int a(read()), b(read()), c(read()), d(read());
+        cerr << a << "\t" << b << "\t" << c << "\t" << d << endl;
         line2Point(inRoot, a, b, ++cnt, 0);
-        point2Line(outRoot, c, d, cnt, 1);
+        cerr << "DEBUG\n";
+        line2Point(outRoot, c, d, cnt, 1);
+
+        line2Point(inRoot, c, d, ++cnt, 0);
+        line2Point(outRoot, a, b, cnt, 1);
     }
+
 }
 
 inline int read(/*ONLY FOR POSITIVE NUMBER*/) {
@@ -347,8 +352,8 @@ void build(int &inId, int &outId, int l, int r) {
     inId = ++cnt;
     outId = ++cnt;
 
-    edge[++edgeCount] = EDGE(head[inId], outId, 0);
-    head[inId] = edgeCount;
+    edge.emplace_back(head[outId], inId, 0);
+    head[outId] = ++edgeCount;
 
     tree[inId].l = tree[outId].l = l;
     tree[inId].r = tree[outId].r = r;
@@ -362,7 +367,7 @@ void build(int &inId, int &outId, int l, int r) {
     build(leftSon[inId], leftSon[outId], l, mid);
     build(rightSon[inId], rightSon[outId], mid + 1, r);
 
-    edge[++edgeCount] = EDGE(head[outId], leftSon[outId], 0);
+    /*edge[++edgeCount] = EDGE(head[outId], leftSon[outId], 0);
     head[outId] = edgeCount;
     edge[++edgeCount] = EDGE(head[outId], rightSon[outId], 0);
     head[outId] = edgeCount;
@@ -370,16 +375,34 @@ void build(int &inId, int &outId, int l, int r) {
     edge[++edgeCount] = EDGE(head[leftSon[inId]], inId, 0);
     head[leftSon[inId]] = edgeCount;
     edge[++edgeCount] = EDGE(head[rightSon[inId]], inId, 0);
-    head[rightSon[inId]] = edgeCount;
+    head[rightSon[inId]] = edgeCount;*/
+
+    edge.emplace_back(head[outId], leftSon[outId], 0);
+    head[outId] = ++edgeCount;
+
+    edge.emplace_back(head[outId], rightSon[outId], 0);
+    head[outId] = ++edgeCount;
+
+    edge.emplace_back(head[leftSon[inId]], inId, 0);
+    head[leftSon[inId]] = ++edgeCount;
+
+    edge.emplace_back(head[rightSon[inId]], inId, 0);
+    head[leftSon[inId]] = ++edgeCount;
 }
 
 void line2Point(int id, int l, int r, int to, int weight) {
     if (l <= tree[id].l && tree[id].r <= r) {
-        edge[++edgeCount] = EDGE(head[id], to, weight);
+        /*edge[++edgeCount] = EDGE(head[id], to, weight);
         head[id] = edgeCount;
 
         edge[++edgeCount] = EDGE(head[to], id, weight);
-        head[to] = edgeCount;
+        head[to] = edgeCount;*/
+
+        edge.emplace_back(head[id], to, weight);
+        head[id] = ++edgeCount;
+
+        edge.emplace_back(head[to], id, weight);
+        head[to] = ++edgeCount;
         return;
     }
 
@@ -391,32 +414,11 @@ void line2Point(int id, int l, int r, int to, int weight) {
     else {
         line2Point(leftSon[id], l, r, to, weight);
         line2Point(rightSon[id], l, r, to, weight);
-    }
-}
-
-void point2Line(int id, int l, int r, int pos, int weight) {
-    if (l <= tree[id].l && tree[id].r <= r) {
-        edge[++edgeCount] = EDGE(head[pos], id, weight);
-        head[pos] = edgeCount;
-
-        edge[++edgeCount] = EDGE(head[id], pos, weight);
-        head[id] = edgeCount;
-        return;
-    }
-
-    int mid = (tree[id].l + tree[id].r) >> 1;
-    if (r <= mid)
-        point2Line(leftSon[id], l, r, pos, weight);
-    else if (l > mid)
-        point2Line(rightSon[id], l, r, pos, weight);
-    else {
-        point2Line(leftSon[id], l, r, pos, weight);
-        point2Line(rightSon[id], l, r, pos, weight);
     }
 }
 
 void dijkstra(int x) {
-    dis.resize(cnt, INT_MAX);
+    /*dis.resize(cnt + 1, INT_MAX);
     dis.at(x) = 0;
     dijkstraTree.build(dis.begin() + 1, dis.end());
     dijkstraTree.insert(x, 0);
@@ -435,6 +437,24 @@ void dijkstra(int x) {
 
         dijkstraTree.insert(x, INT_MAX);
         x = dijkstraTree.query(0, cnt - 1).minn;
+    }*/
+
+    bool vis[cnt];
+    memset(vis, 0, sizeof(vis));
+    dis.resize(cnt, INT_MAX);
+    dis.at(x) = 0;
+    for (int i = 1; i <= n; ++i) {
+        int k = 0, minn = INT_MAX;
+        for (int j = 1; j <= n; ++j)
+            if (!vis[j] && dis[j] < minn)
+                k = j, minn = dis[j];
+        vis[k] = true;
+        for (int j = head[x]; j != -1; j = edge[j].next) {
+            const EDGE &e = edge[j];
+            if (dis[e.to] > dis[k] + e.weight) {
+                dis[e.to] = dis[k] + e.weight;
+            }
+        }
     }
 
     for (int i = 1; i <= n; ++i)
