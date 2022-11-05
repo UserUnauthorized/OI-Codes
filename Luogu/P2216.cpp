@@ -11,7 +11,9 @@ int s[1002][1002], xmin[1002][1002], xmax[1002][1002], ymin[1002][1002], ymax[10
 deque<int> que;
 
 void init();
+
 void build();
+
 void emptyQue();
 
 int main() {

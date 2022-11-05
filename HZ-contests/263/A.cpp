@@ -6,6 +6,7 @@ using namespace std;
 int T, n, m, ans;
 
 void init();
+
 inline void read(int &);
 
 int main() {

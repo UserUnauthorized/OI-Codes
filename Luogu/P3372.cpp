@@ -14,8 +14,11 @@ struct Tree {
 int n, m, a[MAXN];
 
 void init();
+
 void build(int, int, int);
+
 void insert(int, int, int, int);
+
 long long query(int, int, int);
 
 int main() {

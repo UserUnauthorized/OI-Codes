@@ -16,7 +16,9 @@ long long n, m, root, cnt = 0, ans[maxn], head[maxn], dfn[maxn], low[maxn], node
 bool cut[maxn];
 
 void init();
+
 void tarjan(int);
+
 inline void addEdge(int, int);
 
 int main() {

@@ -51,6 +51,7 @@ struct TREE {
 } tree[maxn << 2];
 
 void init();
+
 void build(int, int, int);
 
 int main() {

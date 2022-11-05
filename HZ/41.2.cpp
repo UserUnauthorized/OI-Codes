@@ -10,7 +10,7 @@ inline int read();
 inline void write(int *);
 
 constexpr int maxn = 100005;
-int n(read()), m(read()),ans, source[maxn];
+int n(read()), m(read()), ans, source[maxn];
 int l(INT_MIN), r(0);
 
 void init();

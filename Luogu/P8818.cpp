@@ -1,6 +1,6 @@
 //CSP-S 2022 T2
 //Luogu - P8818
-struct DATA{
+struct DATA {
     int maxN;
     int minN;
     bool includePositive;

@@ -2,6 +2,7 @@
 #include <bits/stdc++.h>
 
 using namespace std;
+
 inline void read(long long &);
 
 long long T, n, m;

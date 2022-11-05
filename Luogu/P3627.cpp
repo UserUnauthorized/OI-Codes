@@ -19,10 +19,15 @@ stack<int> st;
 bool vis[maxn];
 
 void init();
+
 void spfa(int);
+
 void build();
+
 void tarjan(int);
+
 inline void addEdge(int, int);
+
 inline void addOldEdge(int, int);
 
 int main() {

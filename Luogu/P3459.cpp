@@ -14,10 +14,15 @@ struct EDGE {
 int n, m, cnt = 0, tree[maxn << 1], head[maxn], in[maxn], out[maxn];
 
 void init();
+
 int lowbit(int);
+
 void insert(int, int);
+
 int query(int);
+
 void dfs(int);
+
 void addEdge(const int &, const int &);
 
 int main() {

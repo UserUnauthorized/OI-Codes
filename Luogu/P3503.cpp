@@ -9,6 +9,7 @@ int n, m, a[1000005], k, ans;
 long long sum[1000005];
 
 void init();
+
 void solve();
 
 int main() {

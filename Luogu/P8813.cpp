@@ -23,7 +23,7 @@ namespace P8813 {
 
             base *= base;
         }
-        return (int)result;
+        return (int) result;
     }
 }
 

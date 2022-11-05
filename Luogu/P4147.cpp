@@ -13,7 +13,9 @@ bool g[1002][1002];
 deque<int> que;
 
 void init();
+
 void DP();
+
 void empty();
 
 int main() {

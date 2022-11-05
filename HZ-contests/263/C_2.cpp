@@ -10,6 +10,7 @@ int n;
 double p[maxn], dp[maxn][maxn];
 
 void init();
+
 bool check(int);
 
 int main() {

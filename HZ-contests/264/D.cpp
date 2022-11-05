@@ -96,13 +96,13 @@ inline void write(int *result) {
 bool dfs(STATUS status) {
     if (status.prevPlayer == -1) {
         status.prevPlayer = 1;
-            //const STATUS bak = status;
-            for (CARD &card: status.P[1]) {
-                ++status.N[1];
-                card.used = true;
-                status.prevCard = card;
-                if (card.type == 11)
-                    status.clockToward = !status.clockToward;
+        //const STATUS bak = status;
+        for (CARD &card: status.P[1]) {
+            ++status.N[1];
+            card.used = true;
+            status.prevCard = card;
+            if (card.type == 11)
+                status.clockToward = !status.clockToward;
             if (dfs(status))
                 return true;
 
