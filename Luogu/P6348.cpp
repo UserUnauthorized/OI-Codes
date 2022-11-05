@@ -2,342 +2,126 @@
 #include <bits/stdc++.h>
 
 using namespace std;
-constexpr int maxn = 500005;
-
-/*namespace segTree {
-    template<class nodeData, class addData>
-    class _____TREE {
-    public:
-        explicit _____TREE(nodeData (*_merge)(const nodeData &, const nodeData &));
-
-        template<typename sourceType>
-        void build(const sourceType _source[], int _sourceSize);
-
-        template<typename randomAccessIterator>
-        void build(randomAccessIterator begin, randomAccessIterator end);
-
-        void insert(int pos, addData data);
-
-        void update(int l, int r, addData data);
-
-        nodeData query(int l, int r);
-
-    private:
-        int sourceSize;
-
-        struct treeNode {
-            int l, r;
-            nodeData data;
-            addData lazy;
-            bool haveLazy;
-
-            treeNode() : l(-1), r(-1), data(nodeData()), lazy(addData()), haveLazy(-1) {};
-        };
-
-        std::vector<treeNode> node;
-
-        nodeData (*merge)(const nodeData &left, const nodeData &right);
-
-        template<typename randomAccessIterator>
-        void _build(int id, randomAccessIterator left, randomAccessIterator right, const randomAccessIterator &begin);
-
-        void _insert(int id, int pos, const addData &data);
-
-        void _update(int id, int l, int r, const addData &data);
-
-        nodeData _query(int id, int l, int r);
-    };
-
-    template<class nodeData, class addData>
-    _____TREE<nodeData, addData>::_____TREE(nodeData (*_merge)(const nodeData &, const nodeData &)):sourceSize(0) {
-        this->merge = _merge;
-    }
-
-    template<class nodeData, class addData>
-    template<typename sourceType>
-    void _____TREE<nodeData, addData>::build(const sourceType *source, int _sourceSize) {
-        this->sourceSize = _sourceSize;
-        this->node.resize(_sourceSize << 2);
-        _build(1, source, source + _sourceSize - 1, source);
-    }
-
-    template<class nodeData, class addData>
-    template<typename randomAccessIterator>
-    void _____TREE<nodeData, addData>::build(randomAccessIterator begin, randomAccessIterator end) {
-        this->sourceSize = std::distance(begin, end);
-        this->node.resize(this->sourceSize << 2);
-        _build(1, begin, end - 1, begin);
-    }
-
-    template<class nodeData, class addData>
-    template<typename randomAccessIterator>
-    void _____TREE<nodeData, addData>::_build(int id, randomAccessIterator left, randomAccessIterator right,
-                                         const randomAccessIterator &begin) {
-        node.at(id).l = std::distance(begin, left);
-        node.at(id).r = std::distance(begin, right);
-
-        if (left == right) {
-            node.at(id).data = nodeData(*right);
-            return;
-        }
-
-        randomAccessIterator mid = left + (std::distance(left, right) >> 1);
-
-        _build(id << 1, left, mid, begin);
-        _build(id << 1 | 1, mid + 1, right, begin);
-
-        node.at(id).data = merge(node.at(id << 1).data, node.at(id << 1 | 1).data);
-    }
-
-    template<class nodeData, class addData>
-    void _____TREE<nodeData, addData>::_insert(int id, int pos, const addData &data) {
-        if (node.at(id).l == node.at(id).r) {
-            node.at(id).data.addon(data);
-            return;
-        }
-
-        int mid = (node.at(id).l + node.at(id).r) >> 1;
-
-        if (pos > mid)
-            _insert(id << 1 | 1, pos, data);
-        else
-            _insert(id << 1, pos, data);
-
-        node.at(id).data = merge(node.at(id << 1).data, node.at(id << 1 | 1).data);
-    }
-
-    template<class nodeData, class addData>
-    void _____TREE<nodeData, addData>::insert(int pos, addData data) {
-        _insert(1, pos, data);
-    }
-
-    template<class nodeData, class addData>
-    void _____TREE<nodeData, addData>::_update(int id, int l, int r, const addData &data) {
-        if (l <= node.at(id).l && node.at(id).r <= r) {
-            node.at(id).data.addLazy(data);
-            node.at(id).lazy += data;
-            node.at(id).haveLazy = true;
-            return;
-        }
-
-        node.at(id << 1).data.addLazy(node.at(id).lazy);
-        node.at(id << 1 | 1).data.addLazy(node.at(id).lazy);
-        node.at(id << 1).lazy = node.at(id).lazy;
-        node.at(id << 1 | 1).lazy = node.at(id).lazy;
-        node.at(id).lazy = addData();
-
-        int mid = (node.at(id).l + node.at(id).r) >> 1;
-        if (l <= mid)
-            _update(id << 1, l, r, data);
-        if (r > mid)
-            _update(id << 1 | 1, l, r, data);
-
-        node.at(id).data = merge(node.at(id << 1).data, node.at(id << 1 | 1).data);
-    }
-
-    template<class nodeData, class addData>
-    nodeData _____TREE<nodeData, addData>::_query(int id, int l, int r) {
-        if (l <= node.at(id).l && node.at(id).r <= r)
-            return node.at(id).data;
-
-        node.at(id << 1).data.addLazy(node.at(id).lazy);
-        node.at(id << 1 | 1).data.addLazy(node.at(id).lazy);
-        node.at(id << 1).lazy = node.at(id).lazy;
-        node.at(id << 1 | 1).lazy = node.at(id).lazy;
-        node.at(id).lazy = addData();
-
-        int mid = (node.at(id).l + node.at(id).r) >> 1;
-        if (r <= mid)
-            return _query(id << 1, l, r);
-        else if (l > mid)
-            return _query(id << 1 | 1, l, r);
-        else
-            return merge(_query(id << 1, l, r), _query(id << 1 | 1, l, r));
-    }
-
-    template<class nodeData, class addData>
-    void _____TREE<nodeData, addData>::update(int l, int r, addData data) {
-        _update(1, l, r, data);
-    }
-
-    template<class nodeData, class addData>
-    nodeData _____TREE<nodeData, addData>::query(int l, int r) {
-        return _query(1, l, r);
-    }
-
-
-    namespace stdNodeData {
-        template<typename nodeType>
-        class MAX {
-        public:
-            nodeType maxn;
-
-            MAX() : maxn(0) {};
-
-            template<class addData>
-            void addon(const addData &data);
-
-            template<class addData>
-            void addLazy(const addData &data);
-
-            friend MAX mergeForMax(const MAX &left, const MAX &right);
-
-            explicit MAX(nodeType source) : maxn(source) {};
-        };
-
-        template<typename nodeType>
-        MAX<nodeType> mergeForMax(const MAX<nodeType> &left, const MAX<nodeType> &right) {
-            return MAX<nodeType>(std::max(left.maxn, right.maxn));
-        }
-
-        template<typename nodeType>
-        template<class addData>
-        void MAX<nodeType>::addon(const addData &data) {
-            this->maxn += data;
-        }
-
-        template<typename nodeType>
-        template<class addData>
-        void MAX<nodeType>::addLazy(const addData &data) {
-            this->maxn += data;
-        }
-
-        template<typename nodeType>
-        class MIN {
-        public:
-            nodeType minn;
-
-            MIN() : minn(0) {};
-
-            template<class addData>
-            void addon(const addData &data);
-
-            template<class addData>
-            void addLazy(const addData &data);
-
-            friend MIN mergeForMin(const MIN &left, const MIN &right);
-
-            explicit MIN(nodeType source) : minn(source) {};
-        };
-
-        template<typename nodeType>
-        template<class addData>
-        void MIN<nodeType>::addon(const addData &data) {
-            this->minn = data;
-        }
-
-        template<typename nodeType>
-        template<class addData>
-        void MIN<nodeType>::addLazy(const addData &data) {
-            this->minn += data;
-        }
-
-        template<typename nodeType>
-        MIN<nodeType> mergeForMin(const MIN<nodeType> &left, const MIN<nodeType> &right) {
-            return MIN<nodeType>(std::min(left.minn, right.minn));
-        }
-
-        template<typename nodeType>
-        class SUM {
-        public:
-            nodeType sum;
-            int size;
-
-            SUM() : sum(0), size(0) {};
-
-            template<class addData>
-            void addon(const addData &data);
-
-            template<class addData>
-            void addLazy(const addData &data);
-
-            friend SUM mergeForSum(const SUM &left, const SUM &right);
-
-            explicit SUM(nodeType source, int _size = 1) : sum(source), size(_size) {};
-        };
-
-        template<typename nodeType>
-        template<class addData>
-        void SUM<nodeType>::addon(const addData &data) {
-            this->sum += data * this->size;
-        }
-
-        template<typename nodeType>
-        template<class addData>
-        void SUM<nodeType>::addLazy(const addData &data) {
-            this->sum += data * this->size;
-        }
-
-        template<typename nodeType>
-        SUM<nodeType> mergeForSum(const SUM<nodeType> &left, const SUM<nodeType> &right) {
-            return SUM<nodeType>(left.sum + right.sum, left.size + right.size);
-        }
-    }
-}*/
-
-inline int read();
-
-struct TREE {
-    int l, r;
-} tree[maxn << 3];
+constexpr int maxn = 5e5 + 10;
+typedef pair<int, int> P;
 
 struct EDGE {
-    int next;
     int to;
     int weight;
 
-    EDGE() : next(-1), to(-1), weight(-1) {};
-
-    EDGE(int _next, int _to, int _weight) : next(_next), to(_to), weight(_weight) {};
+    EDGE(int _to, int _weight) : to(_to), weight(_weight) {};
 };
 
-int n, m, P, cnt, edgeCount(-1), inRoot, outRoot, head[maxn * 10], leftSon[maxn << 3], rightSon[maxn << 3];
-vector<int> dis;
-vector<EDGE> edge;
+class TREE {
+public:
+    int num[::maxn << 2];
 
-/*segTree::_____TREE<segTree::stdNodeData::MIN<int>, int>
-        dijkstraTree(segTree::stdNodeData::mergeForMin);*/
+    void build(int id, int l, int r, const bool &isInTree);
+
+    void build(int id, int nodeL, int nodeR, const int &l, const int &r, const int &superNode, const bool &isInTree);
+
+    void out(int id, int l, int r);
+} inTree, outTree;
+
+vector<EDGE> edge[(maxn << 3) + (maxn << 1)];
+priority_queue<P, vector<P>, greater<P>> que;
+pair<int, int> pos;
+vector<int> dis;
+bitset<maxn> vis;
+
+inline int read();
 
 void init();
 
 void dijkstra(int x);
 
-void build(int &inId, int &outId, int l, int r);
+void connect(int id, int l, int r);
 
-void line2Point(int id, int l, int r, int to, int weight);
+int n, m, p, cnt(0);
 
 int main() {
     init();
+    connect(1, 1, n);
+    edge[pos.second].emplace_back(pos.first, 0);
+    dijkstra(pos.second);
+    inTree.out(1, 1, n);
     return 0;
-    dijkstra(P);
-    return 0;
+}
+
+void TREE::build(int id, int l, int r, const bool &isInTree) {
+    num[id] = ++cnt;
+
+    if (l == r) {
+        if (r == ::p)
+            isInTree ? pos.first = num[id] : pos.second = num[id];
+        return;
+    }
+
+
+    int mid((l + r) >> 1);
+    build(id << 1, l, mid, isInTree);
+    build(id << 1 | 1, mid + 1, r, isInTree);
+
+    isInTree ? edge[num[id]].emplace_back(num[id << 1], 0), edge[num[id]].emplace_back(num[id << 1 | 1], 0)
+             : edge[num[id << 1]].emplace_back(num[id], 0), edge[num[id << 1 | 1]].emplace_back(num[id], 0);
+}
+
+void TREE::build(int id, int nodeL, int nodeR, const int &l, const int &r, const int &superNode,
+                 const bool &isInTree) {
+    if (l <= nodeL && nodeR <= r) {
+        isInTree ? edge[superNode].emplace_back(num[id], 1) : edge[num[id]].emplace_back(superNode, 0);
+        return;
+    }
+
+    int mid((nodeL + nodeR) >> 1);
+    if (l <= mid)
+        build(id << 1, nodeL, mid, l, r, superNode, isInTree);
+    if (r > mid)
+        build(id << 1 | 1, mid + 1, nodeR, l, r, superNode, isInTree);
+}
+
+void TREE::out(int id, int l, int r) {
+    if (l == r) {
+        printf("%d\n", dis.at(this->num[id]));
+        return;
+    }
+
+    int mid((l + r) >> 1);
+    out(id << 1, l, mid);
+    out(id << 1 | 1, mid + 1, r);
+}
+
+void connect(int id, int l, int r) {
+    edge[inTree.num[id]].emplace_back(outTree.num[id], 0);
+
+    if (l == r)
+        return;
+
+    int mid((l + r) >> 1);
+
+    connect(id << 1, l, mid);
+    connect(id << 1 | 1, mid + 1, r);
 }
 
 void init() {
-    memset(head, 0xff, sizeof(head));
-    memset(leftSon, 0xff, sizeof(leftSon));
-    memset(rightSon, 0xff, sizeof(rightSon));
-
-    cnt = n = read();
+    n = read();
     m = read();
-    P = read();
+    p = read();
 
-    build(inRoot, outRoot, 1, n);
+    inTree.build(1, 1, n, true);
+    outTree.build(1, 1, n, false);
 
     while (m--) {
         int a(read()), b(read()), c(read()), d(read());
-        cerr << a << "\t" << b << "\t" << c << "\t" << d << endl;
-        line2Point(inRoot, a, b, ++cnt, 0);
-        cerr << "DEBUG\n";
-        line2Point(outRoot, c, d, cnt, 1);
+        inTree.build(1, 1, n, a, b, ++cnt, true);
+        outTree.build(1, 1, n, c, d, cnt, false);
 
-        line2Point(inRoot, c, d, ++cnt, 0);
-        line2Point(outRoot, a, b, cnt, 1);
+        inTree.build(1, 1, n, c, d, ++cnt, true);
+        outTree.build(1, 1, n, a, b, cnt, false);
     }
-
 }
 
-inline int read(/*ONLY FOR POSITIVE NUMBER*/) {
+inline int read() {
     int result(0), ch(getchar());
     while (ch < '0' || ch > '9')
         ch = getchar();
@@ -348,117 +132,26 @@ inline int read(/*ONLY FOR POSITIVE NUMBER*/) {
     return result;
 }
 
-void build(int &inId, int &outId, int l, int r) {
-    inId = ++cnt;
-    outId = ++cnt;
-
-    edge.emplace_back(head[outId], inId, 0);
-    head[outId] = ++edgeCount;
-
-    tree[inId].l = tree[outId].l = l;
-    tree[inId].r = tree[outId].r = r;
-
-    if (l == r) {
-        inId = outId = r;
-        return;
-    }
-
-    int mid((l + r) >> 1);
-    build(leftSon[inId], leftSon[outId], l, mid);
-    build(rightSon[inId], rightSon[outId], mid + 1, r);
-
-    /*edge[++edgeCount] = EDGE(head[outId], leftSon[outId], 0);
-    head[outId] = edgeCount;
-    edge[++edgeCount] = EDGE(head[outId], rightSon[outId], 0);
-    head[outId] = edgeCount;
-
-    edge[++edgeCount] = EDGE(head[leftSon[inId]], inId, 0);
-    head[leftSon[inId]] = edgeCount;
-    edge[++edgeCount] = EDGE(head[rightSon[inId]], inId, 0);
-    head[rightSon[inId]] = edgeCount;*/
-
-    edge.emplace_back(head[outId], leftSon[outId], 0);
-    head[outId] = ++edgeCount;
-
-    edge.emplace_back(head[outId], rightSon[outId], 0);
-    head[outId] = ++edgeCount;
-
-    edge.emplace_back(head[leftSon[inId]], inId, 0);
-    head[leftSon[inId]] = ++edgeCount;
-
-    edge.emplace_back(head[rightSon[inId]], inId, 0);
-    head[leftSon[inId]] = ++edgeCount;
-}
-
-void line2Point(int id, int l, int r, int to, int weight) {
-    if (l <= tree[id].l && tree[id].r <= r) {
-        /*edge[++edgeCount] = EDGE(head[id], to, weight);
-        head[id] = edgeCount;
-
-        edge[++edgeCount] = EDGE(head[to], id, weight);
-        head[to] = edgeCount;*/
-
-        edge.emplace_back(head[id], to, weight);
-        head[id] = ++edgeCount;
-
-        edge.emplace_back(head[to], id, weight);
-        head[to] = ++edgeCount;
-        return;
-    }
-
-    int mid = (tree[id].l + tree[id].r) >> 1;
-    if (r <= mid)
-        line2Point(leftSon[id], l, r, to, weight);
-    else if (l > mid)
-        line2Point(rightSon[id], l, r, to, weight);
-    else {
-        line2Point(leftSon[id], l, r, to, weight);
-        line2Point(rightSon[id], l, r, to, weight);
-    }
-}
-
 void dijkstra(int x) {
-    /*dis.resize(cnt + 1, INT_MAX);
+    dis.resize(cnt + 1, INT_MAX);
     dis.at(x) = 0;
-    dijkstraTree.build(dis.begin() + 1, dis.end());
-    dijkstraTree.insert(x, 0);
+    que.emplace(0, x);
 
-    for (int i = 1; i <= n; ++i) {
-        if (dis[x] == INT_MAX)
-            break;
+    while (!que.empty()) {
+        const P t(que.top());
+        const int &k(t.second);
+        que.pop();
 
-        for (int j = head[x]; j != -1; j = edge[j].next) {
-            const EDGE &e = edge[j];
-            if (dis[e.to] > dis[x] + e.weight) {
-                dis[e.to] = dis[x] + e.weight;
-                dijkstraTree.insert(e.to, dis[x] + e.weight);
-            }
-        }
+        if (vis.test(k))
+            continue;
 
-        dijkstraTree.insert(x, INT_MAX);
-        x = dijkstraTree.query(0, cnt - 1).minn;
-    }*/
+        vis.set(k);
 
-    bool vis[cnt];
-    memset(vis, 0, sizeof(vis));
-    dis.resize(cnt, INT_MAX);
-    dis.at(x) = 0;
-    for (int i = 1; i <= n; ++i) {
-        int k = 0, minn = INT_MAX;
-        for (int j = 1; j <= n; ++j)
-            if (!vis[j] && dis[j] < minn)
-                k = j, minn = dis[j];
-        vis[k] = true;
-        for (int j = head[x]; j != -1; j = edge[j].next) {
-            const EDGE &e = edge[j];
-            if (dis[e.to] > dis[k] + e.weight) {
-                dis[e.to] = dis[k] + e.weight;
+        for (const EDGE &e: edge[k]) {
+            if (!vis.test(e.to) && dis.at(e.to) > dis.at(k) + e.weight) {
+                dis.at(e.to) = dis.at(k) + e.weight;
+                que.emplace(dis.at(e.to), e.to);
             }
         }
     }
-
-    for (int i = 1; i <= n; ++i)
-        printf("%d\n", dis.at(i));
 }
-
-
