@@ -25,24 +25,42 @@ struct NODE{
 	}
 };
 
+struct TREE{
+	int l, r;
+	NODE data;
+	bool lazy;
+	TREE():l(0), r(0), lazy(false){};
+	
+	friend TREE merge(const TREE &left, const TREE &right){
+		TREE result;
+		if(left.l > right.r){
+			/*result.r = max(left.r, right.r);
+			result.l = min(left.l, right.l);*/
+			result.r = left.r;
+			result.l = right.l;
+			result.data = merge(right.data, left.data);
+		}else{
+			/*result.r = max(left.r, right.r);
+			result.l = min(left.l, right.l);*/
+			result.l = left.l;
+			result.r = right.r;
+			result.data = merge(left.data, right.data);
+		}
+		return result;
+	}
+}tree[maxn << 2];
+
 void initDfs(int x,int from);
 void dfs(int x,int TOP);
 void init();
 inline int read();
 void build(int id, int l, int r);
 void update(int id, int l, int r, int color);
-NODE query(int id, int l, int r);
+TREE query(int id, int l, int r);
 int LCA(int a, int b);
 
 vector<int> edge[maxn];
 int n, Q, p, cnt(0), color[maxn], dfn[maxn], pos[maxn], size[maxn], son[maxn], dep[maxn], top[maxn], father[maxp][maxn];
-
-struct TREE{
-	int l, r;
-	NODE data;
-	bool lazy;
-	TREE():l(0), r(0), lazy(false){};
-}tree[maxn << 2];
 
 int main(){
 	init();
@@ -65,45 +83,31 @@ int main(){
 				x = father[0][top[x]];
 			}
 			
-			if(dfn[x] > dfn[y])
+			if(dep[x] > dep[y])
 				swap(x, y);
 			update(1, dfn[x], dfn[y], key);
 		}else{
 			int x(read()), y(read());
 			
-			NODE result;
-			pair<int, int> where;
+			TREE result;
 			
 			while(top[x] != top[y]){
 				if(dep[top[x]] < dep[top[y]])
 					swap(x, y);
-				if(where.second < dfn[top[x]]){
-					//result = result + query(1, dfn[top[x]], dfn[x]);
+				
+				if(result.data.count == 0) 
+					result = query(1, dfn[top[x]], dfn[x]);
+				else
 					result = merge(result, query(1, dfn[top[x]], dfn[x]));
-					where.second = dfn[x];
-				}else{
-					//result = query(1, dfn[top[x]], dfn[x]) + result;
-					result = merge(query(1, dfn[top[x]], dfn[x]), result);
-					where.first = dfn[top[x]];
-				}
-					
 				x = father[0][top[x]];
 			}
 			
 			if(dfn[x] > dfn[y])
 				swap(x, y);
-				
-			if(where.second < dfn[x]){
-				//result = result + query(1, dfn[x], dfn[y]);
-				result = merge(result, query(1, dfn[x], dfn[y]));
-				where.second = dfn[x];
-			}else{
-				//result = query(1, dfn[x], dfn[y]) + result;
-				result = merge(query(1, dfn[x], dfn[y]), result);
-				where.first = dfn[y];
-			}
 			
-			printf("%d\n", result.count);
+			if(x != y)
+				result = merge(result, query(1, dfn[x], dfn[y]));
+			printf("%d\n", result.data.count);
 		}
 	}
 	return 0;
@@ -227,13 +231,14 @@ void build(int id, int l, int r){
 	tree[id].data = merge(tree[id << 1].data, tree[id << 1|1].data);
 }
 
-NODE query(int id, int l, int r){
+TREE query(int id, int l, int r){
 	if(l <= tree[id].l && tree[id].r <= r)
-		return tree[id].data;
+		return tree[id];
 		
 	if(tree[id].lazy){
 		tree[id << 1].data = tree[id].data;
 		tree[id << 1|1].data = tree[id].data;
+		//tree[id << 1|1].data = tree[id << 1].data = NODE(tree[id].data.left);
 		tree[id << 1].lazy = true;
 		tree[id << 1|1].lazy = true;
 		tree[id].lazy = false;
@@ -260,6 +265,7 @@ void update(int id, int l, int r, int color){
 	if(tree[id].lazy){
 		tree[id << 1].data = tree[id].data;
 		tree[id << 1|1].data = tree[id].data;
+		//tree[id << 1|1].data = tree[id << 1].data = NODE(tree[id].data.left);
 		tree[id << 1].lazy = true;
 		tree[id << 1|1].lazy = true;
 		tree[id].lazy = false;
