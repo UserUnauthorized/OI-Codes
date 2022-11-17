@@ -86,7 +86,7 @@ int main(){
 			if(dep[x] > dep[y])
 				swap(x, y);
 			update(1, dfn[x], dfn[y], key);
-		}else{
+		} else {
 			int x(read()), y(read());
 			
 			TREE result;
@@ -95,9 +95,9 @@ int main(){
 				if(dep[top[x]] < dep[top[y]])
 					swap(x, y);
 				
-				if(result.data.count == 0) 
+				/*if(result.data.count == 0) 
 					result = query(1, dfn[top[x]], dfn[x]);
-				else
+				else*/
 					result = merge(result, query(1, dfn[top[x]], dfn[x]));
 				x = father[0][top[x]];
 			}
