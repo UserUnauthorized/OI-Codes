@@ -35,8 +35,8 @@ int main(){
 	for(string order; order != "DONE"; cin >> order){
 		if(order == "CHANGE"){
 			int id(read()), key(read());
-			int a(edge[id << 1].to), b(edge[id << 1|1].to);
-			if(dfn[a])
+			//int a(edge[id << 1].to), b(edge[id << 1|1].to);
+			//if(dfn[a])
 			insert(1, dfn[to[id]], key);
 		} else {
 			int x(read()), y(read());
@@ -47,10 +47,15 @@ int main(){
 				if(dep[top[x]] < dep[top[y]])
 					swap(x, y);
 				result = max(result, query(1, dfn[top[x]], dfn[x]));
-				x = father[x];
+				x = father[top[x]];
 			}
 			
-			if(dfn[x] > dfn[y])
+			/*if(x == y){
+				printf("%d\n", result);
+				continue;
+			}*/
+			
+			if(dep[x] > dep[y])
 				swap(x, y);
 			
 			if(dfn[x] + 1 <= dfn[y])
