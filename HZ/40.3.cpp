@@ -35,8 +35,6 @@ int main(){
 	for(string order; order != "DONE"; cin >> order){
 		if(order == "CHANGE"){
 			int id(read()), key(read());
-			//int a(edge[id << 1].to), b(edge[id << 1|1].to);
-			//if(dfn[a])
 			insert(1, dfn[to[id]], key);
 		} else {
 			int x(read()), y(read());
@@ -50,12 +48,7 @@ int main(){
 				x = father[top[x]];
 			}
 			
-			/*if(x == y){
-				printf("%d\n", result);
-				continue;
-			}*/
-			
-			if(dep[x] > dep[y])
+			if(dfn[x] > dfn[y])
 				swap(x, y);
 			
 			if(dfn[x] + 1 <= dfn[y])
@@ -113,7 +106,7 @@ void initDfs(int x, int from){
 		
 		if(e.to == from)
 			continue;
-		 
+		
 		to[i >> 1] = e.to;
 		source[e.to] = weight[i >> 1];
 		initDfs(e.to, x);

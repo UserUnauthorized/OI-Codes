@@ -26,4 +26,4 @@ namespace DEBUG {
 #define debug(...) _debug(#__VA_ARGS__, __VA_ARGS__)
 }  // namespace DEBUG
 
-//using namespace DEBUG;
+using namespace DEBUG;
