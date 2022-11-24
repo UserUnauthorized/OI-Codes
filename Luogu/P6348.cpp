@@ -25,7 +25,7 @@ public:
 
 vector<EDGE> edge[(maxn << 3) + (maxn << 1)];
 priority_queue<P, vector<P>, greater<P>> que;
-pair<int, int> pos;
+pair<int, int> nodeId;
 vector<int> dis;
 bitset<maxn> vis;
 
@@ -42,8 +42,8 @@ int n, m, p, cnt(0);
 int main() {
     init();
     connect(1, 1, n);
-    edge[pos.second].emplace_back(pos.first, 0);
-    dijkstra(pos.second);
+    edge[nodeId.second].emplace_back(nodeId.first, 0);
+    dijkstra(nodeId.second);
     inTree.out(1, 1, n);
     return 0;
 }
@@ -53,7 +53,7 @@ void TREE::build(int id, int l, int r, const bool &isInTree) {
 
     if (l == r) {
         if (r == ::p)
-            isInTree ? pos.first = num[id] : pos.second = num[id];
+            isInTree ? nodeId.first = num[id] : nodeId.second = num[id];
         return;
     }
 
