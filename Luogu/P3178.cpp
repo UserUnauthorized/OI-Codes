@@ -1,7 +1,8 @@
 //Luogu - P3178
 //HZ - 40.4
 
-#ifdef LOCAL \ #include<debug.h> \
+#ifdef LOCAL
+#include<debug.h>
 #else
 #define debug(...)
 #endif
@@ -11,8 +12,8 @@
 using namespace std;
 constexpr int maxn = 1e5 + 5;
 
-int n, m, cnt(
-        0), weight[maxn], dfn[maxn], out[maxn], pos[maxn], son[maxn], top[maxn], dep[maxn], father[maxn], size[maxn];
+int n, m, cnt(0);
+int weight[maxn], dfn[maxn], out[maxn], pos[maxn], son[maxn], top[maxn], dep[maxn], father[maxn], size[maxn];
 vector<int> edge[maxn];
 
 struct TREE {

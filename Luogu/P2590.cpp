@@ -36,8 +36,8 @@ NODE query(int id, int l, int r);
 int LCA(int a, int b);
 
 vector<int> edge[maxn];
-int n, Q, p, cnt(
-        0), weight[maxn], dfn[maxn], pos[maxn], size[maxn], son[maxn], dep[maxn], top[maxn], father[maxp][maxn];
+int n, Q, p, cnt(0);
+int weight[maxn], dfn[maxn], pos[maxn], size[maxn], son[maxn], dep[maxn], top[maxn], father[maxp][maxn];
 
 struct TREE {
     int l, r;

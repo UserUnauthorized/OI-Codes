@@ -18,8 +18,8 @@ void insert(int id, int pos, int key);
 
 int query(int id, int l, int r);
 
-int n, cnt(
-        0), weight[maxn], source[maxn], to[maxn], top[maxn], head[maxn], size[maxn], dfn[maxn], pos[maxn], son[maxn], dep[maxn], father[maxn];
+int n, cnt(0);
+int weight[maxn], source[maxn], to[maxn], top[maxn], head[maxn], size[maxn], dfn[maxn], pos[maxn], son[maxn], dep[maxn], father[maxn];
 
 struct EDGE {
     int next;
