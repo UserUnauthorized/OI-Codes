@@ -19,7 +19,7 @@ void insert(int id, int pos, int key);
 int query(int id, int l, int r);
 
 int n, cnt(0);
-int weight[maxn], source[maxn], to[maxn], top[maxn], head[maxn], size[maxn], dfn[maxn], pos[maxn], son[maxn], dep[maxn], father[maxn];
+int weight[maxn], source[maxn], to[maxn], top[maxn], head[maxn], size[maxn], dfn[maxn], nodeId[maxn], son[maxn], dep[maxn], father[maxn];
 
 struct EDGE {
     int next;
@@ -45,7 +45,7 @@ int main() {
         if (order == "CHANGE") {
             int id(read()), key(read());
             insert(1, dfn[to[id]], key);
-        } else {
+        } else if (order == "QUERY") {
             int x(read()), y(read());
 
             int result(INT_MIN);
@@ -60,7 +60,7 @@ int main() {
             if (dfn[x] > dfn[y])
                 swap(x, y);
 
-            if (dfn[x] + 1 <= dfn[y])
+            if (dfn[x] != dfn[y])
                 result = max(result, query(1, dfn[x] + 1, dfn[y]));
 
             printf("%d\n", result);
@@ -83,6 +83,8 @@ void init() {
         head[a] = i << 1;
         head[b] = i << 1 | 1;
     }
+
+    source[0] = source[1] = INT_MIN;
 }
 
 inline int read() {
@@ -130,7 +132,7 @@ void initDfs(int x, int from) {
 void dfs(int x, int TOP) {
     top[x] = TOP;
     dfn[x] = ++cnt;
-    pos[cnt] = x;
+    nodeId[cnt] = x;
 
     if (!son[x])
         return;
@@ -149,7 +151,7 @@ void build(int id, int l, int r) {
     tree[id].r = r;
 
     if (l == r) {
-        tree[id].max = source[pos[r]];
+        tree[id].max = source[nodeId[r]];
         return;
     }
 
@@ -185,8 +187,8 @@ int query(int id, int l, int r) {
 
     if (r <= mid)
         return query(id << 1, l, r);
-    if (l > mid)
+    else if (l > mid)
         return query(id << 1 | 1, l, r);
-
-    return max(query(id << 1, l, r), query(id << 1 | 1, l, r));
+    else
+        return max(query(id << 1, l, r), query(id << 1 | 1, l, r));
 }
