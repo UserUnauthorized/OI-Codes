@@ -8,4 +8,4 @@ set(CMAKE_EXE_LINKER_FLAGS "-Wl,--stack,${stack_size}")
 include_directories(LocalInclude)
 add_compile_definitions(LOCAL)
 
-add_executable(40.3 HZ/40.3.cpp)
+add_executable(40.5 HZ/40.5.cpp)
