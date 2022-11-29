@@ -5,15 +5,14 @@
 #include <initializer_list>
 
 template<typename T>
-class read_ {
-public:
+struct read_ {
     typedef T value_type;
     typedef T &reference;
     typedef T *pointer;
 
     inline value_type operator()() {
         value_type result(0);
-        bool positive(true);
+        bool positive;
         int input(getchar());
 
         while (input < '0' || input > '9') {
@@ -28,7 +27,7 @@ public:
         }
 
         while (input >= '0' && input <= '9') {
-            result = (result << 3) + (result << 1) + (input & _n_);
+            result = (result << 3) + (result << 1) + (input & 15);
             input = getchar();
         }
 
@@ -44,17 +43,14 @@ public:
     }
 
     template<class ... Args>
-    void operator()(pointer first, Args...args) {
-        this->operator()(std::initializer_list<pointer>{first, args...});
+    void operator()(Args...args) {
+        this->operator()(std::initializer_list<pointer>{args...});
     }
 
     void operator()(std::initializer_list<pointer> args) {
         for (pointer iter: args)
             *iter = this->operator()();
     }
-
-private:
-    static constexpr int _n_ = 15;
 };
 
 #endif //OI_CODES_READ_H
