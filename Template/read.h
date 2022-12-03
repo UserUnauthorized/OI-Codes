@@ -12,7 +12,7 @@ class read_ {
 
     inline value_type operator()() {
         value_type result(0);
-        bool positive;
+        bool positive(true);
         int input(getchar());
 
         while (input < '0' || input > '9') {
