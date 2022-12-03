@@ -6,6 +6,7 @@
 
 template<typename T>
 class read_ {
+public:
     typedef T value_type;
     typedef T &reference;
     typedef T *pointer;
