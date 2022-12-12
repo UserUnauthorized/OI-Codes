@@ -8,4 +8,5 @@ set(CMAKE_EXE_LINKER_FLAGS "-Wl,--stack,${stack_size}")
 include_directories(LocalInclude)
 add_compile_definitions(LOCAL)
 
-add_executable(P3667 Luogu/P3667.cpp)
+add_executable(P3167 Luogu/P3167.cpp)
+add_executable(P3167-regex Luogu/P3167-regex.cpp)
