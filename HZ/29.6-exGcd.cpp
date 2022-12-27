@@ -1,5 +1,8 @@
 //HZ - 29.6
 //Luogu - P2054
+/*
+ * @method: exGcd
+ */
 #include<bits/stdc++.h>
 
 using namespace std;
