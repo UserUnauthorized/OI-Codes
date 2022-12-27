@@ -8,4 +8,4 @@ set(CMAKE_EXE_LINKER_FLAGS "-Wl,--stack,${stack_size}")
 include_directories(LocalInclude)
 add_compile_definitions(LOCAL)
 
-add_executable(P3811 Luogu/P3811.cpp)
+add_executable(P2421 Luogu/P2421.cpp)
