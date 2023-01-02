@@ -8,4 +8,4 @@ set(CMAKE_EXE_LINKER_FLAGS "-Wl,--stack,${stack_size}")
 include_directories(LocalInclude)
 add_compile_definitions(LOCAL)
 
-add_executable(P2054 Luogu/P2054.cpp)
+add_executable(29.7 HZ/29.7.cpp)
