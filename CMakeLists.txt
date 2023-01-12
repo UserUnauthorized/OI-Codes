@@ -9,4 +9,4 @@ include_directories(LocalInclude)
 add_compile_definitions(LOCAL)
 
 add_executable(P2303 Luogu/P2303.cpp)
-add_executable(bitInt Template/bigInteger.cpp Template/bigInteger.h)
+add_executable(bitInt Template/bigInteger.cpp)

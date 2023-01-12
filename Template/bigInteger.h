@@ -9,7 +9,7 @@ class bigInteger {
 
     /**@brief BigInteger class used for OI.
      * @author User-Unauthorized
-     * @version 1.0*/
+     * @version 1.2*/
 
 #define OI_CODES_BIGINTEGER_H_DECIMAL true
 
@@ -58,6 +58,10 @@ public:
     bigInteger(const bigInteger &other) = default;
 
     bigInteger(bigInteger &&other) noexcept = default;
+
+    bigInteger &operator=(const bigInteger &other) = default;
+
+    bigInteger &operator=(bigInteger &&other) noexcept = default;
 
     /**@brief Scan a bigInteger from stdin.*/
     void scan() {
@@ -148,15 +152,6 @@ public:
             _number_.pop_back();
     }
 
-    /**@brief Overload operator =*/
-    bigInteger &operator=(const bigInteger &other) {
-        if (this == &other)
-            return *this;
-        _number_ = other._number_;
-        _positive_ = other._positive_;
-        return *this;
-    }
-
 private:
     /**@brief Add only digits (sign and carry are ignored).*/
     bigInteger _addition_(const bigInteger &Object) const {
@@ -199,21 +194,31 @@ private:
         return result;
     }
 
+    /**@brief Multiply only digits (carry is ignored).*/
+    template<class T>
+    bigInteger _multiplication_(const T &n) const {
+        bigInteger result = *this;
+        for (auto &iter: result._number_)
+            iter = iter * n;
+        return result;
+    }
+
     /**@brief Intercept the number at the specified position and the specified length in the number
      * @param pos The position of the number to intercept
      * @param len The length of the number to intercept*/
     bigInteger _intercept_(const difference_type pos, difference_type len) const {
         bigInteger result;
         result._positive_ = this->_positive_;
-//        result._number_.resize(len, 0);
-//        for (size_t i = 0; i < len; ++i) {
-//            if (i + pos < this->_number_.size())
-//                result._number_[i] = this->_number_[i + pos];
-//        }
-
-//using STL instead of for loop
         result._number_.assign(this->_number_.begin() + pos, this->_number_.begin() + pos + len);
         return result;
+    }
+
+/**@brief intercepts the number at the specified position
+       * @param first An input iterator.
+       * @param last An input iterator.
+       * @warning The input interval is processed according to A right half-open interval*/
+    bigInteger _intercept_(iterator first, iterator last) const {
+        return this->_intercept_(first - this->_number_.begin(), last - first);
     }
 
     /**@brief Start doing subtraction at a certain part of the number(carry is ignored).
@@ -230,21 +235,17 @@ private:
         if (this->_number_.size() < Object._number_.size())
             return bigInteger(0);
         bigInteger result;
-        result._positive_ = this->_positive_ == Object._positive_;
-        result._number_.resize(this->_number_.size() - Object._number_.size() + 1, 0);
-        bigInteger remainder(*this);
-        /*for (int i = (int) this->_number_.size() - 1; i >= 0; --i) {
-            while (remainder._intercept_(i, (difference_type) remainder._number_.size() - i) >= Object) {
+        bigInteger divisor = Object;
+        divisor._positive_ = true;
+        bigInteger dividend = *this;
+        dividend._positive_ = true;
+        result._positive_ = this->_positive_ == divisor._positive_;
+        result._number_.resize(this->_number_.size() - divisor._number_.size() + 1, 0);
+        for (int i = (int) dividend._number_.size() - 1; i >= 0; --i) {
+            while (dividend._intercept_(dividend._number_.begin() + i, dividend._number_.end()) >= divisor) {
+                bigInteger::_partial_subtraction_(dividend, divisor, i);
+                dividend.carry();
                 ++result._number_[i];
-                _partial_subtraction_(remainder, Object, i);
-            }
-        }*/
-        //using iterator instead of for loop
-        for (auto iter = this->_number_.rbegin(); iter != this->_number_.rend(); ++iter) {
-            while (remainder._intercept_(iter - this->_number_.rbegin(), (difference_type) remainder._number_.size() -
-                                                                         (iter - this->_number_.rbegin())) >= Object) {
-                ++result._number_[iter - this->_number_.rbegin()];
-                _partial_subtraction_(remainder, Object, iter - this->_number_.rbegin());
             }
         }
         return result;
@@ -311,28 +312,13 @@ public:
     bool operator<(const bigInteger &Object) const {
         if (this->_positive_ != Object._positive_)
             return (this->_positive_ < Object._positive_);
-        if (this->_number_.size() != Object._number_.size()) //{
-            /*if (this->_positive_)
-                return (this->_number_.size() < Object._number_.size());
-            else
-                return (this->_number_.size() > Object._number_.size());*/
+        if (this->_number_.size() != Object._number_.size())
             return (this->_number_.size() < Object._number_.size()) ^ !this->_positive_;
-        //}
-        /*for (int i = this->_number_.size() - 1; i >= 0; --i)
-            if (this->_number_[i] != Object._number_[i])
-                if (this->_positive_)
-                    return (this->_number_[i] < Object._number_[i]);
-                else
-                    return (this->_number_[i] > Object._number_[i]);*/
-        //using iterator instead of for loop
+
         auto this_iter = this->_number_.rbegin();
         auto Object_iter = Object._number_.rbegin();
         for (; this_iter != this->_number_.rend(); ++this_iter, ++Object_iter)
             if (*this_iter != *Object_iter)
-                /*if (this->_positive_)
-                    return (*this_iter < *Object_iter);
-                else
-                    return (*this_iter > *Object_iter);*/
                 return (*this_iter < *Object_iter) ^ !this->_positive_;
 
         return false;
@@ -358,10 +344,7 @@ public:
     bool operator==(const bigInteger &Object) const {
         if (this->_positive_ != Object._positive_ || this->_number_.size() != Object._number_.size())
             return false;
-        /*for (int i = this->_number_.size() - 1; i >= 0; --i)
-            if (this->_number_[i] != Object._number_[i])
-                return false;*/
-        //using iterator instead of for loop
+
         auto this_iter = this->_number_.rbegin();
         auto Object_iter = Object._number_.rbegin();
         for (; this_iter != this->_number_.rend(); ++this_iter, ++Object_iter)
@@ -411,10 +394,13 @@ public:
         auto iter = this->_number_.begin();
         do {
             ++(*iter);
-            if (*iter >= bigInteger::base)
+            if (*iter >= bigInteger::base) {
                 *iter = 0;
-            ++iter;
-        } while (++iter != this->_number_.end() && *iter < bigInteger::base);
+                ++iter;
+            } else {
+                break;
+            }
+        } while (iter != this->_number_.end());
         if (iter == this->_number_.end())
             this->_number_.push_back(1);
 
@@ -426,29 +412,51 @@ public:
         auto iter = this->_number_.begin();
         do {
             --(*iter);
-            if (*iter < 0)
+            if (*iter < 0) {
                 *iter = bigInteger::base - 1;
-            ++iter;
-        } while (++iter != this->_number_.end() && *iter >= 0);
+                ++iter;
+            } else {
+                break;
+            }
+        } while (iter != this->_number_.end());
         if (iter == this->_number_.end())
             this->_number_.push_back(1);
 
         return *this;
     }
 
-
-    /**@brief Overload the operator! as a factorial operation */
-    bigInteger operator!() const {
+    /**@brief Get the factorial of the int*/
+    bigInteger factorial() const {
         bigInteger result(1);
-        for (bigInteger i(2); i <= *this; ++i)
-            result *= i;
+        int count(1);
+        for (bigInteger i(2); i <= *this; ++i, ++count) {
+            result = result._multiplication_(i);
+            if (count & 3) {
+                count = 0;
+                result.carry();
+            }
+        }
+        result.carry();
         return result;
     }
+
+    friend bigInteger factorial(int _n_);
 
     explicit operator bool() const {
         return *this != bigInteger(0);
     }
 };
+
+bigInteger factorial(int _n_) {
+    bigInteger result(1);
+    for (int i = 2; i <= _n_; ++i) {
+        result = result._multiplication_(i);
+        if (i & 1)
+            result.carry();
+    }
+    result.carry();
+    return result;
+}
 
 
 #endif //OI_CODES_BIGINTEGER_H
