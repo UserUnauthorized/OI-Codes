@@ -8,5 +8,4 @@ set(CMAKE_EXE_LINKER_FLAGS "-Wl,--stack,${stack_size}")
 include_directories(LocalInclude)
 add_compile_definitions(LOCAL)
 
-add_executable(P2303 Luogu/P2303.cpp)
-add_executable(bitInt Template/bigInteger.cpp)
+add_executable(P3223 Luogu/P3223.cpp)
