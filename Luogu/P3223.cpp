@@ -467,11 +467,23 @@ bigInteger factorial(int _n_) {
 
 using namespace std;
 int n, m;
+vector<int> factors; 
 
 int main() {
     cin >> n >> m;
-    bigInteger a = factorial(n + 2) * factorial(n + 3) / factorial(n + 3 - m);
-    bigInteger b = bigInteger(2) * factorial(n + 1) * factorial(n + 2) / factorial(n + 2 - m);
+    bigInteger a(1),b(1);
+    factors.resize(n + 5,0);
+    for(int i = 2; i <= n + 2; ++i) ++factors[i];
+    for(int i = n + 3 - m + 1; i <= n + 3; ++i) ++factors[i];
+    for(int i = 2; i <= n + 3; ++i) while(factors[i]--) a = a * i;
+    
+    fill(factors.begin(),factors.end(),0);
+    ++factors[2];
+    for(int i = 2; i <= n + 1; ++i) ++factors[i];
+    for(int i = n + 2 - m + 1; i <= n + 2; ++i) ++factors[i];
+    for(int i = 2; i <= n + 2; ++i) while(factors[i]--) b = b * i;
+	//bigInteger a = factorial(n + 2) * factorial(n + 3) / factorial(n + 3 - m);
+    //bigInteger b = bigInteger(2) * factorial(n + 1) * factorial(n + 2) / factorial(n + 2 - m);
     cout << a - b;
     return 0;
 }

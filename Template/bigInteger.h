@@ -9,7 +9,7 @@ class bigInteger {
 
     /**@brief BigInteger class used for OI.
      * @author User-Unauthorized
-     * @version 1.2*/
+     * @version 1.2.1*/
 
 #define OI_CODES_BIGINTEGER_H_DECIMAL true
 
@@ -440,12 +440,29 @@ public:
         return result;
     }
 
+	template<typename T>
+	friend bigInteger factorial(const std::vector<T> &_factors_);
     friend bigInteger factorial(int _n_);
 
     explicit operator bool() const {
         return *this != bigInteger(0);
     }
 };
+
+template<typename T>
+friend bigInteger factorial(const std::vector<T> &_factors_){
+	bigInteger result(1);
+	const int _size_ = _factors_.size(), _count_ = 0;
+	for(int i = 2; i <= _size_; ++i){
+		while(_factors_[i]--){
+			result = result._multiplication_(i);
+			++_count_;
+			if(_count_ & 1)
+				result.carry();
+		}
+	}
+	return result;
+}
 
 bigInteger factorial(int _n_) {
     bigInteger result(1);
