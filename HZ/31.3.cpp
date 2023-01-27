@@ -14,6 +14,7 @@ struct STATUS{
 		while(_bit_ > 0){
 			if(_bit_ & 1)
 				++this->sum;
+			_bit_ >>= 1;
 		}
 	};
 	
@@ -26,8 +27,7 @@ vector<STATUS> status;
 
 int n,m,cnt(0);
 unsigned int ans(0);
-unsigned int dp[4][maxS][maxS];
-const bool emptyDp[maxS][maxS]{};
+unsigned int dp[maxN][maxS][maxS];
 unsigned int limit[maxN];
 
 inline void init();
@@ -46,20 +46,21 @@ int main(){
 				dp[2][x.id][j.id] = (j & x) ? j.sum + x.sum : 0;
 	
 	for(int i = 3; i <= n; ++i){ 
-		memset(dp[i % 3],0,sizeof(emptyDp));
-		
 		for(STATUS const &j : status)
 			if(check(j.bit, i))
 				for(STATUS const &x : status)
 					if(j & x)
 						for(STATUS const &y : status)
-							if(x & y && j & y)
-								dp[i % 3][j.id][x.id] = max(dp[i % 3][j.id][x.id], dp[(i - 1) % 3][x.id][y.id] + j.sum);
+							if((x & y) && (j & y)){
+								dp[i][j.id][x.id] = max(dp[i % 3][j.id][x.id], dp[i - 1][x.id][y.id] + j.sum);
+								cerr << "DEBUG";
+							}
+								
 	}
 	
 	for(STATUS const &j : status)
 		for(STATUS const &x : status)
-			ans = max(ans, dp[n % 3][j.id][x.id]);
+			ans = max(ans, dp[n][j.id][x.id]);
 			
 	cout << ans;
 	return 0;	
@@ -84,6 +85,7 @@ void init(){
 	for(int i = 0; i < S; ++i){
 		if((i & (i << 2))||(i & (i << 1))||(i & (i >> 1))||(i & (i >> 2))) continue;
 		status.emplace_back(i,cnt++);
+		cerr << "DEBUG\ti:" << i << endl;
 	}
 }
 
