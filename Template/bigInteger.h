@@ -130,8 +130,8 @@ public:
             std::vector<int>::iterator nextIter;
             nextIter = std::next(iter);
             if (*iter < 0) {
-                --*nextIter;
-                *iter += base;
+                *nextIter += *iter / base - 1;
+                *iter = (*iter % base + base) % base;
             } else if (*iter >= base) {
                 *nextIter += *iter / base;
                 *iter %= base;
@@ -167,7 +167,7 @@ private:
         return result;
     }
 
-/**@brief Sub only digits (sign and carry are ignored).*/
+	/**@brief Sub only digits (sign and carry are ignored).*/
     bigInteger _subtraction_(const bigInteger &Object) const {
         bigInteger result;
         result._positive_ = this->_positive_;
@@ -213,10 +213,10 @@ private:
         return result;
     }
 
-/**@brief intercepts the number at the specified position
-       * @param first An input iterator.
-       * @param last An input iterator.
-       * @warning The input interval is processed according to A right half-open interval*/
+	/**@brief intercepts the number at the specified position
+     * @param first An input iterator.
+     * @param last An input iterator.
+     * @warning The input interval is processed according to A right half-open interval*/
     bigInteger _intercept_(iterator first, iterator last) const {
         return this->_intercept_(first - this->_number_.begin(), last - first);
     }
@@ -441,7 +441,7 @@ public:
     }
 
 	template<typename T>
-	friend bigInteger factorial(const std::vector<T> &_factors_);
+	friend bigInteger factorial(std::vector<T> _factors_);
     friend bigInteger factorial(int _n_);
 
     explicit operator bool() const {
@@ -450,10 +450,11 @@ public:
 };
 
 template<typename T>
-friend bigInteger factorial(const std::vector<T> &_factors_){
+bigInteger factorial(std::vector<T> _factors_){
 	bigInteger result(1);
-	const int _size_ = _factors_.size(), _count_ = 0;
-	for(int i = 2; i <= _size_; ++i){
+	const int _size_ = _factors_.size();
+	int _count_ = 0;
+	for(int i = 2; i < _size_; ++i){
 		while(_factors_[i]--){
 			result = result._multiplication_(i);
 			++_count_;

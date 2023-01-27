@@ -11,7 +11,7 @@ class bigInteger {
 
     /**@brief BigInteger class used for OI.
      * @author User-Unauthorized
-     * @version 1.2*/
+     * @version 1.2.1*/
 
 #define OI_CODES_BIGINTEGER_H_DECIMAL true
 
@@ -129,11 +129,11 @@ public:
             return;
         auto iter = _number_.begin();
         for (; next(iter) != _number_.end(); ++iter) {
-            std::vector<int>::iterator nextIter;
+            bigInteger::iterator nextIter;
             nextIter = std::next(iter);
             if (*iter < 0) {
-                --*nextIter;
-                *iter += base;
+                *nextIter -= -*iter / base + 1;
+                *iter += (-*iter / base + 1) * base;
             } else if (*iter >= base) {
                 *nextIter += *iter / base;
                 *iter %= base;
@@ -169,7 +169,7 @@ private:
         return result;
     }
 
-/**@brief Sub only digits (sign and carry are ignored).*/
+	/**@brief Sub only digits (sign and carry are ignored).*/
     bigInteger _subtraction_(const bigInteger &Object) const {
         bigInteger result;
         result._positive_ = this->_positive_;
@@ -215,10 +215,10 @@ private:
         return result;
     }
 
-/**@brief intercepts the number at the specified position
-       * @param first An input iterator.
-       * @param last An input iterator.
-       * @warning The input interval is processed according to A right half-open interval*/
+	/**@brief intercepts the number at the specified position
+     * @param first An input iterator.
+     * @param last An input iterator.
+     * @warning The input interval is processed according to A right half-open interval*/
     bigInteger _intercept_(iterator first, iterator last) const {
         return this->_intercept_(first - this->_number_.begin(), last - first);
     }
@@ -442,12 +442,30 @@ public:
         return result;
     }
 
+	template<typename T>
+	friend bigInteger factorial(std::vector<T> _factors_);
     friend bigInteger factorial(int _n_);
 
     explicit operator bool() const {
         return *this != bigInteger(0);
     }
 };
+
+template<typename T>
+bigInteger factorial(std::vector<T> _factors_){
+	bigInteger result(1);
+	const int _size_ = _factors_.size();
+	int _count_ = 0;
+	for(int i = 2; i < _size_; ++i){
+		while(_factors_[i]--){
+			result = result._multiplication_(i);
+			/*++_count_;
+			if(_count_ & 1)*/
+				result.carry();
+		}
+	}
+	return result;
+}
 
 bigInteger factorial(int _n_) {
     bigInteger result(1);
@@ -475,15 +493,17 @@ int main() {
     factors.resize(n + 5,0);
     for(int i = 2; i <= n + 2; ++i) ++factors[i];
     for(int i = n + 3 - m + 1; i <= n + 3; ++i) ++factors[i];
-    for(int i = 2; i <= n + 3; ++i) while(factors[i]--) a = a * i;
+    a = factorial(factors);
     
     fill(factors.begin(),factors.end(),0);
     ++factors[2];
     for(int i = 2; i <= n + 1; ++i) ++factors[i];
     for(int i = n + 2 - m + 1; i <= n + 2; ++i) ++factors[i];
-    for(int i = 2; i <= n + 2; ++i) while(factors[i]--) b = b * i;
+    b = factorial(factors);
 	//bigInteger a = factorial(n + 2) * factorial(n + 3) / factorial(n + 3 - m);
     //bigInteger b = bigInteger(2) * factorial(n + 1) * factorial(n + 2) / factorial(n + 2 - m);
-    cout << a - b;
+    bigInteger result = a - b;
+    //result.carry();
+	cout << result;
     return 0;
 }
