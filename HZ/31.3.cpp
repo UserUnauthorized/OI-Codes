@@ -19,7 +19,7 @@ struct STATUS{
 	};
 	
 	bool operator&(const STATUS &Object) const{
-		return this->bit & Object.bit == 0;
+		return (this->bit & Object.bit) == 0;
 	}
 };
 
@@ -43,20 +43,18 @@ int main(){
 	for(STATUS const &j : status)
 		if(check(j.bit, 2))
 			for(STATUS const &x : status)
-				dp[2][x.id][j.id] = (j & x) ? j.sum + x.sum : 0;
+				if(check(x.bit, 1) && (x & j))
+					dp[2][j.id][x.id] = max(dp[2][j.id][x.id], dp[1][x.id][0] + j.sum);
+				
 	
-	for(int i = 3; i <= n; ++i){ 
+	for(int i = 3; i <= n; ++i)
 		for(STATUS const &j : status)
 			if(check(j.bit, i))
 				for(STATUS const &x : status)
-					if(j & x)
+					if((j & x) && check(x.bit, i - 1))
 						for(STATUS const &y : status)
-							if((x & y) && (j & y)){
-								dp[i][j.id][x.id] = max(dp[i % 3][j.id][x.id], dp[i - 1][x.id][y.id] + j.sum);
-								cerr << "DEBUG";
-							}
-								
-	}
+							if((x & y) && (j & y))
+								dp[i][j.id][x.id] = max(dp[i][j.id][x.id], dp[i - 1][x.id][y.id] + j.sum);
 	
 	for(STATUS const &j : status)
 		for(STATUS const &x : status)
@@ -84,8 +82,7 @@ void init(){
 	const int S = 1 << m;
 	for(int i = 0; i < S; ++i){
 		if((i & (i << 2))||(i & (i << 1))||(i & (i >> 1))||(i & (i >> 2))) continue;
-		status.emplace_back(i,cnt++);
-		cerr << "DEBUG\ti:" << i << endl;
+		status.emplace_back(cnt++,i);
 	}
 }
 
