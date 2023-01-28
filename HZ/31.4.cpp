@@ -5,6 +5,33 @@
 using namespace std;
 constexpr int maxN = 2e4 + 5, maxM = 2e5 + 5, maxS = 1 << 20, maxK = 22;
 
+/*namespace DEBUG {
+    template<typename T>
+    inline void _debug(const char *format, T t) {
+        std::cerr << format << '=' << t << std::endl;
+    }
+
+    template<class First, class... Rest>
+    inline void _debug(const char *format, First first, Rest... rest) {
+        while (*format != ',') std::cerr << *format++;
+        std::cerr << '=' << first << ",";
+        _debug(format + 1, rest...);
+    }
+
+    template<typename T>
+    std::ostream &operator<<(std::ostream &os, const std::vector<T> &V) {
+        os << "[ ";
+        for (const auto &vv: V) os << vv << ", ";
+        os << "]";
+        return os;
+    }
+
+#define debug(...) _debug(#__VA_ARGS__, __VA_ARGS__)
+}  // namespace DEBUG
+
+using namespace DEBUG;*/
+#define debug(...)
+
 struct EDGE{
 	int to;
 	int next;
@@ -16,9 +43,9 @@ struct EDGE{
 
 int n,m,K;
 int head[maxN];
-int dp[maxK][maxS];
-int dis[maxK][maxN];
-int limit[maxK];
+unsigned int dp[maxK][maxS];
+unsigned int dis[maxK][maxN];
+unsigned int limit[maxK];
 bool vis[maxN];
 
 void init();
@@ -33,32 +60,40 @@ int main(){
 	if(K == 0){
 		cout << dis[1][n];
 		return 0;
-	}	
+	}
 	
 	const int S = 1 << K;
 	
 	dp[0][0] = 0;
 	
 	for(int k = 1; k <= K; ++k)
-		if(!limit[k + 1])
+		if(!limit[k + 1]){
 			dp[k][1 << (k - 1)] = dis[1][k + 1];
+			debug(k,limit[k + 1],dis[1][k + 1]);
+		}
+			
 	
 	for(int i = 1; i < S; ++i){
 		for(int k = 1; k <= K; ++k){
 			if(~i & 1 << (k - 1)) continue;
 			if((i & limit[k + 1]) != limit[k + 1]) continue;
+			debug(i,k);
 			for(int x = 1; x <= K; ++x){
 				if((x == k) || (~i & 1 << (x - 1))) continue;
-				dp[k][i] = min(dp[k][i], dp[x][i ^ (1 << (k - 1))] + dis[k][x]);
+				debug(i,k,x,dp[k][i],dp[x][i ^ (1 << (k - 1))] + dis[k + 1][x + 1],i ^ (1 << (k - 1)));
+				dp[k][i] = min(dp[k][i], dp[x][i ^ (1 << (k - 1))] + dis[k + 1][x + 1]);
 			}
 		}
 	}
 	
-	int ans(INT_MAX);
-	for(int i = 1; i <= K; ++i)
+	unsigned int ans(INT_MAX);
+	for(int i = 1; i <= K; ++i){
+		debug(i,ans,dp[i][(1 << K) - 1] + dis[i + 1][n],(1 << K) - 1);
 		ans = min(ans, dp[i][(1 << K) - 1] + dis[i + 1][n]);
+	}
 		
-	cout << n;
+		
+	cout << ans;
 	return 0;
 }
 
