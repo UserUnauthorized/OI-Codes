@@ -1,6 +1,7 @@
 //HZ - 31.4
 //Luogu - P3451
 #include<bits/stdc++.h>
+#include<vector>
 using namespace std;
 constexpr int maxN = 2e4 + 5, maxM = 2e5 + 5, maxS = 1 << 20, maxK = 22;
 
@@ -38,24 +39,24 @@ int main(){
 	
 	dp[0][0] = 0;
 	
-	for(int k = 1; k <= K; ++K){
-		dp[k][1 << (k - 1)] = dis[1][k + 1];
-	}
+	for(int k = 1; k <= K; ++k)
+		if(!limit[k + 1])
+			dp[k][1 << (k - 1)] = dis[1][k + 1];
 	
-	for(int i = 0; i < S; ++i){
-		for(int k = 1; k <= K; ++K){
+	for(int i = 1; i < S; ++i){
+		for(int k = 1; k <= K; ++k){
 			if(~i & 1 << (k - 1)) continue;
 			if((i & limit[k + 1]) != limit[k + 1]) continue;
 			for(int x = 1; x <= K; ++x){
 				if((x == k) || (~i & 1 << (x - 1))) continue;
-				dp[k][i | 1 << (k - 1)] = min(dp[k][i | 1 << (k - 1)], dp[x][i ^ (1 << (k - 1))] + dis[k][x]);
+				dp[k][i] = min(dp[k][i], dp[x][i ^ (1 << (k - 1))] + dis[k][x]);
 			}
 		}
 	}
 	
 	int ans(INT_MAX);
 	for(int i = 1; i <= K; ++i)
-		ans = min(ans, dp[i][(1 << (K - 1)) - 1] + dis[i + 1][n]);
+		ans = min(ans, dp[i][(1 << K) - 1] + dis[i + 1][n]);
 		
 	cout << n;
 	return 0;
