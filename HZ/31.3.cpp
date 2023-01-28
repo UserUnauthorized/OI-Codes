@@ -88,6 +88,6 @@ void init(){
 	}
 }
 
-bool check(unsigned int x, int row){
+bool check(unsigned int x, int row) const {
 	return (x & limit[row]) == 0;
 }
