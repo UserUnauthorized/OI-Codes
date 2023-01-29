@@ -1,157 +1,157 @@
 //Luogu - P6348
-#include <bits/stdc++.h>
-
+#include<bits/stdc++.h>
 using namespace std;
-constexpr int maxn = 5e5 + 10;
-typedef pair<int, int> P;
+constexpr int maxN = 5e5 + 5;
+typedef array<int, maxN> ARRAY;
+class GRAPH{
+public:
+	struct _EDGE_{
+		int to;
+		int next;
+		int weight;
+	};
+	typedef GRAPH::_EDGE_ EDGE;
+private:
+	int _cnt_;
+	GRAPH::_EDGE_ _edge_[maxN << 3];
+	int _head_[maxN << 3];
+public:
+	GRAPH():_cnt_(0),_edge_(),_head_(){};
+	
+	void operator()(int _u_, int _v_, int _w_){
+		this->_edge_[++cnt].to = _v_;
+		this->_edge_[cnt].next = this->_head_[_u_];
+		this->_edge_[cnt].weight = _w_;
+		this->_head_[_u_] = cnt;
+	}
+	
+	int operator()(int _x_) const{
+		return this->_head_[_x_];
+	}
+	
+	const GRAPH::_EDGE_& operator[](int _x_) const{
+		return this->_edge_[_x_];
+	}
+} edge;
 
-struct EDGE {
-    int to;
-    int weight;
-
-    EDGE(int _to, int _weight) : to(_to), weight(_weight) {};
+struct STATUS{
+	int dis;
+	int u;
+	
+	bool operator>(const STATUS &Object) const{
+		return this->dis > Object.dis;
+	}
 };
 
-class TREE {
+class INTREE{
 public:
-    int num[::maxn << 2];
+	void build(int n_,ARRAY &idArray);
+	void connect(int l, int r, int nodeId);
+private:
+	int _n_;
+	void build_(int id, int l, int r, ARRAY &pos);
+	void connect_(int id, int l, int r, int queryL, int queryR, int nodeId);
+} inTree;
 
-    void build(int id, int l, int r, const bool &isInTree);
+class OUTTREE{
+public:
+	void build(int n_,ARRAY &idArray);
+	void connect(int l, int r, int nodeId);
+private:
+	int _n_;
+	int _base_;
+	void build_(int id, int l, int r, ARRAY &pos);
+	void connect_(int id, int l, int r, int queryL, int queryR, int nodeId);
+} outTree;
 
-    void build(int id, int nodeL, int nodeR, const int &l, const int &r, const int &superNode, const bool &isInTree);
+int n,m,P;
 
-    void out(int id, int l, int r);
-} inTree, outTree;
-
-vector<EDGE> edge[(maxn << 3) + (maxn << 1)];
-priority_queue<P, vector<P>, greater<P>> que;
-pair<int, int> nodeId;
-vector<int> dis;
-bitset<maxn> vis;
-
-inline int read();
+array<int, maxN * 10> dis;
+array<bool, maxN * 10> vis;
+ARRAY inId,outId;
 
 void init();
+void dijkstra();
 
-void dijkstra(int x);
-
-void connect(int id, int l, int r);
-
-int n, m, p, cnt(0);
-
-int main() {
-    init();
-    connect(1, 1, n);
-    edge[nodeId.second].emplace_back(nodeId.first, 0);
-    dijkstra(nodeId.second);
-    inTree.out(1, 1, n);
-    return 0;
+int main(){
+	init();
 }
 
-void TREE::build(int id, int l, int r, const bool &isInTree) {
-    num[id] = ++cnt;
-
-    if (l == r) {
-        if (r == ::p)
-            isInTree ? nodeId.first = num[id] : nodeId.second = num[id];
-        return;
-    }
-
-
-    int mid((l + r) >> 1);
-    build(id << 1, l, mid, isInTree);
-    build(id << 1 | 1, mid + 1, r, isInTree);
-
-    isInTree ? edge[num[id]].emplace_back(num[id << 1], 0), edge[num[id]].emplace_back(num[id << 1 | 1], 0)
-             : edge[num[id << 1]].emplace_back(num[id], 0), edge[num[id << 1 | 1]].emplace_back(num[id], 0);
+void init(){
+	cin >> n >> m >> P;
+	
+	inTree.build(n,inId);
+	outTree.build(n,outId);
 }
 
-void TREE::build(int id, int nodeL, int nodeR, const int &l, const int &r, const int &superNode,
-                 const bool &isInTree) {
-    if (l <= nodeL && nodeR <= r) {
-        isInTree ? edge[superNode].emplace_back(num[id], 1) : edge[num[id]].emplace_back(superNode, 0);
-        return;
-    }
-
-    int mid((nodeL + nodeR) >> 1);
-    if (l <= mid)
-        build(id << 1, nodeL, mid, l, r, superNode, isInTree);
-    if (r > mid)
-        build(id << 1 | 1, mid + 1, nodeR, l, r, superNode, isInTree);
+void INTREE::build(int n_,ARRAY &idArray){
+	_n_ = n_;
+	this->build_(1,1,_n_,idArray);
 }
 
-void TREE::out(int id, int l, int r) {
-    if (l == r) {
-        printf("%d\n", dis.at(this->num[id]));
-        return;
-    }
-
-    int mid((l + r) >> 1);
-    out(id << 1, l, mid);
-    out(id << 1 | 1, mid + 1, r);
+void INTREE::build_(int id, int l, int r, ARRAY &pos){
+	if(l == r){
+		pos[r] = id;
+		return;
+	}
+	
+	int mid((l + r) >> 1);
+	
+	this->build_(id << 1, l, mid, pos);
+	this->build_(id << 1|1, mid + 1, r, pos);
+	
+	edge(id << 1, id, 0);
+	edge(id << 1|1, id, 0);
 }
 
-void connect(int id, int l, int r) {
-    edge[inTree.num[id]].emplace_back(outTree.num[id], 0);
-
-    if (l == r)
-        return;
-
-    int mid((l + r) >> 1);
-
-    connect(id << 1, l, mid);
-    connect(id << 1 | 1, mid + 1, r);
+void INTREE::connect(int l, int r, int nodeId){
+	this->connect_(1,1,_n_,nodeId);
 }
 
-void init() {
-    n = read();
-    m = read();
-    p = read();
-
-    inTree.build(1, 1, n, true);
-    outTree.build(1, 1, n, false);
-
-    while (m--) {
-        int a(read()), b(read()), c(read()), d(read());
-        inTree.build(1, 1, n, a, b, ++cnt, true);
-        outTree.build(1, 1, n, c, d, cnt, false);
-
-        inTree.build(1, 1, n, c, d, ++cnt, true);
-        outTree.build(1, 1, n, a, b, cnt, false);
-    }
+void INTREE::connect_(int id, int l, int r, int queryL, int queryR, int nodeId){
+	if(queryL <= l && r <= queryR){
+		edge(id, nodeId, 1);
+		return;
+	}
+	
+	int mid((l + r) >> 1);
+	
+	if(queryL <= mid)
+		this->connect_(id << 1, l, mid, queryL, queryR, nodeId);
+	if(queryR > mid)
+		this->connect_(id << 1|1, mid + 1, r, queryL, queryR, nodeId);
 }
 
-inline int read() {
-    int result(0), ch(getchar());
-    while (ch < '0' || ch > '9')
-        ch = getchar();
-    while (ch >= '0' && ch <= '9') {
-        result = (result << 3) + (result << 1) + (ch ^ 48);
-        ch = getchar();
-    }
-    return result;
+void OUTTREE::build(int n_,ARRAY &idArray){
+	_n_ = n_;
+	_base_ = _n_ << 2;
+	this->build_(1,1,_n_,idArray);
 }
 
-void dijkstra(int x) {
-    dis.resize(cnt + 1, INT_MAX);
-    dis.at(x) = 0;
-    que.emplace(0, x);
+void OUTTREE::build_(int id, int l, int r, ARRAY &pos){
+	if(l == r){
+		pos[r] = id + _base_;
+		edge(id + _base_, id, 0);
+		return;
+	}
+	
+	int mid((l + r) >> 1);
+	
+	this->build_(id << 1, l, mid, pos);
+	this->build_(id << 1|1, mid + 1, r, pos);
+	
+	edge(id << 1 + _base_, id + _base_, 0);
+	edge(id << 1|1 + _base_, id + _base_, 0);
+}
 
-    while (!que.empty()) {
-        const P t(que.top());
-        const int &k(t.second);
-        que.pop();
+void OUTTREE::connect(int l, int r, int nodeId){
+	this->connect_(1,1,_n_,l,r,nodeId);
+}
 
-        if (vis.test(k))
-            continue;
+void OUTTREE::connect_(int id, int l, int r, int queryL, int queryR, int nodeId){
+	
+}
 
-        vis.set(k);
-
-        for (const EDGE &e: edge[k]) {
-            if (!vis.test(e.to) && dis.at(e.to) > dis.at(k) + e.weight) {
-                dis.at(e.to) = dis.at(k) + e.weight;
-                que.emplace(dis.at(e.to), e.to);
-            }
-        }
-    }
+void dijkstra(){
+	
 }

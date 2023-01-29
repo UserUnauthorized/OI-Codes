@@ -7,32 +7,6 @@
 
 using namespace std;
 
-namespace DEBUG {
-    template<typename T>
-    inline void _debug(const char *format, T t) {
-        cerr << format << '=' << t << endl;
-    }
-
-    template<class First, class... Rest>
-    inline void _debug(const char *format, First first, Rest... rest) {
-        while (*format != ',') cerr << *format++;
-        cerr << '=' << first << ",";
-        _debug(format + 1, rest...);
-    }
-
-    template<typename T>
-    ostream &operator<<(ostream &os, const vector<T> &V) {
-        os << "[ ";
-        for (const auto &vv: V) os << vv << ", ";
-        os << "]";
-        return os;
-    }
-
-#define debug(...) _debug(#__VA_ARGS__, __VA_ARGS__)
-}  // namespace DEBUG
-
-using namespace DEBUG;
-
 constexpr int maxn = 50002;
 
 struct EDGE {
@@ -65,14 +39,12 @@ int main() {
                 tarjan(i, -1);
         }
         out();
-        //debug(ansnum);
+        
         unsigned long long result(1);
         for (unsigned long long t: ans) {
             result *= t;
         }
-        /*if(t==2){
-            debug(dccnum,dcc[1],dcc[2],dcc[3],dcc[4],dcc[5]);
-        }*/
+        
         printf("Case %d: %d %lld\n", t, ansnum, result);
     }
     return 0;
@@ -88,11 +60,10 @@ bool init() {
     memset(cut, 0, sizeof(cut));
     memset(dcc, 0, sizeof(dcc));
     memset(head, 0, sizeof(head));
-    /*for(int i=1;i<=dccnum;++i){
-        while(!dcc[i].empty()) dcc[i].pop_back();
-    }*/
+    
     while (!ans.empty()) ans.pop_back();
     while (!st.empty()) st.pop();
+    
     m = dccnum = cnt = ansnum = 0;
 
     scanf("%d", &n);
@@ -103,7 +74,6 @@ bool init() {
         scanf("%d%d", &a, &b);
         m = max({m, a, b});
         addEdge(a, b);
-        //debug(t,i,a,b);
     }
 
     cnt = 0;
@@ -127,9 +97,6 @@ void tarjan(int x, int fa) {
     bool first(true);
     int son = 0;
     for (int i = head[x]; i; i = edge[i].next) {
-        /*if(edge[i].to == 0){
-            debug(t,x,i,head[x]);
-        }*/
         int to = edge[i].to;
         if (first && to == fa) {
             first = false;
@@ -144,7 +111,6 @@ void tarjan(int x, int fa) {
             if (dfn[x] <= low[to]) {
                 cut[x] = true;
                 dcc[++dccnum].push_back(x);
-                //debug(t,dccnum,x,to);
 
                 int y;
                 do {
