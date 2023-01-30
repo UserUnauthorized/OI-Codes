@@ -195,8 +195,8 @@ void dijkstra(int x){
 	que.emplace(0,x);
 	
 	while(!que.empty()){
-		STATUS const &s = que.top();
-		
+		STATUS const s = que.top();
+		que.pop();
 		if(vis[s.u]) continue;
 		
 		vis[s.u] = 1;
@@ -207,6 +207,5 @@ void dijkstra(int x){
 					que.emplace(dis[e.to],e.to);
 			}
 		}
-		que.pop();
 	}
 }
