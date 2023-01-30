@@ -1,7 +1,8 @@
-//Luogu - P6348
+//Luogu - CF786B
+//CF - 786B
 #include<bits/stdc++.h>
 using namespace std;
-constexpr int maxN = 5e5 + 5, maxM = 1e5 + 5;
+constexpr int maxN = 1e5 + 5, maxM = 1e5 + 5;
 namespace DEBUG {
     template<typename T>
     inline void _debug(const char *format, T t) {
@@ -37,11 +38,11 @@ struct EDGE{
 };
 
 struct STATUS{
-	int dis;
+	long long dis;
 	int u;
 	
 	STATUS():dis(0),u(0){};
-	STATUS(int _dis_, int _u_):dis(_dis_),u(_u_){};
+	STATUS(long long _dis_, int _u_):dis(_dis_),u(_u_){};
 	
 	bool operator>(const STATUS &Object) const{
 		return this->dis > Object.dis;
@@ -49,27 +50,27 @@ struct STATUS{
 };
 
 typedef std::vector<EDGE> EdgeArray;
-typedef array<unsigned int, (maxN << 3) + (maxM << 2)> ARRAY;
+typedef array<long long, (maxN << 3) + (maxM << 2)> ARRAY;
 
 class OUTTREE{
 public:
 	void build(int n_,ARRAY &idArray);
-	void connect(int l, int r, int nodeId);
+	void connect(int l, int r, int nodeId, int w);
 private:
 	int _n_;
 	void build_(int id, int l, int r, ARRAY &pos);
-	void connect_(int id, int l, int r, int queryL, int queryR, int nodeId);
+	void connect_(int id, int l, int r, int queryL, int queryR, int nodeId, int w);
 } outTree;
 
 class INTREE{
 public:
 	void build(int n_,ARRAY &idArray);
-	void connect(int l, int r, int nodeId);
+	void connect(int l, int r, int nodeId, int w);
 private:
 	int _n_;
 	const int _base_ = maxN << 2;
 	void build_(int id, int l, int r, ARRAY &pos);
-	void connect_(int id, int l, int r, int queryL, int queryR, int nodeId);
+	void connect_(int id, int l, int r, int queryL, int queryR, int nodeId, int w);
 } inTree;
 
 EdgeArray edge[(maxN << 3) + (maxM << 2)];
@@ -84,9 +85,9 @@ void dijkstra(int x);
 int main(){
 	init();
 	dijkstra(outId[P]);
-	
+
 	for(int i = 1; i <= n; ++i)
-		cout << dis[outId[i]] << "\n";
+		cout << ((dis[outId[i]] == LONG_LONG_MAX) ? -1 : (dis[outId[i]])) << " ";
 	return 0;
 }
 
@@ -97,16 +98,22 @@ void init(){
 	outTree.build(n,outId);
 	inTree.build(n,inId);
 	
-	int count = maxN << 3;
 	for(int i = 0; i < m; ++i){
-		int a(0), b(0), c(0), d(0);
-		cin >> a >> b >> c >> d;
-		
-		outTree.connect(a,b,++count);
-		inTree.connect(c,d,count);
-		
-		outTree.connect(c,d,++count);
-		inTree.connect(a,b,count);
+		int type(0);
+		cin >> type;
+		if(type == 1){
+			int u,v,w;
+			cin >> u >> v >> w;
+			edge[outId[u]].emplace_back(inId[v],w);
+		}else if(type == 2){
+			int u,l,r,w;
+			cin >> u >> l >> r >> w;
+			inTree.connect(l,r,outId[u],w);
+		}else{
+			int v,l,r,w;
+			cin >> v >> l >> r >> w;
+			outTree.connect(l,r,inId[v],w);
+		}
 	}
 }
 
@@ -130,22 +137,22 @@ void OUTTREE::build_(int id, int l, int r, ARRAY &pos){
 	edge[id << 1|1].emplace_back(id,0);
 }
 
-void OUTTREE::connect(int l, int r, int nodeId){
-	this->connect_(1,1,_n_,l,r,nodeId);
+void OUTTREE::connect(int l, int r, int nodeId, int w){
+	this->connect_(1,1,_n_,l,r,nodeId,w);
 }
 
-void OUTTREE::connect_(int id, int l, int r, int queryL, int queryR, int nodeId){
+void OUTTREE::connect_(int id, int l, int r, int queryL, int queryR, int nodeId, int w){
 	if(queryL <= l && r <= queryR){
-		edge[id].emplace_back(nodeId,1);
+		edge[id].emplace_back(nodeId,w);
 		return;
 	}
 	
 	int mid((l + r) >> 1);
 	
 	if(queryL <= mid)
-		this->connect_(id << 1, l, mid, queryL, queryR, nodeId);
+		this->connect_(id << 1, l, mid, queryL, queryR, nodeId,w);
 	if(queryR > mid)
-		this->connect_(id << 1|1, mid + 1, r, queryL, queryR, nodeId);
+		this->connect_(id << 1|1, mid + 1, r, queryL, queryR, nodeId,w);
 }
 
 void INTREE::build(int n_,ARRAY &idArray){
@@ -169,26 +176,26 @@ void INTREE::build_(int id, int l, int r, ARRAY &pos){
 	edge[id + _base_].emplace_back((id << 1|1) + _base_, 0);
 }
 
-void INTREE::connect(int l, int r, int nodeId){
-	this->connect_(1,1,_n_,l,r,nodeId);
+void INTREE::connect(int l, int r, int nodeId, int w){
+	this->connect_(1,1,_n_,l,r,nodeId,w);
 }
 
-void INTREE::connect_(int id, int l, int r, int queryL, int queryR, int nodeId){
+void INTREE::connect_(int id, int l, int r, int queryL, int queryR, int nodeId, int w){
 	if(queryL <= l && r <= queryR){
-		edge[nodeId].emplace_back(id + _base_, 0);
+		edge[nodeId].emplace_back(id + _base_, w);
 		return;
 	}
 	
 	int mid((l + r) >> 1);
 	
 	if(queryL <= mid)
-		this->connect_(id << 1, l, mid, queryL, queryR, nodeId);
+		this->connect_(id << 1, l, mid, queryL, queryR, nodeId,w);
 	if(queryR > mid)
-		this->connect_(id << 1|1, mid + 1, r, queryL, queryR, nodeId);
+		this->connect_(id << 1|1, mid + 1, r, queryL, queryR, nodeId,w);
 }
 
 void dijkstra(int x){
-	dis.fill(INT_MAX);
+	dis.fill(LONG_LONG_MAX);
 	priority_queue<STATUS, vector<STATUS>, greater<STATUS> > que;
 	
 	dis[x] = 0;
