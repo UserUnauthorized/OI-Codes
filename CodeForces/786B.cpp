@@ -3,31 +3,6 @@
 #include<bits/stdc++.h>
 using namespace std;
 constexpr int maxN = 1e5 + 5, maxM = 1e5 + 5;
-namespace DEBUG {
-    template<typename T>
-    inline void _debug(const char *format, T t) {
-        std::cerr << format << '=' << t << std::endl;
-    }
-
-    template<class First, class... Rest>
-    inline void _debug(const char *format, First first, Rest... rest) {
-        while (*format != ',') std::cerr << *format++;
-        std::cerr << '=' << first << ",";
-        _debug(format + 1, rest...);
-    }
-
-    template<typename T>
-    std::ostream &operator<<(std::ostream &os, const std::vector<T> &V) {
-        os << "[ ";
-        for (const auto &vv: V) os << vv << ", ";
-        os << "]";
-        return os;
-    }
-
-#define debug(...) _debug(#__VA_ARGS__, __VA_ARGS__)
-}  // namespace DEBUG
-
-using namespace DEBUG;
 
 struct EDGE{
 	int to;
@@ -105,7 +80,6 @@ void init(){
 			int u,v,w;
 			cin >> u >> v >> w;
 			edge[outId[u]].emplace_back(inId[v],w);
-//			cerr << (outId[u]) << ' ' << (inId[v]) <<  ' ' << w << endl;
 		}else if(type == 2){
 			int u,l,r,w;
 			cin >> u >> l >> r >> w;
@@ -136,8 +110,6 @@ void OUTTREE::build_(int id, int l, int r, ARRAY &pos){
 	
 	edge[id << 1].emplace_back(id,0);
 	edge[id << 1|1].emplace_back(id,0);
-//	cerr << (id << 1) << ' ' << id <<  ' ' << 0 << endl;
-//	cerr << (id << 1|1) << ' ' << id <<  ' ' << 0 << endl;
 }
 
 void OUTTREE::connect(int l, int r, int nodeId, int w){
@@ -147,7 +119,6 @@ void OUTTREE::connect(int l, int r, int nodeId, int w){
 void OUTTREE::connect_(int id, int l, int r, int queryL, int queryR, int nodeId, int w){
 	if(queryL <= l && r <= queryR){
 		edge[id].emplace_back(nodeId,w);
-//		cerr << (id) << ' ' << (nodeId) <<  ' ' << w << endl;
 		return;
 	}
 	
@@ -168,7 +139,6 @@ void INTREE::build_(int id, int l, int r, ARRAY &pos){
 	if(l == r){
 		pos[r] = id + _base_;
 		edge[id + _base_].emplace_back(id,0);
-//		cerr << (id + _base_) << ' ' << (id) <<  ' ' << 0 << endl;
 		return;
 	}
 	
@@ -179,8 +149,6 @@ void INTREE::build_(int id, int l, int r, ARRAY &pos){
 	
 	edge[id + _base_].emplace_back((id << 1) + _base_, 0);
 	edge[id + _base_].emplace_back((id << 1|1) + _base_, 0);
-	//cerr << (id + _base_) << ' ' << ((id << 1) + _base_) <<  ' ' << 0 << endl;
-	//cerr << (id + _base_) << ' ' << ((id << 1|1) + _base_) <<  ' ' << 0 << endl;
 }
 
 void INTREE::connect(int l, int r, int nodeId, int w){
@@ -190,7 +158,6 @@ void INTREE::connect(int l, int r, int nodeId, int w){
 void INTREE::connect_(int id, int l, int r, int queryL, int queryR, int nodeId, int w){
 	if(queryL <= l && r <= queryR){
 		edge[nodeId].emplace_back(id + _base_, w);
-//		cerr << (nodeId) << ' ' << (id + _base_) <<  ' ' << w << endl;
 		return;
 	}
 	
