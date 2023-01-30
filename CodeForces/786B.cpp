@@ -205,8 +205,8 @@ void dijkstra(int x){
 		STATUS const &s = que.top();
 		
 		if(vis[s.u]) continue;
-		
 		vis[s.u] = 1;
+		
 		for(EDGE const &e : edge[s.u]){
 			if(dis[e.to] > dis[s.u] + e.weight){
 				dis[e.to] = dis[s.u] + e.weight;
