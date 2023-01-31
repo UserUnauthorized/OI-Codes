@@ -9,7 +9,7 @@ class bigInteger {
 
     /**@brief BigInteger class used for OI.
      * @author User-Unauthorized
-     * @version 1.2*/
+     * @version 1.2.2*/
 
 #define OI_CODES_BIGINTEGER_H_DECIMAL true
 
@@ -130,8 +130,8 @@ public:
             std::vector<int>::iterator nextIter;
             nextIter = std::next(iter);
             if (*iter < 0) {
-                --*nextIter;
-                *iter += base;
+                *nextIter += *iter / base - 1;
+                *iter = (*iter % base + base) % base;
             } else if (*iter >= base) {
                 *nextIter += *iter / base;
                 *iter %= base;
@@ -167,7 +167,7 @@ private:
         return result;
     }
 
-/**@brief Sub only digits (sign and carry are ignored).*/
+	/**@brief Sub only digits (sign and carry are ignored).*/
     bigInteger _subtraction_(const bigInteger &Object) const {
         bigInteger result;
         result._positive_ = this->_positive_;
@@ -213,10 +213,10 @@ private:
         return result;
     }
 
-/**@brief intercepts the number at the specified position
-       * @param first An input iterator.
-       * @param last An input iterator.
-       * @warning The input interval is processed according to A right half-open interval*/
+	/**@brief intercepts the number at the specified position
+     * @param first An input iterator.
+     * @param last An input iterator.
+     * @warning The input interval is processed according to A right half-open interval*/
     bigInteger _intercept_(iterator first, iterator last) const {
         return this->_intercept_(first - this->_number_.begin(), last - first);
     }
@@ -226,7 +226,7 @@ private:
      * @param left minuend
      * @param right subtrahend*/
     static void _partial_subtraction_(bigInteger &left, const bigInteger &right, size_type start) {
-        for (int i = 0; i < right._number_.size(); ++i)
+        for (size_t i = 0; i < right._number_.size(); ++i)
             left._number_[i + start] -= right._number_[i];
     }
 
@@ -304,6 +304,13 @@ public:
     bigInteger operator/(const bigInteger &Object) const {
         bigInteger result;
         result = this->_division_(Object);
+        result.carry();
+        return result;
+    }
+    
+    bigInteger operator%(const bigInteger &Object) const {
+        bigInteger result;
+        result = this->_subtraction_((this->_division_(Object))._multiplication_(Object));
         result.carry();
         return result;
     }
@@ -440,12 +447,30 @@ public:
         return result;
     }
 
+	template<typename T>
+	friend bigInteger factorial(std::vector<T> _factors_);
     friend bigInteger factorial(int _n_);
 
     explicit operator bool() const {
         return *this != bigInteger(0);
     }
 };
+
+template<typename T>
+bigInteger factorial(std::vector<T> _factors_){
+	bigInteger result(1);
+	const int _size_ = _factors_.size();
+	int _count_ = 0;
+	for(int i = 2; i < _size_; ++i){
+		while(_factors_[i]--){
+			result = result._multiplication_(i);
+			++_count_;
+			if(_count_ & 1)
+				result.carry();
+		}
+	}
+	return result;
+}
 
 bigInteger factorial(int _n_) {
     bigInteger result(1);
@@ -464,8 +489,7 @@ bigInteger factorial(int _n_) {
 #include <bits/stdc++.h>
 
 int main() {
-    int n(0);
-    std::cin >> n;
-    const bigInteger result = factorial(n);
-    std::cout << result << std::endl;
+ 	bigInteger a,b;
+ 	std::cin >> a >> b;
+    std::cout << a + b << std::endl << a - b << std::endl << a * b << std::endl << a / b << std::endl << a % b;
 }

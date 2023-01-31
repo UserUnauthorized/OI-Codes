@@ -9,7 +9,7 @@ class bigInteger {
 
     /**@brief BigInteger class used for OI.
      * @author User-Unauthorized
-     * @version 1.2.1*/
+     * @version 1.2.2*/
 
 #define OI_CODES_BIGINTEGER_H_DECIMAL true
 
@@ -226,7 +226,7 @@ private:
      * @param left minuend
      * @param right subtrahend*/
     static void _partial_subtraction_(bigInteger &left, const bigInteger &right, size_type start) {
-        for (int i = 0; i < right._number_.size(); ++i)
+        for (size_t i = 0; i < right._number_.size(); ++i)
             left._number_[i + start] -= right._number_[i];
     }
 
@@ -304,6 +304,13 @@ public:
     bigInteger operator/(const bigInteger &Object) const {
         bigInteger result;
         result = this->_division_(Object);
+        result.carry();
+        return result;
+    }
+    
+    bigInteger operator%(const bigInteger &Object) const {
+        bigInteger result;
+        result = this->_subtraction_(this->_division_(Object)._multiplication_(Object));
         result.carry();
         return result;
     }
