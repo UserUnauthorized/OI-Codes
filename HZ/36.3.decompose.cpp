@@ -2,8 +2,37 @@
 //Luogu - P4168[decompose]
 #include<bits/stdc++.h>
 using namespace std;
-constexpr int maxN = 4e5 + 5, maxK = 520;
+constexpr int maxN = 4e4 + 5, maxK = 220;
 typedef pair<int, int> range;
+
+#include <iostream>
+#include <vector>
+
+namespace DEBUG {
+    template<typename T>
+    inline void _debug(const char *format, T t) {
+        std::cerr << format << '=' << t << std::endl;
+    }
+
+    template<class First, class... Rest>
+    inline void _debug(const char *format, First first, Rest... rest) {
+        while (*format != ',') std::cerr << *format++;
+        std::cerr << '=' << first << ",";
+        _debug(format + 1, rest...);
+    }
+
+    template<typename T>
+    std::ostream &operator<<(std::ostream &os, const std::vector<T> &V) {
+        os << "[ ";
+        for (const auto &vv: V) os << vv << ", ";
+        os << "]";
+        return os;
+    }
+
+#define debug(...) _debug(#__VA_ARGS__, __VA_ARGS__)
+}  // namespace DEBUG
+
+using namespace DEBUG;
 
 int N_, M, block_, K_;
 const int &N = N_, &block = block_, &K = K_; //避免意外更改 
@@ -14,7 +43,7 @@ unordered_map<int, int> cnt;
 unordered_map<int, vector<int> > pos;
 
 void init();
-int query(const range &x);
+int query(range x);
 int count(int x, const range &r);
 inline range decrypt(const range &x, int lastAns);
 
@@ -39,8 +68,11 @@ void init(){
 		belong[i] = i / block;
 	}
 
-	for(int k = 0; k < K; ++k)
-		rightBound[k] = (leftBound[k] = k * block) + ((k == K - 1) ? (N - K * block + block) : block);
+	for(int k = 0; k < K - 1; ++k)
+		rightBound[k] = (leftBound[k] = k * block) + block;
+		
+	leftBound[K - 1] = K * block - block;
+	rightBound[K - 1] = N;
 		
 	for(int i = 0; i < N; ++i)
 		pos[source[i]].push_back(i);
@@ -65,12 +97,14 @@ void init(){
 					b = min(b, mode[k][j - 1]);
 			}
 			
-			mode[k][j] = mode[j][k] = b;
+			mode[k][j] = b;
 		}
 	}
 }
 
-int query(const range &x){
+int query(range x){
+	if(x.first > x.second)
+		swap(x.first, x.second);
 	int const &l = x.first;
 	int const &r = x.second;
 	
