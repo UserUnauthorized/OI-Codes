@@ -107,11 +107,12 @@ int query(range x){
 		swap(x.first, x.second);
 	int const &l = x.first;
 	int const &r = x.second;
+	cnt.clear();
 	
 	if(belong[l] == belong[r]){
 		int b(INT_MAX), ans = 0;
 			
-		for(int i = l; i < r; ++i){
+		for(int i = l; i <= r; ++i){
 			++cnt[source[i]];
 			if(cnt[source[i]] > ans)
 				ans = cnt[(b = source[i])];
