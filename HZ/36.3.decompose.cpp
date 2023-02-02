@@ -90,7 +90,7 @@ void init(){
 					b = min(b, source[i]);
 			}
 			
-			if(j > 0) {
+			if(j > k) {
 				if(cnt[mode[k][j - 1]] > ans)
 					ans = cnt[(b = mode[k][j - 1])];
 				else if(cnt[mode[k][j - 1]] > ans)
