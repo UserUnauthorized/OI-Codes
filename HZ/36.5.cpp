@@ -34,6 +34,18 @@ struct Modify{
 	int pre;
 	int now;
 	
+	void apply(){
+		del(this->pre);
+		add(this->now);
+		source[this->pos] = this->now;
+	}
+	
+	void revoke(){
+		del(this->now);
+		add(this->pre);
+		source[this->pos] = this->pre;
+	}
+	
 	Modify():pos(-1), pre(-1), now(-1){};
 	Modify(int _pos_, int _pre_, int _now_):pos(_pos_), pre(_pre_), now(_now_){};
 };
@@ -41,15 +53,21 @@ struct Modify{
 array<Query, maxN> query;
 array<Modify, maxN> modify;
 
-int N_, M, K_, block_ queryCount(0), modifyType(0);
+int N_, M, K_, block_ queryCount(0), modifyType(0), ans(0);
 int const &N = N_, &K = K_, &block = block_;
 
 void init();
-bool add(int x);
-bool del(int x);
+inline void add(int x);
+inline void del(int x);
 
 int main(){
 	init();
+	
+	add(source[1]);
+	int nowL(1), nowR(1), modifyStamp(0);
+	for(int i = 1; i <= queryCount; ++i){
+		while()
+	}
 }
 
 void init(){
@@ -73,7 +91,19 @@ void init(){
 		} else {
 			int pos, x;
 			cin >> pos >> x;
-			modify[++modifyCount] = Modify()
+			modify[++modifyCount] = Modify(pos, value[pos], value[pos] = x);
 		}
 	}
+	
+	sort(query + 1, query + queryCount + 1);
+}
+
+void add(int x){
+	if(cnt[x]++)
+		++ans;
+}
+
+void del(int x){
+	if(--cnt[x])
+		--ans;
 }
