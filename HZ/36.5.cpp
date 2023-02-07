@@ -99,8 +99,7 @@ inline void del(valueType x);
 int main(){
 	init();
 	
-	add(source[1]);
-	int nowL(1), nowR(1), modifyStamp(0);
+	int nowL(1), nowR(0), modifyStamp(0);
 	for(int i = 1; i <= queryCount; ++i){
 //		debug(nowL, nowR, modifyStamp, query[i].l, query[i].r, query[i].pos, query[i].stamp);
 		while(nowL > query[i].l)
