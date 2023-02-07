@@ -7,8 +7,19 @@ array<valueType, maxN> belong, source;
 array<array<valueType, maxM>, maxK> sum;
 array<valueType, maxK> leftBound, rightBound;
 
+struct Query{
+	int l;
+	int r;
+	int a;
+	int b;
+	
+	Query():l(-1), r(-1), a(-1), b(-1){};
+	Query(int _l_, int _r_, int _a_, int _b_):l(_l_), r(_r_), a(_a_), b(_b_){};
+};
+
 int N_, M_, block_, K_, Q;
 const int &N = N_, &M = M_, &block = block_, &K = K_;
+
 
 void init();
 
