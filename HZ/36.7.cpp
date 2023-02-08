@@ -20,8 +20,10 @@ struct Query{
 int N_, M_, block_, K_, Q;
 const int &N = N_, &M = M_, &block = block_, &K = K_;
 
-
 void init();
+Query decode(Query Object, int lastAns);
+valueType query(Query x);
+inline bool check(int l, int r, int color);
 
 int main(){
 	init();
@@ -50,4 +52,32 @@ void init(){
 		for(int i = leftBound[k]; i < rightBound[k]; ++i)
 			++sum[k][source[i]];
 	}
+}
+
+Query decode(Query Object, int lastAns){
+	return Query(Object.l ^ lastAns, Object.r ^ lastAns, Object.a ^ lastAns, Object.b ^ lastAns);
+}
+
+valueType query(Query x){
+	int const &l = x.l, &r = x.r, &a = x.a, &b = x.b;
+	int ans(0);
+	
+	if(belong[r] - belong[l] < 2){
+		for(int c = a; i <= b; ++i){
+			if(!check(l, r, c)) 
+				continue;
+			
+			int cnt(0);
+			for(int i = l; i <= r; ++i){
+				if(source[i] == c)
+					++cnt;
+			}
+			
+			ans += cnt * cnt;
+		}
+	}
+}
+
+inline bool check(int l, int r, int color){
+	return (sum[belong[r]][color] - sum[max(belong[l] - 1, 0)][color]) > 0;
 }
