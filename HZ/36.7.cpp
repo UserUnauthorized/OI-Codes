@@ -3,6 +3,7 @@
 using namespace std;
 constexpr int maxN = 5e4 + 5, maxM = 2e4 + 5, maxK = sqrt(maxN) + 5;
 typedef int valueType;
+
 array<valueType, maxN> belong, source;
 array<array<valueType, maxM>, maxK> sum;
 array<valueType, maxK> leftBound, rightBound;
@@ -27,6 +28,13 @@ inline bool check(int l, int r, int color);
 
 int main(){
 	init();
+	int lastAns(0);
+	while(Q--){
+		int l, r, a, b;
+		cin >> l >> r >> a >> b;
+		cout << (lastAns = query(decode(Query(l, r, a, b), lastAns))) << '\n';
+	} 
+	return 0;
 }
 
 void init(){
@@ -35,7 +43,7 @@ void init(){
 	block_ = sqrt(N);
 	K_ = ceil((double)N / (double)block);
 	
-	for(int i = 0/* TAG:ÏÂ±ê0¿ª */; i < N; ++i){
+	for(int i = 0; i < N; ++i){
 		cin >> source[i];
 		belong[i] = i / block;
 	}
@@ -55,15 +63,14 @@ void init(){
 }
 
 Query decode(Query Object, int lastAns){
-	return Query(Object.l ^ lastAns, Object.r ^ lastAns, Object.a ^ lastAns, Object.b ^ lastAns);
+	return Query((Object.l ^ lastAns) - 1, (Object.r ^ lastAns) - 1, Object.a ^ lastAns, Object.b ^ lastAns);
 }
 
 valueType query(Query x){
 	int const &l = x.l, &r = x.r, &a = x.a, &b = x.b;
 	int ans(0);
-	
 	if(belong[r] - belong[l] < 2){
-		for(int c = a; i <= b; ++i){
+		for(int c = a; c <= b; ++c){
 			if(!check(l, r, c)) 
 				continue;
 			
@@ -75,9 +82,29 @@ valueType query(Query x){
 			
 			ans += cnt * cnt;
 		}
+	} else {
+		for(int c = a; c <= b; ++c){
+			if(!check(l, r, c)) 
+				continue;
+			
+			int cnt(0);
+			for(int i = l; i < rightBound[belong[l]]; ++i)
+				if(source[i] == c)
+					++cnt;
+			
+			for(int i = leftBound[belong[r]]; i <= r; ++i)
+				if(source[i] == c)
+					++cnt;
+			
+			cnt += sum[belong[r] - 1][c] - sum[belong[l]][c];
+			
+			ans += cnt * cnt;
+		}
 	}
+	
+	return ans;
 }
 
 inline bool check(int l, int r, int color){
-	return (sum[belong[r]][color] - sum[max(belong[l] - 1, 0)][color]) > 0;
+	return (sum[belong[r]][color] - ((belong[l] > 0) ? sum[belong[l] - 1][color] : 0)) > 0;
 }
