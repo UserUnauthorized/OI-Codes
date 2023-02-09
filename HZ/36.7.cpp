@@ -34,7 +34,7 @@ array<valueType, maxN> belong, source;
 array<array<valueType, maxM>, maxK> sum;
 array<valueType, maxK> leftBound, rightBound;
 array<valueType, maxM> cnt;
-array<array<array<valueType, maxM>, maxK>, maxK> preAns;
+array<array<valueType, maxK>, maxM> preAns;
 
 struct Query{
 	int l;
@@ -87,6 +87,10 @@ void init(){
 		for(int i = leftBound[k]; i < rightBound[k]; ++i)
 			++sum[k][source[i]];
 	}
+	
+	for(int k = 0; k < K; ++k)
+		for(int color = 1; color <= M; ++color)
+			preAns[k][color] = preAns[k][color - 1] + sum[k][color] * sum[k][color];
 }
 
 Query decode(Query Object, int lastAns){
@@ -103,20 +107,18 @@ valueType query(Query x){
 		for(int i = l; i <= r; ++i)
 			if(a <= source[i] && source[i] <= b)
 				++ans += 2 * cnt[source[i]]++;
-				
 	} else {
-		for(int color = a; color <= b; ++color)
-			ans += pow((cnt[color] = sum[belong[r] - 1][color] - sum[belong[l]][color]), 2);
-			
+		int ansR = (preAns[belong[r] - 1][b] - preAns[belong[r] - 1][a - 1]) * (preAns[belong[r] - 1][b] + preAns[belong[r] - 1][a - 1]);
+		int ansL = (preAns[belong[l]][b] - preAns[belong[l]][a - 1]) * (preAns[belong[l]][b] + preAns[belong[l]][a - 1]);
+		ans = (ansL + ansR) * (ansR - ansL);
+
 		for(int i = l; i < rightBound[belong[l]]; ++i)
 			if(a <= source[i] && source[i] <= b)
-				++ans += 2 * cnt[source[i]]++;
+				++ans += 2 * (sum[belong[r] - 1][source[i]] - sum[belong[l]][source[i]] + cnt[source[i]]++);
 				
 		for(int i = leftBound[belong[r]]; i <= r; ++i)
 			if(a <= source[i] && source[i] <= b)
-				++ans += 2 * cnt[source[i]]++;
-				
-		
+				++ans += 2 * (sum[belong[r] - 1][source[i]] - sum[belong[l]][source[i]] + cnt[source[i]]++);
 	}
 	
 	return ans;
