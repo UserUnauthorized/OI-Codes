@@ -1,7 +1,7 @@
 //HZ - 36.7
 #include<bits/stdc++.h>
 using namespace std;
-constexpr int maxN = 5e4 + 5, maxM = 2e4 + 5, maxK = sqrt(maxN) + 5;
+constexpr int maxN = 5e4 + 5, maxM = 2e4 + 5, maxK = maxN / pow(maxN, 1.0 / 1.5) + 3;
 typedef int valueType;
 
 namespace DEBUG {
@@ -34,7 +34,7 @@ array<valueType, maxN> belong, source;
 array<array<valueType, maxM>, maxK> sum;
 array<valueType, maxK> leftBound, rightBound;
 array<valueType, maxM> cnt;
-array<array<valueType, maxK>, maxM> preAns;
+array<array<array<valueType, maxK>, maxK>, maxM> preAns;
 
 struct Query{
 	int l;
@@ -67,7 +67,7 @@ int main(){
 void init(){
 	cin >> N_ >> M_ >> Q;
 	
-	block_ = sqrt(N);
+	block_ = pow(N, 1.0 / 1.5);
 	K_ = ceil((double)N / (double)block);
 	
 	for(int i = 0; i < N; ++i){
@@ -88,9 +88,13 @@ void init(){
 			++sum[k][source[i]];
 	}
 	
+	for(int color = 1; color <= M; ++color)
+		preAns[0][0][color] = preAns[0][0][color - 1] + sum[0][color] * sum[0][color];
+	
 	for(int k = 0; k < K; ++k)
-		for(int color = 1; color <= M; ++color)
-			preAns[k][color] = preAns[k][color - 1] + sum[k][color] * sum[k][color];
+		for(int j = (k > 0) ? k : 1; j < K; ++j)
+			for(int color = 1; color <= M; ++color)
+				preAns[k][j][color] = preAns[k][j][color - 1] + (sum[j][color] - sum[k - 1][color]) * (sum[j][color] - sum[k - 1][color]);
 }
 
 Query decode(Query Object, int lastAns){
@@ -108,9 +112,10 @@ valueType query(Query x){
 			if(a <= source[i] && source[i] <= b)
 				++ans += 2 * cnt[source[i]]++;
 	} else {
-		int ansR = (preAns[belong[r] - 1][b] - preAns[belong[r] - 1][a - 1]) * (preAns[belong[r] - 1][b] + preAns[belong[r] - 1][a - 1]);
-		int ansL = (preAns[belong[l]][b] - preAns[belong[l]][a - 1]) * (preAns[belong[l]][b] + preAns[belong[l]][a - 1]);
-		ans = (ansL + ansR) * (ansR - ansL);
+//		int const ansB = (preAns[belong[r] - 1][b] - preAns[belong[l]][b]) * (preAns[belong[r] - 1][b] + preAns[belong[l]][b]);
+//		int const ansA = (preAns[belong[r] - 1][a - 1] - preAns[belong[l]][a - 1]) * (preAns[belong[r] - 1][a - 1] + preAns[belong[l]][a - 1]);
+//		ans = ansB - ansA;
+		ans = preAns[belong[l] + 1][belong[r] - 1][b] - preAns[belong[l] + 1][belong[r] - 1][a - 1];
 
 		for(int i = l; i < rightBound[belong[l]]; ++i)
 			if(a <= source[i] && source[i] <= b)
