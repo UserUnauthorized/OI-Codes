@@ -4,9 +4,37 @@ using namespace std;
 constexpr int maxN = 5e4 + 5, maxM = 2e4 + 5, maxK = sqrt(maxN) + 5;
 typedef int valueType;
 
+namespace DEBUG {
+    template<typename T>
+    inline void _debug(const char *format, T t) {
+        std::cerr << format << '=' << t << std::endl;
+    }
+
+    template<class First, class... Rest>
+    inline void _debug(const char *format, First first, Rest... rest) {
+        while (*format != ',') std::cerr << *format++;
+        std::cerr << '=' << first << ",";
+        _debug(format + 1, rest...);
+    }
+
+    template<typename T>
+    std::ostream &operator<<(std::ostream &os, const std::vector<T> &V) {
+        os << "[ ";
+        for (const auto &vv: V) os << vv << ", ";
+        os << "]";
+        return os;
+    }
+
+#define debug(...) _debug(#__VA_ARGS__, __VA_ARGS__)
+}  // namespace DEBUG
+
+using namespace DEBUG;
+
 array<valueType, maxN> belong, source;
 array<array<valueType, maxM>, maxK> sum;
 array<valueType, maxK> leftBound, rightBound;
+array<valueType, maxM> cnt;
+array<array<array<valueType, maxM>, maxK>, maxK> preAns;
 
 struct Query{
 	int l;
@@ -24,7 +52,6 @@ const int &N = N_, &M = M_, &block = block_, &K = K_;
 void init();
 Query decode(Query Object, int lastAns);
 valueType query(Query x);
-inline bool check(int l, int r, int color);
 
 int main(){
 	init();
@@ -68,43 +95,29 @@ Query decode(Query Object, int lastAns){
 
 valueType query(Query x){
 	int const &l = x.l, &r = x.r, &a = x.a, &b = x.b;
+	debug(l, r, a, b);
 	int ans(0);
+	cnt.fill(0);
+	
 	if(belong[r] - belong[l] < 2){
-		for(int c = a; c <= b; ++c){
-			if(!check(l, r, c)) 
-				continue;
-			
-			int cnt(0);
-			for(int i = l; i <= r; ++i){
-				if(source[i] == c)
-					++cnt;
-			}
-			
-			ans += cnt * cnt;
-		}
+		for(int i = l; i <= r; ++i)
+			if(a <= source[i] && source[i] <= b)
+				++ans += 2 * cnt[source[i]]++;
+				
 	} else {
-		for(int c = a; c <= b; ++c){
-			if(!check(l, r, c)) 
-				continue;
+		for(int color = a; color <= b; ++color)
+			ans += pow((cnt[color] = sum[belong[r] - 1][color] - sum[belong[l]][color]), 2);
 			
-			int cnt(0);
-			for(int i = l; i < rightBound[belong[l]]; ++i)
-				if(source[i] == c)
-					++cnt;
-			
-			for(int i = leftBound[belong[r]]; i <= r; ++i)
-				if(source[i] == c)
-					++cnt;
-			
-			cnt += sum[belong[r] - 1][c] - sum[belong[l]][c];
-			
-			ans += cnt * cnt;
-		}
+		for(int i = l; i < rightBound[belong[l]]; ++i)
+			if(a <= source[i] && source[i] <= b)
+				++ans += 2 * cnt[source[i]]++;
+				
+		for(int i = leftBound[belong[r]]; i <= r; ++i)
+			if(a <= source[i] && source[i] <= b)
+				++ans += 2 * cnt[source[i]]++;
+				
+		
 	}
 	
 	return ans;
-}
-
-inline bool check(int l, int r, int color){
-	return (sum[belong[r]][color] - ((belong[l] > 0) ? sum[belong[l] - 1][color] : 0)) > 0;
 }
