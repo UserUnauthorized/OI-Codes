@@ -30,3 +30,9 @@
 *.exe
 *.OUT
 *.app
+
+# Debug datas
+*.in
+*.out
+*.ans
+*.err
