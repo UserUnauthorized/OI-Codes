@@ -1,34 +1,8 @@
 //HZ - 36.7
 #include<bits/stdc++.h>
 using namespace std;
-constexpr int maxN = 5e4 + 5, maxM = 2e4 + 5, maxK = 52;
+constexpr int maxN = 5e4 + 5, maxM = 2e4 + 5, maxK = 105;
 typedef int valueType;
-
-namespace DEBUG {
-    template<typename T>
-    inline void _debug(const char *format, T t) {
-        std::cerr << format << '=' << t << std::endl;
-    }
-
-    template<class First, class... Rest>
-    inline void _debug(const char *format, First first, Rest... rest) {
-        while (*format != ',') std::cerr << *format++;
-        std::cerr << '=' << first << ",";
-        _debug(format + 1, rest...);
-    }
-
-    template<typename T>
-    std::ostream &operator<<(std::ostream &os, const std::vector<T> &V) {
-        os << "[ ";
-        for (const auto &vv: V) os << vv << ", ";
-        os << "]";
-        return os;
-    }
-
-#define debug(...) _debug(#__VA_ARGS__, __VA_ARGS__)
-}  // namespace DEBUG
-
-using namespace DEBUG;
 
 array<valueType, maxN> belong, source;
 array<array<valueType, maxM>, maxK> sum;
@@ -90,13 +64,24 @@ void init(){
 	
 	for(int j = 0; j < K; ++j)
 		for(int color = 1; color <= M; ++color)
-			preAns[0][j].at(color) = preAns[0][j].at(color - 1) + sum[j].at(color) * sum[j].at(color);
+			preAns[0][j][color] = preAns[0][j][color - 1] + sum[j][color] * sum[j][color];
+			
+	for(int k = 1; k < K; ++k){
+		for(int j = k; j < K; ++j){
+			preAns[k][j] = preAns[k][j - 1];
+			
+			for(int i = leftBound[j]; i < rightBound[j]; ++i)
+				++preAns[k][j][source[i]] += 2 * cnt[source[i]]++;			
+		}
+		
+		for(int i = leftBound[k]; i < N; ++i)
+			cnt[source[i]] = 0;
+	}
 	
 	for(int k = 1; k < K; ++k)
 		for(int j = k; j < K; ++j)
-			for(int color = 1; color <= M; ++color)
-				preAns[k][j].at(color) = preAns[k][j].at(color - 1) + (sum[j][color] - sum[k - 1][color]) * (sum[j][color] - sum[k - 1][color]);
-			
+			for(int color = 2; color <= M; ++color)
+				preAns[k][j][color] += preAns[k][j][color - 1];
 }
 
 Query decode(Query Object, int lastAns){
@@ -106,23 +91,43 @@ Query decode(Query Object, int lastAns){
 valueType query(Query x){
 	int const &l = x.l, &r = x.r, &a = x.a, &b = x.b;
 	int ans(0);
-	cnt.fill(0);
+//	cnt.fill(0);
 	
 	if(belong[r] - belong[l] < 2){
 		for(int i = l; i <= r; ++i)
 			if(a <= source[i] && source[i] <= b)
 				++ans += 2 * cnt[source[i]]++;
+				
+		for(int i = l; i <= r; ++i)
+			cnt[source[i]] = 0;
 	} else {
 		ans = preAns[belong[l] + 1][belong[r] - 1][b] - preAns[belong[l] + 1][belong[r] - 1][a - 1];
 
-		for(int i = l; i < rightBound[belong[l]]; ++i)
-			if(a <= source[i] && source[i] <= b)
-				++ans += 2 * (sum[belong[r] - 1][source[i]] - sum[belong[l]][source[i]] + cnt[source[i]]++);
+		for(int i = l; i < rightBound[belong[l]]; ++i){
+			if(source[i] < a || b < source[i])
+				continue;
+			
+			if(!cnt[source[i]])
+				cnt[source[i]] = sum[belong[r] - 1][source[i]] - sum[belong[l]][source[i]];
 				
+			++ans += 2 * cnt[source[i]]++;
+		}
+				
+		for(int i = leftBound[belong[r]]; i <= r; ++i){
+			if(source[i] < a || b < source[i])
+				continue;
+			
+			if(!cnt[source[i]])
+				cnt[source[i]] = sum[belong[r] - 1][source[i]] - sum[belong[l]][source[i]];
+				
+			++ans += 2 * cnt[source[i]]++;
+		}
+		
+		for(int i = l; i < rightBound[belong[l]]; ++i)
+			cnt[source[i]] = 0;
+		
 		for(int i = leftBound[belong[r]]; i <= r; ++i)
-			if(a <= source[i] && source[i] <= b)
-				++ans += 2 * (sum[belong[r] - 1][source[i]] - sum[belong[l]][source[i]] + cnt[source[i]]++);
+			cnt[source[i]] = 0;
 	}
-	
 	return ans;
 }
