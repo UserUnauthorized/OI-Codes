@@ -3,7 +3,7 @@
 #include<bits/stdc++.h>
 using namespace std;
 constexpr int maxN = 1e5 + 5, maxM = 1e6 + 5;
-array<int, maxN> belong, source, cnt;
+array<int, maxN> belongN, source, cnt;
 
 struct Query{
 	int l;
@@ -17,10 +17,10 @@ struct Query{
 	Query(int _l_, int _r_, int _a_, int _b_, int _pos_):l(_l_), r(_r_), a(_a_), b(_b_), pos(_pos_){};
 	
 	bool operator<(Query const &Object) const{
-		if(belong[this->l] != belong[Object.l])
+		if(belongN[this->l] != belongN[Object.l])
 			return this->l < Object.l;
 			
-		if(belong[this->r] != belong[Object.r])
+		if(belongN[this->r] != belongN[Object.r])
 			return this->r < Object.r;
 			
 		return this->pos < Object.pos;
@@ -93,7 +93,7 @@ void init(){
 	
 	for(int i = 1; i <= N; ++i){
 		cin >> source[i];
-		belong[i] = (i - 1) / block + 1;
+		belongN[i] = (i - 1) / block + 1;
 		D_ = max(D, source[i]);
 	}
 	
