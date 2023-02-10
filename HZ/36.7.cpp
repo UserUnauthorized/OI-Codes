@@ -91,7 +91,6 @@ Query decode(Query Object, int lastAns){
 valueType query(Query x){
 	int const &l = x.l, &r = x.r, &a = x.a, &b = x.b;
 	int ans(0);
-//	cnt.fill(0);
 	
 	if(belong[r] - belong[l] < 2){
 		for(int i = l; i <= r; ++i)
