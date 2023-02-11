@@ -30,11 +30,6 @@ struct Query{
 array<Query, maxM> query;
 
 void init();
-/*inline void add(int pos);
-inline void del(int pos);
-inline void update(int pos, NODE x);
-inline int lowBit(int x);
-NODE getSum(int pos);*/
 
 int N_, M_,/* D_,*/ block_;
 int const &N = N_, &M = M_, &D = N_, &block = block_;
