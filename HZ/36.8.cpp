@@ -27,7 +27,7 @@ struct Query{
 	}
 };
 
-struct NODE{
+/*struct NODE{
 	int sum;
 	int cnt;
 	
@@ -45,17 +45,17 @@ struct NODE{
 	NODE operator-(NODE const &Object) const{
 		return NODE(this->sum - Object.sum, this->cnt - Object.cnt);
 	}
-};
+};*/
 
 array<Query, maxM> query;
-array<NODE, maxN> tree, ans;
+/*array<NODE, maxN> tree, ans;*/
 
 void init();
-inline void add(int pos);
+/*inline void add(int pos);
 inline void del(int pos);
 inline void update(int pos, NODE x);
 inline int lowBit(int x);
-NODE getSum(int pos);
+NODE getSum(int pos);*/
 
 int N_, M_,/* D_,*/ block_;
 int const &N = N_, &M = M_, &D = N_, &block = block_;
@@ -77,7 +77,7 @@ int main(){
 		while(nowR > r)
 			del(source[nowR]--);
 			
-		ans[query[i].pos] = getSum(b) - getSum(a - 1);
+//		ans[query[i].pos] = getSum(b) - getSum(a - 1);
 	}
 	
 	for(int i = 0; i < M; ++i)
@@ -106,7 +106,7 @@ void init(){
 	sort(query.begin(), query.begin() + M);
 }
 
-void add(int pos){
+/*void add(int pos){
 	if(cnt[pos]++)
 		update(pos, NODE(1, 0));
 	else 
@@ -140,4 +140,4 @@ void update(int pos, NODE x){
 
 int lowBit(int x){
 	return x & (-x);
-}
+}*/
