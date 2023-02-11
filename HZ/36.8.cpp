@@ -2,35 +2,6 @@
 //Luogu - P4396
 #include<bits/stdc++.h>
 using namespace std;
-
-
-namespace DEBUG {
-    template<typename T>
-    inline void _debug(const char *format, T t) {
-        std::cerr << format << '=' << t << std::endl;
-    }
-
-    template<class First, class... Rest>
-    inline void _debug(const char *format, First first, Rest... rest) {
-        while (*format != ',') std::cerr << *format++;
-        std::cerr << '=' << first << ",";
-        _debug(format + 1, rest...);
-    }
-
-    template<typename T>
-    std::ostream &operator<<(std::ostream &os, const std::vector<T> &V) {
-        os << "[ ";
-        for (const auto &vv: V) os << vv << ", ";
-        os << "]";
-        return os;
-    }
-
-#define debug(...) _debug(#__VA_ARGS__, __VA_ARGS__)
-}  // namespace DEBUG
-
-using namespace DEBUG;
-
-
 constexpr int maxN = 1e5 + 5, maxM = 1e6 + 5, maxK = 1e3 + 5;
 array<int, maxN> source;
 array<int, maxN> belong, sum;
@@ -105,9 +76,9 @@ int main(){
 		while(nowR < r)
 			add(source[++nowR]);
 		while(nowR > r)
-			del(source[nowR]--);
+			del(source[nowR--]);
 			
-		out[i] = getAns(query[i].a, query[i].b);
+		out[query[i].pos] = getAns(query[i].a, query[i].b);
 	}
 	
 	for(int i = 0; i < M; ++i)
@@ -125,19 +96,12 @@ void init(){
 	for(int i = 1; i <= N; ++i){
 		cin >> source[i];
 		belong[i] = (i - 1) / block + 1;
-//		debug(i, belong[i]);
-//		D_ = max(D, source[i]);
 	}
-//	
-//	D_ = max(D, N);
-//	
-//	for(int i = 1; i <= D; ++i)
-//		belong[i] = (i - 1) / block + 1;
 	
 	for(int k = 1; k <= K; ++k)
 		leftBound[k] = (rightBound[k] = k * block + 1) - block;
 	
-	rightBound[K] = N;
+	rightBound[K] = N + 1;
 	
 	for(int i = 0; i < M; ++i){
 		int l, r, a, b;
@@ -149,16 +113,12 @@ void init(){
 }
 
 void add(int x){
-	if(belong[x] > K)
-		exit(x);
 	++blockSum[belong[x]];
 	if(!sum[x]++)
 		++blockCnt[belong[x]];
 }
 
 void del(int x){
-	if(belong[x] > K)
-		exit(x);
 	--blockSum[belong[x]];
 	if(!--sum[x])
 		--blockCnt[belong[x]];
