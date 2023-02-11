@@ -55,7 +55,6 @@ array<NODE, maxM> out;
 void init();
 void add(int x);
 void del(int x);
-inline int read();
 NODE getAns(int a, int b);
 
 int N_, M_, D_, block_, K_;
@@ -156,18 +155,4 @@ NODE getAns(int a, int b){
 	}
 	
 	return result;
-}
-
-int read(){
-	int result(0), ch(getchar());
-	
-	while(ch < '0' || ch > '9')
-		ch = getchar();
-		
-	while(ch >= '0' && ch <= '9'){
-		result = (result << 3) + (result << 1) + (ch & 15);
-		ch = getchar();
-	}
-	
-	return ch;
 }
