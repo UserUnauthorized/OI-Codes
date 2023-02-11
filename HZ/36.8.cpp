@@ -27,28 +27,7 @@ struct Query{
 	}
 };
 
-/*struct NODE{
-	int sum;
-	int cnt;
-	
-	NODE():sum(0),cnt(0){};
-	NODE(int _sum_, int _cnt_):sum(_sum_),cnt(_cnt_){};
-	
-	NODE operator+(NODE const &Object) const{
-		return NODE(this->sum + Object.sum, this->cnt + Object.cnt);
-	}
-	
-	void operator+=(NODE const &Object){
-		*this = *this + Object;
-	}
-	
-	NODE operator-(NODE const &Object) const{
-		return NODE(this->sum - Object.sum, this->cnt - Object.cnt);
-	}
-};*/
-
 array<Query, maxM> query;
-/*array<NODE, maxN> tree, ans;*/
 
 void init();
 /*inline void add(int pos);
@@ -77,7 +56,6 @@ int main(){
 		while(nowR > r)
 			del(source[nowR]--);
 			
-//		ans[query[i].pos] = getSum(b) - getSum(a - 1);
 	}
 	
 	for(int i = 0; i < M; ++i)
@@ -105,39 +83,3 @@ void init(){
 	
 	sort(query.begin(), query.begin() + M);
 }
-
-/*void add(int pos){
-	if(cnt[pos]++)
-		update(pos, NODE(1, 0));
-	else 
-		update(pos, NODE(1, 1));
-}
-
-void del(int pos){
-	if(--cnt[pos])
-		update(pos, NODE(-1, -1));
-	else 
-		update(pos, NODE(-1, 0));
-}
-
-NODE getSum(int pos){
-	NODE result(0, 0);
-	
-	while(pos > 0){
-		result += tree[pos];
-		pos -= lowBit(pos);
-	}
-	
-	return result;
-}
-
-void update(int pos, NODE x){
-	while(pos <= D){
-		tree[pos] += x;
-		pos += lowBit(pos);
-	}
-}
-
-int lowBit(int x){
-	return x & (-x);
-}*/
