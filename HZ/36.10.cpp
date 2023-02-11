@@ -3,6 +3,33 @@
 #include<bits/stdc++.h>
 using namespace std;
 constexpr int maxN = 5e4 + 5;
+
+namespace DEBUG {
+    template<typename T>
+    inline void _debug(const char *format, T t) {
+        std::cerr << format << '=' << t << std::endl;
+    }
+
+    template<class First, class... Rest>
+    inline void _debug(const char *format, First first, Rest... rest) {
+        while (*format != ',') std::cerr << *format++;
+        std::cerr << '=' << first << ",";
+        _debug(format + 1, rest...);
+    }
+
+    template<typename T>
+    std::ostream &operator<<(std::ostream &os, const std::vector<T> &V) {
+        os << "[ ";
+        for (const auto &vv: V) os << vv << ", ";
+        os << "]";
+        return os;
+    }
+
+#define debug(...) _debug(#__VA_ARGS__, __VA_ARGS__)
+}  // namespace DEBUG
+
+using namespace DEBUG;
+
 typedef long long valueType;
 array<valueType, maxN> source, belong, cnt;
 
@@ -26,7 +53,7 @@ struct Query{
 };
 
 array<Query, maxN> query;
-array<valueType, maxN> out, id;
+array<valueType, maxN> out, now;
 
 void init();
 inline void add(valueType x);
@@ -37,7 +64,9 @@ valueType N_, M_, block_, ans(0);
 valueType const &N = N_, &M = M_, &block = block_;
 
 int main(){
-	freopen("P1494_1.in", "r", stdin);
+//	freopen("P1494_1.in", "r", stdin);
+//	freopen("P1494_1.ans", "w", stdout);
+//	freopen("P1494_1.err", "w", stderr);
 	init();
 	
 	int nowL(1), nowR(0);
@@ -58,18 +87,22 @@ int main(){
 			del(source[nowR--]);
 		while(nowR < r)
 			add(source[++nowR]);
-			
-		id[i] = query[i].pos;
-		out[id[i]] = ans;
+		
+		now[query[i].pos] = i;
+		out[query[i].pos] = ans;
+//		debug(query[i].pos, out[query[i].pos]);
 	}
 	
 	for(int i = 0; i < M; ++i){
-		int a(out[i]), b(solve(query[id[i]].r - query[id[i]].l + 1));
-		int g = __gcd(a, b);
+		valueType a(out[i]), b(solve(query[now[i]].r - query[now[i]].l + 1));
+		b = max(b, (valueType)1);
+		valueType g = __gcd(a, b);
+//		debug(i, a, b, g);
 		a /= g;
 		b /= g;
 		if(a == 0)
 			b = 1;
+//		debug(a, b);
 		cout << a << '/' << b << '\n';
 	}
 		
