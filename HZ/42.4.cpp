@@ -113,5 +113,17 @@ public:
 		}
 	}
 	
+	pointer find(int key){
+		pointer result = root;
+		
+		while(now != NULL && now->value != key)
+			now = now->son(key > now->value);
+		
+		if(now != NULL)
+			Splay(now);
+			
+		return now;
+	}
+	
 	
 };
