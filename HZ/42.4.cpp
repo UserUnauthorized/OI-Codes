@@ -63,5 +63,11 @@ struct SPLAY{
 			(now->father)->son(father->isRightSon()) = now;
 			
 		father->father = now;
+		now->son(!isRightSon) = father;
+		father->update();
+		now->update();
+		
+		if(now->father == NULL)
+			this->root = now;
 	}
 };
