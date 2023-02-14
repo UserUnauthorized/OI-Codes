@@ -198,4 +198,29 @@ public:
 				
 		return current->value;
 	}
+	
+	int next(int key){
+		pointer current = this->find(key);
+		bool newNodeCreated = false;
+		
+		if(current == NULL){
+			insert(key);
+			current = this->root;
+			newNodeCreated = true;
+		}
+		
+		if(current->rightSon == NULL){
+			if(newNodeCreated)
+				remove(key);
+			
+			return -1;
+		}
+		
+		for(current = current->rightSon; current->leftSon != NULL; current = current->leftSon);
+		
+		if(newNodeCreated)
+				remove(key);
+				
+		return current->value;
+	}
 };
