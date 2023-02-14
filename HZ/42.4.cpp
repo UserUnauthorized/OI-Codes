@@ -89,14 +89,14 @@ public:
 	}
 	
 	void insert(int key){
-		if(root == NULL){
-			root = this->newNode();
-			root->init();
-			root->value = key;
+		if(this->root == NULL){
+			this->root = this->newNode();
+			this->root->init();
+			this->root->value = key;
 			return;
 		}
 		
-		pointer now(root), father(NULL);
+		pointer now(this->root), father(NULL);
 		
 		for(;; father = now, now = now->son(key > now->value)){
 			if(now == NULL){
@@ -118,7 +118,7 @@ public:
 	}
 	
 	pointer find(int key){
-		pointer result = root;
+		pointer result = this->root;
 		
 		while(result != NULL && result->value != key)
 			result = result->son(key > result->value);
@@ -152,7 +152,7 @@ public:
 	}
 	
 	int kth(int key){
-		pointer current = root;
+		pointer current = this->root;
 		
 		while(true){
 			if(current->leftSon != NULL && key <= (current->leftSon)->size){
@@ -172,5 +172,30 @@ public:
 			
 			current = current->rightSon;
 		}
+	}
+	
+	int pre(int key){
+		pointer current = this->find(key);
+		bool newNodeCreated = false;
+		
+		if(current == NULL){
+			insert(key);
+			current = this->root;
+			newNodeCreated = true;
+		}
+		
+		if(current->leftSon == NULL){
+			if(newNodeCreated)
+				remove(key);
+			
+			return -1;
+		}
+		
+		for(current = current->leftSon; current->rightSon != NULL; current = current->rightSon);
+		
+		if(newNodeCreated)
+				remove(key);
+				
+		return current->value;
 	}
 };
