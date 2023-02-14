@@ -301,6 +301,9 @@ public:
 } tree;
 
 int main(){
+	freopen("input2.in", "r", stdin);
+	freopen("input2.ans", "w", stdout);
+	freopen("input2.err", "w", stderr);
 	int n;
 	cin >> n;
 	while(n--){
