@@ -82,7 +82,7 @@ public:
 			this->root = now;
 	}
 	
-	void Splay(pointer now){
+	void splay(pointer now){
 		for(pointer father = now->father; (father = now->father) != NULL; rotate(now))
 			if(father->father != NULL)
 				rotate(now->isRightSon() == father->isRightSon() ? father : now);
@@ -105,13 +105,13 @@ public:
 				now->father = father;
 				now->value = key;
 				father->son(key > father->value) = now;
-				Splay(now);
+				this->splay(now);
 				return;
 			}
 			
 			if(now->value == key){
 				++now->count;
-				Splay(now);
+				this->splay(now);
 				return;
 			}
 		}
@@ -124,7 +124,7 @@ public:
 			result = result->son(key > result->value);
 		
 		if(result != NULL)
-			Splay(result);
+			this->splay(result);
 			
 		return result;
 	}
@@ -154,5 +154,23 @@ public:
 	int kth(int key){
 		pointer current = root;
 		
+		while(true){
+			if(current->leftSon != NULL && key <= (current->leftSon)->size){
+				current = current->leftSon;
+				continue;
+			}
+			
+			if(current->leftSon != NULL)
+				key -= (current->leftSon)->size;
+			
+			key -= current->size;
+			
+			if(key <= 0){
+				this->splay(current);
+				return current->value;
+			}
+			
+			current = current->rightSon;
+		}
 	}
 };
