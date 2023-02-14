@@ -52,6 +52,10 @@ private:
 	pointer newNode(){
 		return (pointer)malloc(sizeof(NODE));
 	}
+	
+	void delNode(pointer p){
+		free(p);
+	}
 
 public:
 	pointer root;
@@ -116,14 +120,39 @@ public:
 	pointer find(int key){
 		pointer result = root;
 		
-		while(now != NULL && now->value != key)
-			now = now->son(key > now->value);
+		while(result != NULL && result->value != key)
+			result = result->son(key > result->value);
 		
-		if(now != NULL)
-			Splay(now);
+		if(result != NULL)
+			Splay(result);
 			
-		return now;
+		return result;
 	}
 	
+	/*TODO:void remove(int key)*/
 	
+	int rank(int key){
+		pointer current = find(key);
+		bool newNodeCreated = false;
+		
+		if(current == NULL){
+			insert(key);
+			newNodeCreated = true;
+		}
+		
+		int result = 1;
+		
+		if(root->leftSon != NULL)
+			result += (root->leftSon)->size;
+			
+		if(newNodeCreated)
+			remove(key);
+			
+		return result;
+	}
+	
+	int kth(int key){
+		pointer current = root;
+		
+	}
 };
