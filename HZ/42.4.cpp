@@ -2,6 +2,33 @@
 //Luogu - P3369
 #include<bits/stdc++.h>
 using namespace std;
+
+namespace DEBUG {
+    template<typename T>
+    inline void _debug(const char *format, T t) {
+        std::cerr << format << '=' << t << std::endl;
+    }
+
+    template<class First, class... Rest>
+    inline void _debug(const char *format, First first, Rest... rest) {
+        while (*format != ',') std::cerr << *format++;
+        std::cerr << '=' << first << ",";
+        _debug(format + 1, rest...);
+    }
+
+    template<typename T>
+    std::ostream &operator<<(std::ostream &os, const std::vector<T> &V) {
+        os << "[ ";
+        for (const auto &vv: V) os << vv << ", ";
+        os << "]";
+        return os;
+    }
+
+#define debug(...) _debug(#__VA_ARGS__, __VA_ARGS__)
+}  // namespace DEBUG
+
+using namespace DEBUG;
+
 typedef long long valueType;
 constexpr valueType maxN = 1e5 + 5;
 
@@ -28,7 +55,7 @@ struct NODE{
 	}
 	
 	void update(){
-		this->size = (this->leftSon ? (this->leftSon)->size : 0) + (this->rightSon ? (this->rightSon)->size : 0) + this->count;
+		this->size = (this->leftSon != NULL ? (this->leftSon)->size : 0) + (this->rightSon != NULL ? (this->rightSon)->size : 0) + this->count;
 	}
 	
 	void init(){
@@ -53,8 +80,9 @@ private:
 		return (pointer)malloc(sizeof(NODE));
 	}
 	
-	void delNode(pointer p){
+	void delNode(pointer &p){
 		free(p);
+		p = NULL;
 	}
 
 public:
@@ -129,7 +157,48 @@ public:
 		return result;
 	}
 	
-	/*TODO:void remove(int key)*/
+	void remove(int key){
+		pointer current = find(key);
+		
+		if(current == NULL)
+			exit(1);
+			
+		this->splay(current);
+		
+		current = this->root;
+		
+		if(current->count > 1){
+			--current->count;
+			current->update();
+			return;
+		}
+		
+		if(current->leftSon == NULL && current->rightSon == NULL){
+			this->delNode(current);
+			this->root = NULL;
+			return;
+		}
+		
+		if(current->leftSon == NULL){
+			this->root = current->rightSon;
+			this->root->father = NULL;
+			delNode(current);
+			return;
+		}
+		
+		if(current->rightSon == NULL){
+			this->root = current->leftSon;
+			this->root->father = NULL;
+			delNode(current);
+			return;
+		}
+		
+		pre(current->value);
+		current->rightSon->father = this->root;
+		this->root->rightSon = current->rightSon;
+		delNode(current);
+		root->update();
+	}
 	
 	int rank(int key){
 		pointer current = find(key);
@@ -147,6 +216,8 @@ public:
 			
 		if(newNodeCreated)
 			remove(key);
+		else
+			this->splay(current);
 			
 		return result;
 	}
@@ -194,8 +265,10 @@ public:
 		for(current = current->leftSon; current->rightSon != NULL; current = current->rightSon);
 		
 		if(newNodeCreated)
-				remove(key);
+			remove(key);
 				
+		this->splay(current);
+		
 		return current->value;
 	}
 	
@@ -221,6 +294,32 @@ public:
 		if(newNodeCreated)
 				remove(key);
 				
+		this->splay(current);		
+		
 		return current->value;
 	}
-};
+} tree;
+
+int main(){
+	int n;
+	cin >> n;
+	while(n--){
+		int opt, x;
+		cin >> opt >> x;
+		
+		if(opt == 1)
+			tree.insert(x);
+		else if(opt == 2)
+			tree.remove(x);
+		else if(opt == 3)
+			cout << tree.rank(x) << '\n';
+		else if(opt == 4)
+			cout << tree.kth(x) << '\n';
+		else if(opt == 5)
+			cout << tree.pre(x) << '\n';
+		else if(opt == 6)
+			cout << tree.next(x) << '\n';
+	}
+	
+	return 0;
+}
