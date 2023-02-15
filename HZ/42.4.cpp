@@ -90,13 +90,17 @@ public:
 	
 	SPLAY(): root(NULL){};
 	
-	void rotate(pointer now){
+	void rotate(const pointer &now){
 		pointer father = now->father;
 		bool isRightSon = now->isRightSon();
 		father->son(isRightSon) = now->son(!isRightSon);
 		
-		if(now->son(!isRightSon))
+		if(now->son(!isRightSon) != NULL){
+			debug(isRightSon, now->son(!isRightSon)->father->value);
 			(now->son(!isRightSon))->father = father;
+			debug(now->son(!isRightSon)->father->value);
+		}
+			
 			
 		if((now->father = father->father))
 			(now->father)->son(father->isRightSon()) = now;
@@ -110,7 +114,7 @@ public:
 			this->root = now;
 	}
 	
-	void splay(pointer now){
+	void splay(const pointer &now){
 		for(pointer father = now->father; (father = now->father) != NULL; rotate(now))
 			if(father->father != NULL)
 				rotate(now->isRightSon() == father->isRightSon() ? father : now);
@@ -237,7 +241,9 @@ public:
 			key -= current->size;
 			
 			if(key <= 0){
+				debug(current->value, key);
 				this->splay(current);
+				debug(current->value);
 				return current->value;
 			}
 			
