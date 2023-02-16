@@ -9,13 +9,14 @@ struct NODE{
 	typedef NODE self;
 	typedef self* pointer;
 	typedef self& reference;
+	typedef ::valueType valueType;
 
 	pointer father;
 	pointer leftSon;
 	pointer rightSon;
-	valueType value;
-	valueType count;
-	valueType size;
+	self::valueType value;
+	self::valueType count;
+	self::valueType size;
 	
 	NODE():father(NULL), leftSon(NULL), rightSon(NULL), value(0), count(0), size(0){};
 	
@@ -74,6 +75,7 @@ public:
 	typedef NODE node;
 	typedef node::pointer pointer;
 	typedef SPLAY self;
+	typedef node::valueType valueType;
 
 private:
 	pointer newNode(){
@@ -118,7 +120,7 @@ public:
 				rotate(current->isRightSon() == father->isRightSon() ? father : current);
 	}
 	
-	void insert(int key){
+	void insert(self::valueType key){
 		if(this->root == NULL){
 			this->root = this->newNode();
 			this->root->init();
@@ -147,7 +149,7 @@ public:
 		}
 	}
 	
-	pointer find(int key){
+	pointer find(self::valueType key){
 		pointer result = this->root;
 		
 		while(result != NULL && result->value != key)
@@ -159,7 +161,7 @@ public:
 		return result;
 	}
 	
-	void remove(int key){
+	void remove(self::valueType key){
 		pointer current = find(key);
 		
 		if(current == NULL)
@@ -202,7 +204,7 @@ public:
 		root->update();
 	}
 	
-	int rank(int key){
+	self::valueType rank(self::valueType key){
 		pointer current = find(key);
 		bool newNodeCreated = false;
 		
@@ -224,7 +226,7 @@ public:
 		return result;
 	}
 	
-	int kth(int key){
+	self::valueType kth(self::valueType key){
 		pointer current = this->root;
 		
 		while(true){
@@ -247,7 +249,7 @@ public:
 		}
 	}
 	
-	int pre(int key){
+	self::valueType pre(self::valueType key){
 		pointer current = this->find(key);
 		bool newNodeCreated = false;
 		
@@ -274,7 +276,7 @@ public:
 		return current->value;
 	}
 	
-	int next(int key){
+	self::valueType next(self::valueType key){
 		pointer current = this->find(key);
 		bool newNodeCreated = false;
 		
