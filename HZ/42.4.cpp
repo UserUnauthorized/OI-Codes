@@ -2,33 +2,6 @@
 //Luogu - P3369
 #include<bits/stdc++.h>
 using namespace std;
-
-namespace DEBUG {
-    template<typename T>
-    inline void _debug(const char *format, T t) {
-        std::cerr << format << '=' << t << std::endl;
-    }
-
-    template<class First, class... Rest>
-    inline void _debug(const char *format, First first, Rest... rest) {
-        while (*format != ',') std::cerr << *format++;
-        std::cerr << '=' << first << ",";
-        _debug(format + 1, rest...);
-    }
-
-    template<typename T>
-    std::ostream &operator<<(std::ostream &os, const std::vector<T> &V) {
-        os << "[ ";
-        for (const auto &vv: V) os << vv << ", ";
-        os << "]";
-        return os;
-    }
-
-#define debug(...) _debug(#__VA_ARGS__, __VA_ARGS__)
-}  // namespace DEBUG
-
-using namespace DEBUG;
-
 typedef long long valueType;
 constexpr valueType maxN = 1e5 + 5;
 
@@ -64,9 +37,35 @@ struct NODE{
 		this->count = this->size = 1;
 	}
 	
-	void clear(){
-		this->leftSon = this->rightSon = this->father = NULL;
-		this->value = this->count = this->size = 0;
+	friend std::ostream &operator<<(std::ostream &output, const self &Object) {
+        if(Object.leftSon != NULL){
+        	output << Object.value << ' ' << Object.leftSon->value << ' ' << 0 << endl;
+        	output << *(Object.leftSon);
+		}
+        
+        if(Object.rightSon != NULL){
+        	output << Object.value << ' ' << Object.rightSon->value << ' ' << 1 << endl;
+        	output << *(Object.rightSon);
+		}
+        return output;
+    }
+    
+    friend std::ostream &operator<<(std::ostream &output, pointer Object) {
+        output << *Object;
+        return output;
+    }
+    
+    friend void outData(std::ostream &output, pointer Object){
+    	if(Object == NULL)
+    		return;
+    		
+    	output << Object->value << ' ' << Object->count << ' ' << Object->size << endl;
+    	
+    	if(Object->leftSon != NULL)
+    		outData(output, Object->leftSon);
+    	
+    	if(Object->rightSon != NULL)
+    		outData(output, Object->rightSon);
 	}
 };
 
@@ -74,6 +73,7 @@ class SPLAY{
 public:
 	typedef NODE node;
 	typedef node::pointer pointer;
+	typedef SPLAY self;
 
 private:
 	pointer newNode(){
@@ -96,9 +96,7 @@ public:
 		father->son(isRightSon) = now->son(!isRightSon);
 		
 		if(now->son(!isRightSon) != NULL){
-			debug(isRightSon, now->son(!isRightSon)->father->value);
 			(now->son(!isRightSon))->father = father;
-			debug(now->son(!isRightSon)->father->value);
 		}
 			
 			
@@ -128,22 +126,22 @@ public:
 			return;
 		}
 		
-		pointer now(this->root), father(NULL);
+		pointer current(this->root), father(NULL);
 		
-		for(;; father = now, now = now->son(key > now->value)){
-			if(now == NULL){
-				now = newNode();
-				now->init();
-				now->father = father;
-				now->value = key;
-				father->son(key > father->value) = now;
-				this->splay(now);
+		for(;; father = current, current = current->son(key > current->value)){
+			if(current == NULL){
+				current = this->newNode();
+				current->init();
+				current->father = father;
+				current->value = key;
+				father->son(key > father->value) = current;
+				this->splay(current);
 				return;
 			}
 			
-			if(now->value == key){
-				++now->count;
-				this->splay(now);
+			if(current->value == key){
+				++current->count;
+				this->splay(current);
 				return;
 			}
 		}
@@ -238,12 +236,10 @@ public:
 			if(current->leftSon != NULL)
 				key -= (current->leftSon)->size;
 			
-			key -= current->size;
+			key -= current->count;
 			
 			if(key <= 0){
-				debug(current->value, key);
 				this->splay(current);
-				debug(current->value);
 				return current->value;
 			}
 			
@@ -304,12 +300,22 @@ public:
 		
 		return current->value;
 	}
+	
+    friend std::ostream &operator<<(std::ostream &output, const self &Object) {
+    	output << "TREE BEGIN\n";
+        if(Object.root != NULL)
+        	cerr << Object.root;
+        output << "TREE END\n";
+        output << "==========\n";
+        output << "DATA BEGIN\n";
+        if(Object.root != NULL)
+        	outData(output, Object.root);
+        output << "DATA END\n";
+        return output;
+    }
 } tree;
 
 int main(){
-	freopen("input2.in", "r", stdin);
-	freopen("input2.ans", "w", stdout);
-	freopen("input2.err", "w", stderr);
 	int n;
 	cin >> n;
 	while(n--){
