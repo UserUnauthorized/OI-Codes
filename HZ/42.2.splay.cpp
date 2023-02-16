@@ -2,6 +2,33 @@
 //Luogu - P2286 [Splay]
 #include<bits/stdc++.h>
 using namespace std;
+
+namespace DEBUG {
+    template<typename T>
+    inline void _debug(const char *format, T t) {
+        std::cerr << format << '=' << t << std::endl;
+    }
+
+    template<class First, class... Rest>
+    inline void _debug(const char *format, First first, Rest... rest) {
+        while (*format != ',') std::cerr << *format++;
+        std::cerr << '=' << first << ",";
+        _debug(format + 1, rest...);
+    }
+
+    template<typename T>
+    std::ostream &operator<<(std::ostream &os, const std::vector<T> &V) {
+        os << "[ ";
+        for (const auto &vv: V) os << vv << ", ";
+        os << "]";
+        return os;
+    }
+
+#define debug(...) _debug(#__VA_ARGS__, __VA_ARGS__)
+}  // namespace DEBUG
+
+using namespace DEBUG;
+
 typedef int valueType;
 constexpr valueType maxN = 8e4 + 5;
 struct NODE{
@@ -253,7 +280,7 @@ int main(){
 		valueType x;
 		
 		cin >> type >> x;
-		
+		debug(n, type, x, treeType);
 		if(treeType == -1)
 			treeType = type;
 			
@@ -263,6 +290,7 @@ int main(){
 		} else {
 			valueType const pre = tree.pre(x);
 			valueType const next = tree.next(x);
+			debug(n, x, pre, next, ans, type, treeType);
 			if(next - x < x - pre){
 				tree.remove(next);
 				ans += next - x;
@@ -270,6 +298,7 @@ int main(){
 				tree.remove(pre);
 				ans -= x - pre;
 			}
+			debug(ans);
 		}
 	}
 	
