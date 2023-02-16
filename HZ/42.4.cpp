@@ -90,32 +90,32 @@ public:
 	
 	SPLAY(): root(NULL){};
 	
-	void rotate(const pointer &now){
-		pointer father = now->father;
-		bool isRightSon = now->isRightSon();
-		father->son(isRightSon) = now->son(!isRightSon);
+	void rotate(const pointer &current){
+		pointer father = current->father;
+		bool isRightSon = current->isRightSon();
+		father->son(isRightSon) = current->son(!isRightSon);
 		
-		if(now->son(!isRightSon) != NULL){
-			(now->son(!isRightSon))->father = father;
+		if(current->son(!isRightSon) != NULL){
+			(current->son(!isRightSon))->father = father;
 		}
 			
 			
-		if((now->father = father->father))
-			(now->father)->son(father->isRightSon()) = now;
+		if((current->father = father->father))
+			(current->father)->son(father->isRightSon()) = current;
 			
-		father->father = now;
-		now->son(!isRightSon) = father;
+		father->father = current;
+		current->son(!isRightSon) = father;
 		father->update();
-		now->update();
+		current->update();
 		
-		if(now->father == NULL)
-			this->root = now;
+		if(current->father == NULL)
+			this->root = current;
 	}
 	
-	void splay(const pointer &now){
-		for(pointer father = now->father; (father = now->father) != NULL; rotate(now))
+	void splay(const pointer &current){
+		for(pointer father = current->father; (father = current->father) != NULL; rotate(current))
 			if(father->father != NULL)
-				rotate(now->isRightSon() == father->isRightSon() ? father : now);
+				rotate(current->isRightSon() == father->isRightSon() ? father : current);
 	}
 	
 	void insert(int key){
