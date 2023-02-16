@@ -85,5 +85,14 @@ public:
 		father->father = current;
 		father->update();
 		current->update();
+		
+		if(current->father == NULL)/*TAG:forget*/
+			this->root = current;
+	}
+	
+	void splay(pointer current){
+		for(pointer father = current->father; (father = current->father)/*TAG:forget*/ != NULL; this->rotate(current))
+			if(father->father != NULL)
+				this->rotate(current->isRightSon() == father->isRightSon() ? father : current);
 	}
 };
