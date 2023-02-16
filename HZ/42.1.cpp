@@ -53,5 +53,37 @@ public:
 	typedef node::pointer pointer;
 	typedef node::valueType valueType;
 
+private:
+	pointer newNode(){
+		return (pointer)malloc(sizeof(node));
+	}
+	
+	void delNode(pointer &p){
+		free(p);
+		p = NULL;
+	}
+	
+protected:
+	pointer root;
 
+public:
+	SPLAY():root(NULL){};
+	
+	void rotate(pointer current){
+		pointer father = current->father;
+		bool const isRightSon = current->isRightSon();
+		
+		father->son(isRightSon) = current->son(!isRightSon);
+		
+		if(current->son(!isRightSon) != NULL)
+			current->son(!isRightSon)->father = father;
+			
+		if((current->father = father->father) != NULL)
+			current->father->son(father->isRightSon()) = current;
+			
+		current->son(!isRightSon) = father;
+		father->father = current;
+		father->update();
+		current->update();
+	}
 };
