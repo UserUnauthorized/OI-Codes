@@ -257,7 +257,20 @@ int main(){
 		if(treeType == -1)
 			treeType = type;
 			
-		
+		if(type == treeType || tree.empty()){
+			treeType = type;
+			tree.insert(x);
+		} else {
+			valueType const pre = tree.pre(x);
+			valueType const next = tree.next(x);
+			if(next - x < x - pre){
+				tree.remove(next);
+				ans += next - x;
+			} else {
+				tree.remove(pre);
+				ans -= x - pre;
+			}
+		}
 	}
 	
 	cout << ans;
