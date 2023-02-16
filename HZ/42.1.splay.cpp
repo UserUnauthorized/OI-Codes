@@ -1,37 +1,10 @@
-//HZ - 42.1
-//Luogu - P2234
-//LOJ - 10143
+//HZ - 42.1 [Splay]
+//Luogu - P2234 [Splay]
+//LOJ - 10143 [Splay]
 #include<bits/stdc++.h>
 using namespace std;
 typedef int valueType;
 constexpr valueType maxN = 3.4e4 + 5;
-
-namespace DEBUG {
-    template<typename T>
-    inline void _debug(const char *format, T t) {
-        std::cerr << format << '=' << t << std::endl;
-    }
-
-    template<class First, class... Rest>
-    inline void _debug(const char *format, First first, Rest... rest) {
-        while (*format != ',') std::cerr << *format++;
-        std::cerr << '=' << first << ",";
-        _debug(format + 1, rest...);
-    }
-
-    template<typename T>
-    std::ostream &operator<<(std::ostream &os, const std::vector<T> &V) {
-        os << "[ ";
-        for (const auto &vv: V) os << vv << ", ";
-        os << "]";
-        return os;
-    }
-
-#define debug(...) _debug(#__VA_ARGS__, __VA_ARGS__)
-}  // namespace DEBUG
-
-using namespace DEBUG;
-
 struct NODE{
 	typedef NODE self;
 	typedef self* pointer;
@@ -81,7 +54,7 @@ public:
 
 private:
 	pointer newNode(){
-		return (pointer)malloc(sizeof(node));
+//		return (pointer)malloc(sizeof(node));
 		static node pool[::maxN], *allocp = pool - 1;
 		return ++allocp;
 	}
@@ -141,6 +114,7 @@ public:
 				current->init();
 				current->father = father;
 				current->value = key;
+				father->son(key > father->value) = current;/*TAG:forget*/
 				this->splay(current);
 				return;
 			}
@@ -151,6 +125,7 @@ public:
 				return;
 			}
 			
+			father = current;
 			current = current->son(key > current->value);
 		}
 	}
@@ -176,7 +151,7 @@ public:
 		if(current->count > 1){
 			--current->count;
 			current->update();
-			this->splay(current);/*TAG*/
+			this->splay(current);
 			return;
 		}
 		
@@ -220,6 +195,9 @@ public:
 			newNodeCreated = true;
 		}
 		
+		if(current->count > 1)
+			return current->value;
+		
 		if(current->leftSon == NULL){
 			if(newNodeCreated)
 				this->remove(key);
@@ -230,7 +208,7 @@ public:
 		for(current = current->leftSon; current->rightSon != NULL/*TAG:forget*/; current = current->rightSon);
 		
 		if(newNodeCreated)
-			delNode(current);
+			this->remove(key);
 			
 		this->splay(current);
 		
@@ -247,6 +225,9 @@ public:
 			newNodeCreated = true;
 		}
 		
+		if(current->count > 1)
+			return current->value;
+			
 		if(current->rightSon == NULL){
 			if(newNodeCreated)
 				this->remove(key);
@@ -257,7 +238,7 @@ public:
 		for(current = current->rightSon; current->leftSon != NULL; current = current->leftSon);
 		
 		if(newNodeCreated)
-			delNode(current);
+			this->remove(key);
 			
 		this->splay(current);
 		
@@ -281,7 +262,6 @@ int main(){
 		cin >> t;
 		tree.insert(t);
 		valueType pre(tree.pre(t)), next(tree.next(t));
-		debug(n, t, pre, next);
 		ans += min((pre != 1e7) ? (t - pre) : INT_MAX, (next != 1e7) ? (next - t) : INT_MAX);
 	}
 	
