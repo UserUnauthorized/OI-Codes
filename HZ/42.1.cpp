@@ -6,6 +6,32 @@ using namespace std;
 typedef int valueType;
 constexpr valueType maxN = 3.4e4 + 5;
 
+namespace DEBUG {
+    template<typename T>
+    inline void _debug(const char *format, T t) {
+        std::cerr << format << '=' << t << std::endl;
+    }
+
+    template<class First, class... Rest>
+    inline void _debug(const char *format, First first, Rest... rest) {
+        while (*format != ',') std::cerr << *format++;
+        std::cerr << '=' << first << ",";
+        _debug(format + 1, rest...);
+    }
+
+    template<typename T>
+    std::ostream &operator<<(std::ostream &os, const std::vector<T> &V) {
+        os << "[ ";
+        for (const auto &vv: V) os << vv << ", ";
+        os << "]";
+        return os;
+    }
+
+#define debug(...) _debug(#__VA_ARGS__, __VA_ARGS__)
+}  // namespace DEBUG
+
+using namespace DEBUG;
+
 struct NODE{
 	typedef NODE self;
 	typedef self* pointer;
@@ -56,6 +82,8 @@ public:
 private:
 	pointer newNode(){
 		return (pointer)malloc(sizeof(node));
+		static node pool[::maxN], *allocp = pool - 1;
+		return ++allocp;
 	}
 	
 	void delNode(pointer &p){
@@ -69,7 +97,7 @@ protected:
 public:
 	SPLAY():root(NULL){};
 	
-	void rotate(pointer current){
+	void rotate(const pointer &current){
 		pointer father = current->father;
 		bool const isRightSon = current->isRightSon();
 		
@@ -80,9 +108,10 @@ public:
 			
 		if((current->father = father->father) != NULL)
 			current->father->son(father->isRightSon()) = current;
-			
+		
 		current->son(!isRightSon) = father;
-		father->father = current;
+		father->father = current;	
+		
 		father->update();
 		current->update();
 		
@@ -90,9 +119,172 @@ public:
 			this->root = current;
 	}
 	
-	void splay(pointer current){
+	void splay(const pointer &current){
 		for(pointer father = current->father; (father = current->father)/*TAG:forget*/ != NULL; this->rotate(current))
 			if(father->father != NULL)
 				this->rotate(current->isRightSon() == father->isRightSon() ? father : current);
 	}
-};
+	
+	void insert(self::valueType key){
+		if(this->root == NULL){
+			this->root = this->newNode();
+			this->root->init();
+			this->root->value = key;
+			return;
+		}
+		
+		pointer current = this->root, father(NULL);
+		
+		while(true){
+			if(current == NULL){/*TAG:forget*/
+				current = this->newNode();
+				current->init();
+				current->father = father;
+				current->value = key;
+				this->splay(current);
+				return;
+			}
+			
+			if(current->value == key){
+				++current->count;
+				this->splay(current);
+				return;
+			}
+			
+			current = current->son(key > current->value);
+		}
+	}
+	
+	pointer find(self::valueType key){
+		pointer result = this->root;
+		
+		while(result != NULL && result->value != key)
+			result = result->son(key > result->value);
+			
+		if(result != NULL)
+			this->splay(result);
+			
+		return result;
+	}
+	
+	void remove(self::valueType key){
+		pointer current = find(key);
+		
+		if(current == NULL)
+			exit(1);
+		
+		if(current->count > 1){
+			--current->count;
+			current->update();
+			this->splay(current);/*TAG*/
+			return;
+		}
+		
+		this->splay(current);
+		current = this->root;
+		
+		if(current->leftSon == NULL && current->rightSon == NULL){
+			this->delNode(current);
+			this->root = NULL;
+			return;
+		}
+		
+		if(current->leftSon == NULL){
+			this->root = current->rightSon;
+			this->root->father = NULL;/*TAG:forget*/
+			this->delNode(current);
+			return;
+		}
+		
+		if(current->rightSon == NULL){
+			this->root = current->leftSon;
+			this->root->father = NULL;/*TAG:forget*/
+			this->delNode(current);
+			return;
+		}
+		
+		this->pre(current->value);
+		current->rightSon->father = this->root;
+		this->root->rightSon = current->rightSon;/*TAG:forget*/
+		this->delNode(current);
+		this->root->update();
+	}
+	
+	self::valueType pre(self::valueType key){
+		pointer current = this->find(key);
+		bool newNodeCreated = false;
+		
+		if(current == NULL){
+			this->insert(key);
+			current = this->root;
+			newNodeCreated = true;
+		}
+		
+		if(current->leftSon == NULL){
+			if(newNodeCreated)
+				this->remove(key);
+				
+			return 1e7;
+		}
+		
+		for(current = current->leftSon; current->rightSon != NULL/*TAG:forget*/; current = current->rightSon);
+		
+		if(newNodeCreated)
+			delNode(current);
+			
+		this->splay(current);
+		
+		return current->value;
+	}
+	
+	self::valueType next(self::valueType key){
+		pointer current = this->find(key);
+		bool newNodeCreated = false;
+		
+		if(current == NULL){
+			this->insert(key);
+			current = this->root;
+			newNodeCreated = true;
+		}
+		
+		if(current->rightSon == NULL){
+			if(newNodeCreated)
+				this->remove(key);
+				
+			return 1e7;
+		}
+		
+		for(current = current->rightSon; current->leftSon != NULL; current = current->leftSon);
+		
+		if(newNodeCreated)
+			delNode(current);
+			
+		this->splay(current);
+		
+		return current->value;
+	}
+} tree;
+
+int main(){
+	valueType n(0), ans(0);
+	cin >> n;
+	
+	{
+		valueType t;
+		cin >> t;
+		ans = t;
+		tree.insert(t);
+	}
+	
+	while(--n){
+		valueType t;
+		cin >> t;
+		tree.insert(t);
+		valueType pre(tree.pre(t)), next(tree.next(t));
+		debug(n, t, pre, next);
+		ans += min((pre != 1e7) ? (t - pre) : INT_MAX, (next != 1e7) ? (next - t) : INT_MAX);
+	}
+	
+	cout << ans;
+	return 0;
+}
