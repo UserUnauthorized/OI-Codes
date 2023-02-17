@@ -439,7 +439,7 @@ int main(){
 				tree.remove(x);
 			}
 		} else if(order == 'F'){
-			cout << (x > tree.size() ? -1 : tree.kth(tree.size() - x)) << '\n';
+			cout << (x > tree.size() ? -1 : tree.kth(tree.size() + 1 - x)) << '\n';
 		}
 	}
 	
