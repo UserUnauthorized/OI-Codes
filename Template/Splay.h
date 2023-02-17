@@ -306,7 +306,7 @@ public:
 		return current->value;
 	}
 	
-	bool empty(){
+	bool empty()const{
 		return this->root == NULL;
 	}
 	
@@ -334,6 +334,13 @@ public:
 		
 		this->splay(current);
 		return current->value;
+	}
+	
+	self::valueType size()const{
+		if(this->empty())
+			return 0;
+			
+		return this->root->size;
 	}
 	
 	void update(self::valueType key){
