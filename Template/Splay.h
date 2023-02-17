@@ -117,9 +117,9 @@ public:
 			this->root = current;
 	}
 	
-	void splay(const pointer &current){
-		for(pointer father = current->father; (father = current->father) != NULL; rotate(current))
-			if(father->father != NULL)
+	void splay(const pointer &current, pointer to = NULL){
+		for(pointer father = current->father; (father = current->father) != to; rotate(current))
+			if(father->father != to)
 				rotate(current->isRightSon() == father->isRightSon() ? father : current);
 	}
 	
