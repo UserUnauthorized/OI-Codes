@@ -2,6 +2,7 @@
 #define OI_CODES_SPLAY_H
 
 #include<iostream>
+
 struct NODE{
 	typedef NODE self;
 	typedef self* pointer;
@@ -75,6 +76,11 @@ public:
 	typedef node::valueType valueType;
 
 private:
+	static const self::valueType preNotFoundValue = -1;
+	static const self::valueType nextNotFoundValue = -1;
+	static const self::valueType minNotFoundValue = LONG_LONG_MAX;
+	static const self::valueType maxNotFoundValue = LONG_LONG_MIN;
+	
 	pointer newNode(){
 		return (pointer)malloc(sizeof(NODE));
 	}
@@ -260,7 +266,7 @@ public:
 			if(newNodeCreated)
 				remove(key);
 			
-			return -1;
+			return this->preNotFoundValue;
 		}
 		
 		for(current = current->leftSon; current->rightSon != NULL; current = current->rightSon);
@@ -287,7 +293,7 @@ public:
 			if(newNodeCreated)
 				remove(key);
 			
-			return -1;
+			return this->nextNotFoundValue;
 		}
 		
 		for(current = current->rightSon; current->leftSon != NULL; current = current->leftSon);
@@ -300,16 +306,66 @@ public:
 		return current->value;
 	}
 	
+	bool empty(){
+		return this->root == NULL;
+	}
+	
+	self::valueType min(){
+		if(this->empty())
+			return this->minNotFoundValue;
+		
+		pointer current = this->root;
+		
+		while(current->leftSon != NULL)
+			current = current->leftSon;
+		
+		this->splay(current);
+		return current->value;
+	}
+	
+	self::valueType max(){
+		if(this->empty())
+			return this->maxNotFoundValue;
+			
+		pointer current = this->root;
+		
+		while(current->rightSon != NULL)
+			current = current->rightSon;
+		
+		this->splay(current);
+		return current->value;
+	}
+	
+	void update(self::valueType key){
+		if(this->empty())
+			return;
+			
+		this->update(this->root, key);
+	}
+
+
+private:
+	void update(pointer current, self::valueType key){
+		current->value += key;
+		
+		if(current->leftSon != NULL)
+			update(current->leftSon, key);
+		
+		if(current->rightSon != NULL)
+			update(current->rightSon, key);
+	}
+
+public:
     friend std::ostream &operator<<(std::ostream &output, const self &Object) {
-    	output << "TREE BEGIN\n";
+    	output << "TREE BEGIN" << std::endl;
         if(Object.root != NULL)
         	output << Object.root;
-        output << "TREE END\n";
-        output << "==========\n";
-        output << "DATA BEGIN\n";
+        output << "TREE END" << std::endl;
+        output << "==========" << std::endl;
+        output << "DATA BEGIN" << std::endl;
         if(Object.root != NULL)
         	outData(output, Object.root);
-        output << "DATA END\n";
+        output << "DATA END" << std::endl;
         return output;
     }
 };
