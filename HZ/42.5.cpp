@@ -1,6 +1,8 @@
 //HZ - 42.5 [Splay]
 //Luogu - P3391 [Splay]
 //LOJ - 105 [Splay]
+#include<bits/stdc++.h>
+using namespace std;
 typedef int valueType;
 #ifndef OI_CODES_SPLAY_H
 #define OI_CODES_SPLAY_H
@@ -82,8 +84,8 @@ public:
 private:
 	static const self::valueType preNotFoundValue = -1;
 	static const self::valueType nextNotFoundValue = -1;
-	static const self::valueType minNotFoundValue = LONG_LONG_MAX;
-	static const self::valueType maxNotFoundValue = LONG_LONG_MIN;
+	static const self::valueType minNotFoundValue = INT_MAX;
+	static const self::valueType maxNotFoundValue = INT_MIN;
 	
 	pointer newNode(){
 		return (pointer)malloc(sizeof(NODE));
@@ -414,6 +416,7 @@ public:
 			current = this->newNode();
 			current->init();
 			current->father = father;
+			father->rightSon = current;
 			father->update();
 			current->value = i;
 		}
@@ -421,6 +424,7 @@ public:
 		current = this->newNode();
 		current->init();
 		current->father = father;
+		father->rightSon = current;
 		current->value = INT_MAX;
 	}
 	
