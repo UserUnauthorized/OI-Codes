@@ -4,9 +4,36 @@
 #include<bits/stdc++.h>
 using namespace std;
 typedef int valueType;
+
+namespace DEBUG {
+    template<typename T>
+    inline void _debug(const char *format, T t) {
+        std::cerr << format << '=' << t << std::endl;
+    }
+
+    template<class First, class... Rest>
+    inline void _debug(const char *format, First first, Rest... rest) {
+        while (*format != ',') std::cerr << *format++;
+        std::cerr << '=' << first << ",";
+        _debug(format + 1, rest...);
+    }
+
+    template<typename T>
+    std::ostream &operator<<(std::ostream &os, const std::vector<T> &V) {
+        os << "[ ";
+        for (const auto &vv: V) os << vv << ", ";
+        os << "]";
+        return os;
+    }
+
+#define debug(...) _debug(#__VA_ARGS__, __VA_ARGS__)
+}  // namespace DEBUG
+
+using namespace DEBUG;
+
 #ifndef OI_CODES_SPLAY_H
 #define OI_CODES_SPLAY_H
-
+//EDITED
 #include<iostream>
 
 struct NODE{
@@ -21,8 +48,9 @@ struct NODE{
 	self::valueType value;
 	self::valueType count;
 	self::valueType size;
+	bool tag = false;
 	
-	NODE():father(NULL), leftSon(NULL), rightSon(NULL), value(0), count(0), size(0){};
+	NODE():father(NULL), leftSon(NULL), rightSon(NULL), value(0), count(0), size(0), tag(false){};
 	
 	pointer &son(bool _rightSon_){
 		return _rightSon_ ? this->rightSon : this->leftSon;
@@ -160,9 +188,12 @@ public:
 	
 	pointer find(self::valueType key){
 		pointer result = this->root;
-		
-		while(result != NULL && result->value != key)
+		push(result);
+		while(result != NULL && result->value != key){
+			push(result);
 			result = result->son(key > result->value);
+		}
+		push(result);
 		
 		if(result != NULL)
 			this->splay(result);
@@ -175,7 +206,7 @@ public:
 		
 		if(current == NULL)
 			exit(1);
-			
+		push(current);
 		this->splay(current);
 		
 		current = this->root;
@@ -384,10 +415,12 @@ public:
     
 //TEMP CODE
 public:
-	pointer findBySize(self::valueType key) const{
+	pointer findBySize(self::valueType key){
 		pointer current = this->root;
 		
 		while(true){
+			push(current);
+			
 			if(current->leftSon != NULL && key <= (current->leftSon)->size){
 				current = current->leftSon;
 				continue;
@@ -425,7 +458,10 @@ public:
 		current->init();
 		current->father = father;
 		father->rightSon = current;
+		father->update();
 		current->value = INT_MAX;
+		
+		this->splay(current);
 	}
 	
 	void reserve(self::valueType l, self::valueType r){
@@ -435,17 +471,17 @@ public:
 		
 		current = current->leftSon;
 		
-		std::swap(current->leftSon, current->rightSon);
+		current->tag ^= 1;
 	}
 	
 	void outPut(){
-		this->remove(INT_MIN);
-		this->remove(INT_MAX);
 		this->out(this->root);
 	}
 
 private:
 	void out(pointer current){
+		push(current);
+		
 		if(current->leftSon != NULL)
 			out(current->leftSon);
 		
@@ -453,6 +489,22 @@ private:
 		
 		if(current->rightSon != NULL)
 			out(current->rightSon);
+	}
+	
+	void push(pointer current){
+		if(current->tag == false)
+			return;
+		
+		current->tag = false;
+		swap(current->leftSon, current->rightSon);
+		
+		if(current->leftSon != NULL){
+			current->leftSon->tag ^= 1;
+		}
+		
+		if(current->rightSon != NULL){
+			current->rightSon->tag ^= 1;
+		}
 	}
 };
 
@@ -471,10 +523,11 @@ int main(){
 	while(m--){
 		valueType l, r;
 		cin >> l >> r;
-		
-		tree.reserve(l, r);
+		tree.reserve(l + 1, r + 1);
 	}
 	
+	tree.remove(INT_MIN);
+	tree.remove(INT_MAX);
 	tree.outPut();
 	return 0;
 }
