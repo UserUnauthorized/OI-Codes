@@ -3,8 +3,35 @@
 //LOJ - 106 [Splay]
 #include<bits/stdc++.h>
 using namespace std;
+
+namespace DEBUG {
+    template<typename T>
+    inline void _debug(const char *format, T t) {
+        std::cerr << format << '=' << t << std::endl;
+    }
+
+    template<class First, class... Rest>
+    inline void _debug(const char *format, First first, Rest... rest) {
+        while (*format != ',') std::cerr << *format++;
+        std::cerr << '=' << first << ",";
+        _debug(format + 1, rest...);
+    }
+
+    template<typename T>
+    std::ostream &operator<<(std::ostream &os, const std::vector<T> &V) {
+        os << "[ ";
+        for (const auto &vv: V) os << vv << ", ";
+        os << "]";
+        return os;
+    }
+
+#define debug(...) _debug(#__VA_ARGS__, __VA_ARGS__)
+}  // namespace DEBUG
+
+using namespace DEBUG;
+
 typedef int valueType;
-constexpr valueType maxN = 5e4 + 5;
+constexpr valueType maxN = 5e4 + 5, maxD = 1e8 + 5;
 typedef array<valueType, maxN> container;
 #ifndef OI_CODES_SPLAY_H
 #define OI_CODES_SPLAY_H
@@ -84,10 +111,10 @@ public:
 	typedef node::valueType valueType;
 
 private:
-	static const self::valueType preNotFoundValue = -1;
-	static const self::valueType nextNotFoundValue = -1;
-	static const self::valueType minNotFoundValue = LONG_LONG_MAX;
-	static const self::valueType maxNotFoundValue = LONG_LONG_MIN;
+	static const self::valueType preNotFoundValue = -2147483647;
+	static const self::valueType nextNotFoundValue = 2147483647;
+	static const self::valueType minNotFoundValue = -2147483647;
+	static const self::valueType maxNotFoundValue = 2147483647;
 	
 	pointer newNode(){
 		return (pointer)malloc(sizeof(NODE));
@@ -132,7 +159,9 @@ public:
 	}
 	
 	void insert(self::valueType key){
+		debug(key, this->root->value);
 		if(this->root == NULL){
+			debug("AAA");
 			this->root = this->newNode();
 			this->root->init();
 			this->root->value = key;
@@ -140,7 +169,7 @@ public:
 		}
 		
 		pointer current(this->root), father(NULL);
-		
+		debug(current->value);
 		for(;; father = current, current = current->son(key > current->value)){
 			if(current == NULL){
 				current = this->newNode();
@@ -402,6 +431,7 @@ struct SEGNODE{
 	SEGNODE():data(NULL), leftBound(-1), rightBound(-1), leftSon(NULL), rightSon(NULL){};
 	
 	void init(self::valueType l, self::valueType r, const container& source){
+//		debug(l, r);
 		this->data = (pointer)malloc(sizeof(splay));
 		
 		this->leftBound = l;
@@ -431,12 +461,23 @@ public:
 	TREE():root(NULL){};
 	
 	pointer build(self::valueType l, self::valueType r, const container& source){
+//		debug(l ,r);
+//		cerr << l << '\t' << r << '\n';
+//		cerr << "";
 		pointer current = this->newNode();
 		
 		if(this->root == NULL)
 			this->root = current;
 			
-		current->init(l, r, source);
+//		current->init(l, r, source);
+		current->data = (Node::pointer)malloc(sizeof(SPLAY));
+		current->leftBound = l;
+		current->rightBound = r;
+		
+		for(int i = l; i <= r; ++i)//{
+			current->data->insert(source[i]);
+//		}
+			
 		
 		if(l == r)
 			return current;
@@ -466,13 +507,112 @@ public:
 	}
 	
 	self::valueType rank(self::valueType l, self::valueType r, self::valueType key){
-		return this->rank(this->root, l, r, key);
+		return this->rank(this->root, l, r, key) + 1;
 	}
 	
 	self::valueType rank(pointer current, self::valueType l, self::valueType r, self::valueType key){
 		if(l <= current->leftBound && current->rightBound <= r)
-			return current->data->rank(key);
+			return current->data->rank(key) - 1;
 		
+		self::valueType mid = (current->leftBound + current->rightBound) >> 1;
 		
+		if(r <= mid)
+			return this->rank(current->leftSon, l, r, key);
+		if(l > mid)
+			return this->rank(current->rightSon, l, r, key);
+			
+		return this->rank(current->leftSon, l, r, key) + this->rank(current->rightSon, l, r, key);
+	}
+	
+	self::valueType kth(self::valueType l, self::valueType r, self::valueType key){
+		self::valueType nowL = 1, nowR = maxD;
+		
+		while(nowL != nowR){
+			self::valueType mid = (nowL + nowR) >> 1;
+			
+			if(this->rank(l, r, mid) < key)
+				nowL = mid + 1;
+			else 
+				nowR = mid;
+		}
+		
+		return nowL - 1;
+	}
+	
+	self::valueType pre(self::valueType l, self::valueType r, self::valueType key){
+		return this->pre(this->root, l, r, key);
+	}
+	
+	self::valueType pre(pointer current, self::valueType l, self::valueType r, self::valueType key){
+		if(l <= current->leftBound && current->rightBound <= r)
+			return current->data->pre(key) - 1;
+		
+		self::valueType mid = (current->leftBound + current->rightBound) >> 1;
+		
+		if(r <= mid)
+			return this->pre(current->leftSon, l, r, key);
+		if(l > mid)
+			return this->pre(current->rightSon, l, r, key);
+			
+		return max(this->pre(current->leftSon, l, r, key), this->pre(current->rightSon, l, r, key));
+	}
+	
+	self::valueType next(self::valueType l, self::valueType r, self::valueType key){
+		return this->next(this->root, l, r, key);
+	}
+	
+	self::valueType next(pointer current, self::valueType l, self::valueType r, self::valueType key){
+		if(l <= current->leftBound && current->rightBound <= r)
+			return current->data->next(key) - 1;
+		
+		self::valueType mid = (current->leftBound + current->rightBound) >> 1;
+		
+		if(r <= mid)
+			return this->next(current->leftSon, l, r, key);
+		if(l > mid)
+			return this->next(current->rightSon, l, r, key);
+			
+		return min(this->next(current->leftSon, l, r, key), this->next(current->rightSon, l, r, key));
 	}
 };
+
+int main(){
+	valueType n(0), m(0);
+	container source;
+	
+	cin >> n >> m;
+	
+	for(int i = 1; i <= n; ++i)
+		cin >> source[i];
+	
+	TREE tree;
+	
+	tree.build(1, n, source);
+	
+	while(m--){
+		int opt;
+		cin >> opt;
+		if(opt == 1){
+			int l, r, key;
+			cin >> l >> r >> key;
+			cout << tree.rank(l, r, key) << '\n';
+		} else if(opt == 2){
+			int l, r, key;
+			cin >> l >> r >> key;
+			cout << tree.kth(l, r, key) << '\n';
+		} else if(opt == 3){
+			int pos, key;
+			cin >> pos >> key;
+			tree.modify(pos, source[pos], key);
+			source[pos] = key;
+		} else if(opt == 4){
+			int l, r, key;
+			cin >> l >> r >> key;
+			cout << tree.pre(l, r, key) << '\n';
+		} else if(opt == 5){
+			int l, r, key;
+			cin >> l >> r >> key;
+			cout << tree.next(l, r, key) << '\n';
+		}
+	}
+}
