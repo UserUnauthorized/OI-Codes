@@ -420,25 +420,22 @@ struct SEGNODE{
 	typedef SEGNODE self;
 	typedef self* selfPointer;
 	typedef SPLAY splay;
-	typedef splay* pointer;
 	typedef ::valueType valueType;
 	typedef ::container container;
 	
-	pointer data;
+	splay data;
 	self::valueType leftBound, rightBound;
 	selfPointer leftSon, rightSon;
 	
-	SEGNODE():data(NULL), leftBound(-1), rightBound(-1), leftSon(NULL), rightSon(NULL){};
+	SEGNODE():data(), leftBound(-1), rightBound(-1), leftSon(NULL), rightSon(NULL){};
 	
 	void init(self::valueType l, self::valueType r, const container& source){
-//		debug(l, r);
-		this->data = (pointer)malloc(sizeof(splay));
-		
+//		debug(l, r);		
 		this->leftBound = l;
 		this->rightBound = r;
 		
 		for(int i = l; i <= r; ++i)
-			this->data->insert(source[i]);
+			this->data.insert(source[i]);
 	}
 };
 
@@ -461,22 +458,26 @@ public:
 	TREE():root(NULL){};
 	
 	pointer build(self::valueType l, self::valueType r, const container& source){
-//		debug(l ,r);
+		debug(l ,r);
 //		cerr << l << '\t' << r << '\n';
 //		cerr << "";
-		pointer current = this->newNode();
+//		pointer current = this->newNode();
+		pointer current = new Node();
 		if(this->root == NULL)
 			this->root = current;
 			
 //		current->init(l, r, source);
-		current->data = (Node::pointer)malloc(sizeof(SPLAY));
+//		current->data = (Node::pointer)malloc(sizeof(SPLAY));
+//		current->data = current->newNode();
+//		current->data = SPLAY();
+		cerr << current->data;
 		current->leftBound = l;
 		current->rightBound = r;
 		
 		for(int i = l; i <= r; ++i){
-			cerr << *(current->data);
-			current->data->insert(source[i]);
-			return NULL;
+			debug(l, r, i);
+			cerr << current->data;
+			current->data.insert(source[i]);
 		}
 			
 		
@@ -498,8 +499,8 @@ public:
 	void modify(pointer current, self::valueType pos, self::valueType from, self::valueType to){
 		self::valueType mid = (current->leftBound + current->rightBound) >> 1;
 		
-		current->data->remove(from);
-		current->data->insert(to);
+		current->data.remove(from);
+		current->data.insert(to);
 		
 		if(pos <= mid)
 			this->modify(current->leftSon, pos, from, to);
@@ -513,7 +514,7 @@ public:
 	
 	self::valueType rank(pointer current, self::valueType l, self::valueType r, self::valueType key){
 		if(l <= current->leftBound && current->rightBound <= r)
-			return current->data->rank(key) - 1;
+			return current->data.rank(key) - 1;
 		
 		self::valueType mid = (current->leftBound + current->rightBound) >> 1;
 		
@@ -546,7 +547,7 @@ public:
 	
 	self::valueType pre(pointer current, self::valueType l, self::valueType r, self::valueType key){
 		if(l <= current->leftBound && current->rightBound <= r)
-			return current->data->pre(key) - 1;
+			return current->data.pre(key) - 1;
 		
 		self::valueType mid = (current->leftBound + current->rightBound) >> 1;
 		
@@ -564,7 +565,7 @@ public:
 	
 	self::valueType next(pointer current, self::valueType l, self::valueType r, self::valueType key){
 		if(l <= current->leftBound && current->rightBound <= r)
-			return current->data->next(key) - 1;
+			return current->data.next(key) - 1;
 		
 		self::valueType mid = (current->leftBound + current->rightBound) >> 1;
 		
