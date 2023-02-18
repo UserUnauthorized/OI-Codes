@@ -465,7 +465,6 @@ public:
 //		cerr << l << '\t' << r << '\n';
 //		cerr << "";
 		pointer current = this->newNode();
-		
 		if(this->root == NULL)
 			this->root = current;
 			
@@ -474,9 +473,11 @@ public:
 		current->leftBound = l;
 		current->rightBound = r;
 		
-		for(int i = l; i <= r; ++i)//{
+		for(int i = l; i <= r; ++i){
+			cerr << *(current->data);
 			current->data->insert(source[i]);
-//		}
+			return NULL;
+		}
 			
 		
 		if(l == r)
