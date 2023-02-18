@@ -391,7 +391,7 @@ struct SEGNODE{
 	typedef SEGNODE self;
 	typedef self* selfPointer;
 	typedef SPLAY splay;
-	typedef splay pointer;
+	typedef splay* pointer;
 	typedef ::valueType valueType;
 	typedef ::container container;
 	
@@ -399,7 +399,7 @@ struct SEGNODE{
 	self::valueType leftBound, rightBound;
 	selfPointer leftSon, rightSon;
 	
-	SEGNODE():data(NULL), l(-1), r(-1), leftSon(NULL), rightSon(NULL){};
+	SEGNODE():data(NULL), leftBound(-1), rightBound(-1), leftSon(NULL), rightSon(NULL){};
 	
 	void init(self::valueType l, self::valueType r, const container& source){
 		this->data = (pointer)malloc(sizeof(splay));
@@ -445,6 +445,34 @@ public:
 		
 		current->leftSon = this->build(l, mid, source);
 		current->rightSon = this->build(mid + 1, r, source);
+		
+		return current;
 	}
 	
+	void modify(self::valueType pos, self::valueType from, self::valueType to){
+		this->modify(this->root, pos, from, to);
+	}
+	
+	void modify(pointer current, self::valueType pos, self::valueType from, self::valueType to){
+		self::valueType mid = (current->leftBound + current->rightBound) >> 1;
+		
+		current->data->remove(from);
+		current->data->insert(to);
+		
+		if(pos <= mid)
+			this->modify(current->leftSon, pos, from, to);
+		else
+			this->modify(current->rightSon, pos, from, to);
+	}
+	
+	self::valueType rank(self::valueType l, self::valueType r, self::valueType key){
+		return this->rank(this->root, l, r, key);
+	}
+	
+	self::valueType rank(pointer current, self::valueType l, self::valueType r, self::valueType key){
+		if(l <= current->leftBound && current->rightBound <= r)
+			return current->data->rank(key);
+		
+		
+	}
 };
