@@ -103,7 +103,7 @@ struct NODE{
 	}
 };
 
-class SPLAY{
+struct SPLAY{
 public:
 	typedef NODE node;
 	typedef node::pointer pointer;
@@ -423,21 +423,23 @@ struct SEGNODE{
 	typedef ::valueType valueType;
 	typedef ::container container;
 	
-	splay data;
+	splay* data;
 	self::valueType leftBound, rightBound;
 	selfPointer leftSon, rightSon;
 	
-	SEGNODE():data(), leftBound(-1), rightBound(-1), leftSon(NULL), rightSon(NULL){};
+	SEGNODE():data(NULL), leftBound(-1), rightBound(-1), leftSon(NULL), rightSon(NULL){};
 	
-	void init(self::valueType l, self::valueType r, const container& source){
+	void init(self::valueType l, self::valueType r){
 //		debug(l, r);		
 		this->leftBound = l;
 		this->rightBound = r;
 		
-		for(int i = l; i <= r; ++i)
-			this->data.insert(source[i]);
+//		for(int i = l; i <= r; ++i)
+//			this->data.insert(source[i]);
 	}
 };
+
+container source;
 
 class TREE{
 public:
@@ -457,37 +459,32 @@ public:
 	
 	TREE():root(NULL){};
 	
-	pointer build(self::valueType l, self::valueType r, const container& source){
+	pointer build(const self::valueType &l, const self::valueType &r){
 		debug(l ,r);
-//		cerr << l << '\t' << r << '\n';
-//		cerr << "";
-//		pointer current = this->newNode();
 		pointer current = new Node();
+		current->data = new SPLAY();
 		if(this->root == NULL)
 			this->root = current;
 			
-//		current->init(l, r, source);
-//		current->data = (Node::pointer)malloc(sizeof(SPLAY));
-//		current->data = current->newNode();
-//		current->data = SPLAY();
-		cerr << current->data;
+		cerr << *current->data;
 		current->leftBound = l;
 		current->rightBound = r;
 		
 		for(int i = l; i <= r; ++i){
 			debug(l, r, i);
-			cerr << current->data;
-			current->data.insert(source[i]);
+			cerr << *current->data;
+			debug(i, source[i]);
+			current->data->insert(source[i]);
 		}
-			
 		
+		return current;
 		if(l == r)
 			return current;
 		
 		self::valueType mid = (l + r) >> 1;
 		
-		current->leftSon = this->build(l, mid, source);
-		current->rightSon = this->build(mid + 1, r, source);
+		current->leftSon = this->build(l, mid);
+		current->rightSon = this->build(mid + 1, r);
 		
 		return current;
 	}
@@ -499,8 +496,8 @@ public:
 	void modify(pointer current, self::valueType pos, self::valueType from, self::valueType to){
 		self::valueType mid = (current->leftBound + current->rightBound) >> 1;
 		
-		current->data.remove(from);
-		current->data.insert(to);
+		current->data->remove(from);
+		current->data->insert(to);
 		
 		if(pos <= mid)
 			this->modify(current->leftSon, pos, from, to);
@@ -514,7 +511,7 @@ public:
 	
 	self::valueType rank(pointer current, self::valueType l, self::valueType r, self::valueType key){
 		if(l <= current->leftBound && current->rightBound <= r)
-			return current->data.rank(key) - 1;
+			return current->data->rank(key) - 1;
 		
 		self::valueType mid = (current->leftBound + current->rightBound) >> 1;
 		
@@ -547,7 +544,7 @@ public:
 	
 	self::valueType pre(pointer current, self::valueType l, self::valueType r, self::valueType key){
 		if(l <= current->leftBound && current->rightBound <= r)
-			return current->data.pre(key) - 1;
+			return current->data->pre(key) - 1;
 		
 		self::valueType mid = (current->leftBound + current->rightBound) >> 1;
 		
@@ -565,7 +562,7 @@ public:
 	
 	self::valueType next(pointer current, self::valueType l, self::valueType r, self::valueType key){
 		if(l <= current->leftBound && current->rightBound <= r)
-			return current->data.next(key) - 1;
+			return current->data->next(key) - 1;
 		
 		self::valueType mid = (current->leftBound + current->rightBound) >> 1;
 		
@@ -580,7 +577,6 @@ public:
 
 int main(){
 	valueType n(0), m(0);
-	container source;
 	
 	cin >> n >> m;
 	
@@ -589,7 +585,7 @@ int main(){
 	
 	TREE tree;
 	
-	tree.build(1, n, source);
+	tree.build(1, n);
 	
 	while(m--){
 		int opt;
