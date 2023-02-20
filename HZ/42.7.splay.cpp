@@ -29,9 +29,6 @@ namespace DEBUG {
 }  // namespace DEBUG
 
 using namespace DEBUG;
-
-#ifndef OI_CODES_SPLAY_H
-#define OI_CODES_SPLAY_H
 //EDITED
 #include<iostream>
 
@@ -47,9 +44,11 @@ struct NODE{
 	self::valueType value;
 	self::valueType count;
 	self::valueType size;
+	self::valueType num;
+	self::valueType max;
 	bool tag = false;
 	
-	NODE():father(NULL), leftSon(NULL), rightSon(NULL), value(0), count(0), size(0), tag(false){};
+	NODE():father(NULL), leftSon(NULL), rightSon(NULL), value(0), count(0), size(0), num(0), size(0), tag(false){};
 	
 	pointer &son(bool _rightSon_){
 		return _rightSon_ ? this->rightSon : this->leftSon;
@@ -61,12 +60,14 @@ struct NODE{
 	
 	void update(){
 		this->size = (this->leftSon != NULL ? (this->leftSon)->size : 0) + (this->rightSon != NULL ? (this->rightSon)->size : 0) + this->count;
+		this->max = std::max((this->leftSon != NULL ? (this->leftSon)->max : 0), (this->rightSon != NULL ? (this->rightSon)->max : 0));
 	}
 	
 	void init(){
 		this->leftSon = this->rightSon = this->father = NULL;
 		this->value = 0;
 		this->count = this->size = 1;
+		this->num = this->max = 1;
 	}
 	
 	friend std::ostream &operator<<(std::ostream &output, const self &Object) {
@@ -437,9 +438,27 @@ public:
 			current = current->rightSon;
 		}
 	}
+	
+	pointer insert(self::valueType key, self::valueType pos){
+		this->splay(this->findBySize(pos + 1));
+		this->splay(this->findBySize(pos + 2), this->root);
+		
+		pointer current = this->newNode();
+		current->init();
+		current->value = key;
+		
+		if(this->root->rightSon->leftSon != NULL)
+			exit(111);
+			
+		current->father = this->root->rightSon;
+		this->root->rightSon->leftSon = current;
+		current->father->update();
+		this->root->update();
+		
+		this->splay(current);
+		current->num = this->root->leftSon->max + 1;
+	}
 };
-
-#endif //OI_CODES_SPLAY_H
 
 #include<bits/stdc++.h>
 using namespace std;
@@ -449,6 +468,8 @@ int main(){
 	valueType n;
 	
 	cin >> n;
-	tree.build(n);
+	tree.insert(INT_MIN);
+	tree.insert(INT_MAX);
+	
 	return 0;
 }
