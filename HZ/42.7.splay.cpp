@@ -44,11 +44,10 @@ struct NODE{
 	self::valueType value;
 	self::valueType count;
 	self::valueType size;
-	self::valueType num;
 	self::valueType max;
 	bool tag = false;
 	
-	NODE():father(NULL), leftSon(NULL), rightSon(NULL), value(0), count(0), size(0), num(0), size(0), tag(false){};
+	NODE():father(NULL), leftSon(NULL), rightSon(NULL), value(0), count(0), size(0), max(0), tag(false){};
 	
 	pointer &son(bool _rightSon_){
 		return _rightSon_ ? this->rightSon : this->leftSon;
@@ -59,15 +58,19 @@ struct NODE{
 	}
 	
 	void update(){
+//		if(this->value == INT_MIN || this->value == INT_MAX)
+//			return;
 		this->size = (this->leftSon != NULL ? (this->leftSon)->size : 0) + (this->rightSon != NULL ? (this->rightSon)->size : 0) + this->count;
-		this->max = std::max((this->leftSon != NULL ? (this->leftSon)->max : 0), (this->rightSon != NULL ? (this->rightSon)->max : 0));
+		this->max = std::max({(this->leftSon != NULL ? this->leftSon->max : 0), (this->rightSon != NULL ? this->rightSon->max : 0), 1});
+		if(this->leftSon != NULL && this->leftSon->value < this->value)
+			this->max = std::max(this->max, this->leftSon->max + 1);
 	}
 	
 	void init(){
 		this->leftSon = this->rightSon = this->father = NULL;
 		this->value = 0;
 		this->count = this->size = 1;
-		this->num = this->max = 1;
+		this->max = 1;
 	}
 	
 	friend std::ostream &operator<<(std::ostream &output, const self &Object) {
@@ -92,7 +95,7 @@ struct NODE{
     	if(Object == NULL)
     		return;
     		
-    	output << Object->value << ' ' << Object->count << ' ' << Object->size << std::endl;
+    	output << Object->value << ' ' << Object->count << ' ' << Object->size << ' ' << Object->max << std::endl;
     	
     	if(Object->leftSon != NULL)
     		outData(output, Object->leftSon);
@@ -174,173 +177,20 @@ public:
 				current->father = father;
 				current->value = key;
 				father->son(key > father->value) = current;
+				current->max = -1e9;
 				this->splay(current);
 				return;
 			}
+			
+			current->max = -1e9;
 			
 			if(current->value == key){
 				++current->count;
+				current->max = -1e9;
 				this->splay(current);
 				return;
 			}
 		}
-	}
-	
-	pointer find(self::valueType key){
-		pointer result = this->root;
-		push(result);
-		while(result != NULL && result->value != key){
-			push(result);
-			result = result->son(key > result->value);
-		}
-		push(result);
-		
-		if(result != NULL)
-			this->splay(result);
-			
-		return result;
-	}
-	
-	void remove(self::valueType key){
-		pointer current = find(key);
-		
-		if(current == NULL)
-			exit(1);
-		push(current);
-		this->splay(current);
-		
-		current = this->root;
-		
-		if(current->count > 1){
-			--current->count;
-			current->update();
-			return;
-		}
-		
-		if(current->leftSon == NULL && current->rightSon == NULL){
-			this->delNode(current);
-			this->root = NULL;
-			return;
-		}
-		
-		if(current->leftSon == NULL){
-			this->root = current->rightSon;
-			this->root->father = NULL;
-			delNode(current);
-			return;
-		}
-		
-		if(current->rightSon == NULL){
-			this->root = current->leftSon;
-			this->root->father = NULL;
-			delNode(current);
-			return;
-		}
-		
-		pre(current->value);
-		current->rightSon->father = this->root;
-		this->root->rightSon = current->rightSon;
-		delNode(current);
-		root->update();
-	}
-	
-	self::valueType rank(self::valueType key){
-		pointer current = find(key);
-		bool newNodeCreated = false;
-		
-		if(current == NULL){
-			insert(key);
-			newNodeCreated = true;
-		}
-		
-		int result = 1;
-		
-		if(root->leftSon != NULL)
-			result += (root->leftSon)->size;
-			
-		if(newNodeCreated)
-			remove(key);
-		else
-			this->splay(current);
-			
-		return result;
-	}
-	
-	self::valueType kth(self::valueType key){
-		pointer current = this->root;
-		
-		while(true){
-			if(current->leftSon != NULL && key <= (current->leftSon)->size){
-				current = current->leftSon;
-				continue;
-			}
-			
-			if(current->leftSon != NULL)
-				key -= (current->leftSon)->size;
-			
-			key -= current->count;
-			
-			if(key <= 0){
-				this->splay(current);
-				return current->value;
-			}
-			
-			current = current->rightSon;
-		}
-	}
-	
-	self::valueType pre(self::valueType key){
-		pointer current = this->find(key);
-		bool newNodeCreated = false;
-		
-		if(current == NULL){
-			insert(key);
-			current = this->root;
-			newNodeCreated = true;
-		}
-		
-		if(current->leftSon == NULL){
-			if(newNodeCreated)
-				remove(key);
-			
-			return this->preNotFoundValue;
-		}
-		
-		for(current = current->leftSon; current->rightSon != NULL; current = current->rightSon);
-		
-		if(newNodeCreated)
-			remove(key);
-				
-		this->splay(current);
-		
-		return current->value;
-	}
-	
-	self::valueType next(self::valueType key){
-		pointer current = this->find(key);
-		bool newNodeCreated = false;
-		
-		if(current == NULL){
-			insert(key);
-			current = this->root;
-			newNodeCreated = true;
-		}
-		
-		if(current->rightSon == NULL){
-			if(newNodeCreated)
-				remove(key);
-			
-			return this->nextNotFoundValue;
-		}
-		
-		for(current = current->rightSon; current->leftSon != NULL; current = current->leftSon);
-		
-		if(newNodeCreated)
-				remove(key);
-				
-		this->splay(current);		
-		
-		return current->value;
 	}
 	
 	bool empty()const{
@@ -379,25 +229,6 @@ public:
 			
 		return this->root->size;
 	}
-	
-	void update(self::valueType key){
-		if(this->empty())
-			return;
-			
-		this->update(this->root, key);
-	}
-
-
-private:
-	void update(pointer current, self::valueType key){
-		current->value += key;
-		
-		if(current->leftSon != NULL)
-			update(current->leftSon, key);
-		
-		if(current->rightSon != NULL)
-			update(current->rightSon, key);
-	}
 
 public:
     friend std::ostream &operator<<(std::ostream &output, const self &Object) {
@@ -419,8 +250,6 @@ public:
 		pointer current = this->root;
 		
 		while(true){
-			push(current);
-			
 			if(current->leftSon != NULL && key <= (current->leftSon)->size){
 				current = current->leftSon;
 				continue;
@@ -439,16 +268,13 @@ public:
 		}
 	}
 	
-	pointer insert(self::valueType key, self::valueType pos){
+	self::valueType insert(self::valueType key, self::valueType pos){
 		this->splay(this->findBySize(pos + 1));
 		this->splay(this->findBySize(pos + 2), this->root);
 		
 		pointer current = this->newNode();
 		current->init();
 		current->value = key;
-		
-		if(this->root->rightSon->leftSon != NULL)
-			exit(111);
 			
 		current->father = this->root->rightSon;
 		this->root->rightSon->leftSon = current;
@@ -456,8 +282,13 @@ public:
 		this->root->update();
 		
 		this->splay(current);
-		current->num = this->root->leftSon->max + 1;
+//		cerr << *this << "\n\n";
+		current->max = this->root->leftSon->max + 1;
+		current->update();
+		return current->max;
 	}
+	
+	
 };
 
 #include<bits/stdc++.h>
@@ -470,6 +301,13 @@ int main(){
 	cin >> n;
 	tree.insert(INT_MIN);
 	tree.insert(INT_MAX);
+	
+	for(int i = 1; i <= n; ++i){
+		int t(0);
+		cin >> t;
+		cout << tree.insert(i, t) - 1 << '\n';
+//		cerr << tree << endl << endl;
+	}
 	
 	return 0;
 }
