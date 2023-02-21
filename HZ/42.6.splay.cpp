@@ -459,21 +459,11 @@ public:
 	TREE():root(NULL){};
 	
 	pointer build(const self::valueType &l, const self::valueType &r, const container &source){
-		debug(l ,r);
 		pointer current = this->newNode();
 
 		if(this->root == NULL)
 			this->root = current;
-			
-//		current->leftBound = l;
-//		current->rightBound = r;
-//	
-//		for(int i = l; i <= r; ++i){
-//			debug(l, r, i);
-//			cerr << *current->data;
-//			debug(i, source[i]);
-//			(current->data)->insert(source[i]);
-//		}
+
 		current->init(l , r, source);
 		
 		if(l == r)
