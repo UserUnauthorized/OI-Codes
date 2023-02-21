@@ -45,9 +45,10 @@ struct NODE{
 	self::valueType count;
 	self::valueType size;
 	self::valueType max;
+	self::valueType num;
 	bool tag = false;
 	
-	NODE():father(NULL), leftSon(NULL), rightSon(NULL), value(0), count(0), size(0), max(0), tag(false){};
+	NODE():father(NULL), leftSon(NULL), rightSon(NULL), value(0), count(0), size(0), max(0), num(0), tag(false){};
 	
 	pointer &son(bool _rightSon_){
 		return _rightSon_ ? this->rightSon : this->leftSon;
@@ -58,19 +59,17 @@ struct NODE{
 	}
 	
 	void update(){
-//		if(this->value == INT_MIN || this->value == INT_MAX)
-//			return;
+		if(this->value == INT_MIN || this->value == INT_MAX)
+			return;
 		this->size = (this->leftSon != NULL ? (this->leftSon)->size : 0) + (this->rightSon != NULL ? (this->rightSon)->size : 0) + this->count;
-		this->max = std::max({(this->leftSon != NULL ? this->leftSon->max : 0), (this->rightSon != NULL ? this->rightSon->max : 0), 1});
-		if(this->leftSon != NULL && this->leftSon->value < this->value)
-			this->max = std::max(this->max, this->leftSon->max + 1);
+		this->max = std::max({this->num, (this->leftSon != NULL ? this->leftSon->max : 0), (this->rightSon != NULL ? this->rightSon->max : 0), 1});
 	}
 	
 	void init(){
 		this->leftSon = this->rightSon = this->father = NULL;
 		this->value = 0;
 		this->count = this->size = 1;
-		this->max = 1;
+		this->num = this->max = 1;
 	}
 	
 	friend std::ostream &operator<<(std::ostream &output, const self &Object) {
@@ -177,12 +176,12 @@ public:
 				current->father = father;
 				current->value = key;
 				father->son(key > father->value) = current;
-				current->max = -1e9;
+				current->max = 0;
 				this->splay(current);
 				return;
 			}
 			
-			current->max = -1e9;
+			current->max = 0;
 			
 			if(current->value == key){
 				++current->count;
@@ -282,8 +281,7 @@ public:
 		this->root->update();
 		
 		this->splay(current);
-//		cerr << *this << "\n\n";
-		current->max = this->root->leftSon->max + 1;
+		current->num = this->root->leftSon->max + 1;
 		current->update();
 		return current->max;
 	}
@@ -305,8 +303,7 @@ int main(){
 	for(int i = 1; i <= n; ++i){
 		int t(0);
 		cin >> t;
-		cout << tree.insert(i, t) - 1 << '\n';
-//		cerr << tree << endl << endl;
+		cout << tree.insert(i, t) << '\n';
 	}
 	
 	return 0;
