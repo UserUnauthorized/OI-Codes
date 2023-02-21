@@ -31,7 +31,8 @@ namespace DEBUG {
 using namespace DEBUG;
 
 typedef int valueType;
-constexpr valueType maxN = 5e4 + 5, maxD = 1e8 + 5;
+constexpr valueType maxN = 5e4 + 5;
+valueType minSource(INT_MAX), maxSource(INT_MIN);
 typedef array<valueType, maxN> container;
 #ifndef OI_CODES_SPLAY_H
 #define OI_CODES_SPLAY_H
@@ -117,8 +118,8 @@ private:
 	static const self::valueType maxNotFoundValue = 2147483647;
 	
 	pointer newNode(){
-		return (pointer)malloc(sizeof(NODE));
 //		return new node();
+		return (pointer)malloc(sizeof(node));
 	}
 	
 	void delNode(pointer &p){
@@ -244,7 +245,8 @@ public:
 	}
 	
 	self::valueType rank(self::valueType key){
-		pointer current = find(key);
+//		pointer current = find(key);
+		pointer current = NULL;
 		bool newNodeCreated = false;
 		
 		if(current == NULL){
@@ -289,7 +291,8 @@ public:
 	}
 	
 	self::valueType pre(self::valueType key){
-		pointer current = this->find(key);
+//		pointer current = this->find(key);
+		pointer current = NULL;
 		bool newNodeCreated = false;
 		
 		if(current == NULL){
@@ -316,7 +319,8 @@ public:
 	}
 	
 	self::valueType next(self::valueType key){
-		pointer current = this->find(key);
+//		pointer current = this->find(key);
+		pointer current = NULL;
 		bool newNodeCreated = false;
 		
 		if(current == NULL){
@@ -378,25 +382,6 @@ public:
 			
 		return this->root->size;
 	}
-	
-	void update(self::valueType key){
-		if(this->empty())
-			return;
-			
-		this->update(this->root, key);
-	}
-
-
-private:
-	void update(pointer current, self::valueType key){
-		current->value += key;
-		
-		if(current->leftSon != NULL)
-			update(current->leftSon, key);
-		
-		if(current->rightSon != NULL)
-			update(current->rightSon, key);
-	}
 
 public:
     friend std::ostream &operator<<(std::ostream &output, const self &Object) {
@@ -430,13 +415,14 @@ struct SEGNODE{
 	SEGNODE():data(NULL), leftBound(-1), rightBound(-1), leftSon(NULL), rightSon(NULL){};
 	
 	void init(self::valueType l, self::valueType r, const container &source){
-		this->data = (pointer)malloc(sizeof(splay));
+		this->data = new splay();
 
 		this->leftBound = l;
 		this->rightBound = r;
-		
-		for(int i = l; i <= r; ++i)
+
+		for(int i = l; i <= r; ++i){
 			this->data->insert(source[i]);
+		}
 	}
 };
 
@@ -450,7 +436,10 @@ public:
 	
 private:
 	pointer newNode(){
-		return (pointer)malloc(sizeof(Node));
+//		return new Node();
+//		return (pointer)malloc(sizeof(Node));
+		static Node pool[maxN << 2], *allocp = pool - 1;
+		return ++allocp;
 	}
 	
 public:
@@ -465,7 +454,7 @@ public:
 			this->root = current;
 
 		current->init(l , r, source);
-		
+
 		if(l == r)
 			return current;
 		
@@ -484,7 +473,7 @@ public:
 	void modify(pointer current, self::valueType pos, self::valueType from, self::valueType to){
 		current->data->remove(from);
 		current->data->insert(to);
-		
+
 		if(current->leftBound == current->rightBound)
 			return;
 		
@@ -515,12 +504,12 @@ public:
 	}
 	
 	self::valueType kth(self::valueType l, self::valueType r, self::valueType key){
-		self::valueType nowL = 1, nowR = maxD;
+		self::valueType nowL = minSource, nowR = maxSource;
 		
 		while(nowL != nowR){
 			self::valueType mid = (nowL + nowR) >> 1;
 			
-			if(this->rank(l, r, mid) < key)
+			if(this->rank(l, r, mid) - 1 < key)
 				nowL = mid + 1;
 			else 
 				nowR = mid;
@@ -535,7 +524,7 @@ public:
 	
 	self::valueType pre(pointer current, self::valueType l, self::valueType r, self::valueType key){
 		if(l <= current->leftBound && current->rightBound <= r)
-			return current->data->pre(key) - 1;
+			return current->data->pre(key);
 		
 		self::valueType mid = (current->leftBound + current->rightBound) >> 1;
 		
@@ -553,7 +542,7 @@ public:
 	
 	self::valueType next(pointer current, self::valueType l, self::valueType r, self::valueType key){
 		if(l <= current->leftBound && current->rightBound <= r)
-			return current->data->next(key) - 1;
+			return current->data->next(key);
 		
 		self::valueType mid = (current->leftBound + current->rightBound) >> 1;
 		
@@ -566,14 +555,21 @@ public:
 	}
 };
 
+inline int read();
+
 int main(){
 	valueType n(0), m(0);
 	container source;
 	
-	cin >> n >> m;
+	n = read();
+	m = read();
 	
-	for(int i = 1; i <= n; ++i)
-		cin >> source[i];
+	for(int i = 1; i <= n; ++i){
+		source[i] = read();
+		minSource = min(minSource, source[i] - 1);
+		maxSource = max(maxSource, source[i] + 1);
+	}
+		
 	
 	TREE tree;
 	
@@ -583,26 +579,37 @@ int main(){
 		int opt;
 		cin >> opt;
 		if(opt == 1){
-			int l, r, key;
-			cin >> l >> r >> key;
+			int l(read()), r(read()), key(read());
 			cout << tree.rank(l, r, key) << '\n';
 		} else if(opt == 2){
-			int l, r, key;
-			cin >> l >> r >> key;
+			int l(read()), r(read()), key(read());
 			cout << tree.kth(l, r, key) << '\n';
 		} else if(opt == 3){
-			int pos, key;
-			cin >> pos >> key;
+			int pos(read()), key(read());
+			minSource = min(minSource, key - 1);
+			maxSource = max(maxSource, key + 1);
 			tree.modify(pos, source[pos], key);
 			source[pos] = key;
 		} else if(opt == 4){
-			int l, r, key;
-			cin >> l >> r >> key;
+			int l(read()), r(read()), key(read());
 			cout << tree.pre(l, r, key) << '\n';
-		} else if(opt == 5){
-			int l, r, key;
-			cin >> l >> r >> key;
+		} else {
+			int l(read()), r(read()), key(read());
 			cout << tree.next(l, r, key) << '\n';
 		}
 	}
+}
+
+inline int read(){
+	int result(0), ch(getchar());
+	
+	while(ch < '0' || ch > '9')
+		ch = getchar();
+		
+	while(ch >='0' && ch <= '9'){
+		result = (result << 3) + (result << 1) + (ch & 15);
+		ch = getchar();
+	}
+	
+	return result;
 }
