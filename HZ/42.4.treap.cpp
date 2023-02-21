@@ -4,3 +4,10 @@
 #include<bits/stdc++.h>
 using namespace std;
 
+struct NODE{
+	typedef NODE self;
+	typedef long long valueType;
+	typedef self* pointer;
+	
+	
+};
