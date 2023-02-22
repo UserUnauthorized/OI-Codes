@@ -124,7 +124,7 @@ private:
 	
 	void delNode(pointer &p){
 		free(p);
-		p = NULL;
+//		p = NULL;
 	}
 
 public:
@@ -291,27 +291,18 @@ public:
 	}
 	
 	self::valueType pre(self::valueType key){
-//		pointer current = this->find(key);
-		pointer current = NULL;
-		bool newNodeCreated = false;
-		
-		if(current == NULL){
-			insert(key);
-			current = this->root;
-			newNodeCreated = true;
-		}
+		insert(key);
+		pointer current = this->root;
 		
 		if(current->leftSon == NULL){
-			if(newNodeCreated)
-				remove(key);
+			remove(key);
 			
 			return this->preNotFoundValue;
 		}
 		
 		for(current = current->leftSon; current->rightSon != NULL; current = current->rightSon);
 		
-		if(newNodeCreated)
-			remove(key);
+		remove(key);
 				
 		this->splay(current);
 		
@@ -319,27 +310,18 @@ public:
 	}
 	
 	self::valueType next(self::valueType key){
-//		pointer current = this->find(key);
-		pointer current = NULL;
-		bool newNodeCreated = false;
-		
-		if(current == NULL){
-			insert(key);
-			current = this->root;
-			newNodeCreated = true;
-		}
+		insert(key);
+		pointer current = this->root;
 		
 		if(current->rightSon == NULL){
-			if(newNodeCreated)
-				remove(key);
+			remove(key);
 			
 			return this->nextNotFoundValue;
 		}
 		
 		for(current = current->rightSon; current->leftSon != NULL; current = current->leftSon);
 		
-		if(newNodeCreated)
-				remove(key);
+		remove(key);
 				
 		this->splay(current);		
 		
