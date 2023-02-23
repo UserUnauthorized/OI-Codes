@@ -134,7 +134,7 @@ public:
 	
 	void rotate(const pointer &current){
 		pointer father = current->father;
-		bool isRightSon = current->isRightSon();
+		bool const isRightSon = current->isRightSon();
 		father->son(isRightSon) = current->son(!isRightSon);
 		
 		if(current->son(!isRightSon) != NULL){
@@ -246,23 +246,23 @@ public:
 	
 	self::valueType rank(self::valueType key){
 //		pointer current = find(key);
-		pointer current = NULL;
-		bool newNodeCreated = false;
+//		pointer current = NULL;
+//		bool newNodeCreated = false;
 		
-		if(current == NULL){
-			insert(key);
-			newNodeCreated = true;
-		}
+//		if(current == NULL){
+		insert(key);
+//			newNodeCreated = true;
+//		}
 		
 		int result = 1;
 		
 		if(root->leftSon != NULL)
 			result += (root->leftSon)->size;
 			
-		if(newNodeCreated)
-			remove(key);
-		else
-			this->splay(current);
+//		if(newNodeCreated)
+		remove(key);
+//		else
+//			this->splay(current);
 			
 		return result;
 	}
@@ -537,7 +537,7 @@ public:
 	}
 };
 
-inline int read();
+int read();
 
 int main(){
 	valueType n(0), m(0);
@@ -582,7 +582,7 @@ int main(){
 	}
 }
 
-inline int read(){
+int read(){
 	int result(0), ch(getchar());
 	
 	while(ch < '0' || ch > '9')
