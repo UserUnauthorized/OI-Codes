@@ -99,7 +99,7 @@ private:
 			++current->count;
 			++current->size;
 		} else {
-			bool isRightSon = key > current->value;
+			bool const isRightSon = key > current->value;
 			
 			this->insert(current->son(isRightSon), key);
 			if(current->son(isRightSon)->priority < current->priority)
@@ -122,6 +122,32 @@ private:
 			return;
 		}
 		
+		if(current->count > 1){
+			--current->count;
+			--current->size();
+			return;
+		}
+		
+		if(current->leftSon == NULL && current->rightSon == NULL){
+			this->delNode(current);
+			return;
+		}
+		
+		if(current->leftSon == NULL){
+			pointer tmp = current;
+			current = current->rightSon;
+			this->delNode(tmp);
+			return;
+		}
+		
+		if(current->rightSon == NULL){
+			pointer tmp = current;
+			current = current->leftSon;
+			this->delNode(tmp);
+			return;
+		}
+		
+		bool const direction = current->leftSon->priority > current->rightSon->priority;
 		
 	}
 };
