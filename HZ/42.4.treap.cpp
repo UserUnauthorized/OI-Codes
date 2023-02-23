@@ -149,5 +149,20 @@ private:
 		
 		bool const direction = current->leftSon->priority > current->rightSon->priority;
 		
+		this->rotate(current, direction);
+		
+		this->remove(current->son(!direction), key);
+		
+		current->update();
+	}
+	
+public:
+	self::valueType rank(self::valueType key){
+		return this->rank(this->root, key);
+	}
+
+private:
+	self::valueType rank(pointer current, self::valueType key){
+		
 	}
 };
