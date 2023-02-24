@@ -206,31 +206,33 @@ public:
 			pointer son = current->son(current->leftSon->priority > current->rightSon->priority);
 			this->rotate(son);
 		}	
-		
+
 		if(current->leftSon != NULL){
-//			this->rotate(current->leftSon);
 			current->leftSon->father = current->father;
 			
 			if(current->father != NULL){
 				bool const isRightSon = current->isRightSon();
 				current->father->son(isRightSon) = current->leftSon;
 				current->father->update();
+			} else {
+				this->root = current->leftSon;
 			}
-//			this->delNode(current);
 		} else if(current->rightSon != NULL){
-//			this->rotate(current->rightSon);
 			current->rightSon->father = current->father;
 			
 			if(current->father != NULL){
 				bool const isRightSon = current->isRightSon();
 				current->father->son(isRightSon) = current->rightSon;
 				current->father->update();
+			} else {
+				this->root = current->rightSon;
 			}
 			
-//			this->delNode(current);
 		} else {
-			current->father->son(current->isRightSon()) = NULL;
-//			this->delNode(current);
+			if(current->father != NULL)
+				current->father->son(current->isRightSon()) = NULL;
+			else
+				this->root = NULL;
 		}
 		
 		this->delNode(current);
@@ -334,45 +336,24 @@ public:
 } tree;
 
 int main(){
-	freopen("input2.in", "r", stdin);
-	freopen("input2.ans", "w", stdout);
-	freopen("input2.err", "w", stderr);
 	int n;
 	cin >> n;
 	while(n--){
 		int opt, x;
 		cin >> opt >> x;
 		
-		if(opt == 1){
-			debug(opt, x);
+		if(opt == 1)
 			tree.insert(x);
-			cerr << tree << endl;
-		}
-		else if(opt == 2){
-			debug(opt, x);
+		else if(opt == 2)
 			tree.remove(x);
-			cerr << tree << endl;
-		}
-		else if(opt == 3){
-			debug(opt, x);
+		else if(opt == 3)
 			cout << tree.rank(x) << '\n';
-			cerr << tree << endl;
-		}
-		else if(opt == 4){
-			debug(opt, x);
+		else if(opt == 4)
 			cout << tree.kth(x) << '\n';
-			cerr << tree << endl;
-		}
-		else if(opt == 5){
-			debug(opt, x);
+		else if(opt == 5)
 			cout << tree.pre(x) << '\n';
-			cerr << tree << endl;
-		}
-		else if(opt == 6){
-			debug(opt, x);
+		else if(opt == 6)
 			cout << tree.next(x) << '\n';
-			cerr << tree << endl;
-		}
 	}
 	
 	return 0;
