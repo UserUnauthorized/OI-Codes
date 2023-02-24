@@ -203,25 +203,30 @@ public:
 			return;
 		
 		while(current->leftSon != NULL && current->rightSon != NULL){
-			debug(current->leftSon->priority, current->rightSon->priority);
-			debug(current->son(current->leftSon->priority > current->rightSon->priority)->value);
-			this->rotate(current->son(current->leftSon->priority > current->rightSon->priority));
-//			cerr << *this << endl;
+			pointer son = current->son(current->leftSon->priority > current->rightSon->priority);
+			this->rotate(son);
 		}	
-			
+		
 		if(current->leftSon != NULL){
 //			this->rotate(current->leftSon);
-//			current->father->rightSon = NULL;
 			current->leftSon->father = current->father;
-			current->father->son(current->isRightSon()) = current->leftSon;
-			current->father->update();/* TAG */
+			
+			if(current->father != NULL){
+				bool const isRightSon = current->isRightSon();
+				current->father->son(isRightSon) = current->leftSon;
+				current->father->update();
+			}
 //			this->delNode(current);
 		} else if(current->rightSon != NULL){
 //			this->rotate(current->rightSon);
 			current->rightSon->father = current->father;
-			current->father->son(current->isRightSon()) = current->rightSon;
-			current->father->update();/* TAG */
-//			current->father->leftSon = NULL;
+			
+			if(current->father != NULL){
+				bool const isRightSon = current->isRightSon();
+				current->father->son(isRightSon) = current->rightSon;
+				current->father->update();
+			}
+			
 //			this->delNode(current);
 		} else {
 			current->father->son(current->isRightSon()) = NULL;
@@ -329,9 +334,9 @@ public:
 } tree;
 
 int main(){
-	freopen("input1.in", "r", stdin);
-	freopen("input1.ans", "w", stdout);
-	freopen("intput1.err", "w", stderr);
+	freopen("input2.in", "r", stdin);
+	freopen("input2.ans", "w", stdout);
+	freopen("input2.err", "w", stderr);
 	int n;
 	cin >> n;
 	while(n--){
