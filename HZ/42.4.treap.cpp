@@ -14,17 +14,17 @@ struct NODE{
 	
 	pointer leftSon;
 	pointer rightSon;
-//	pointer father;
+	pointer father;
 	randType priority;
 		
 	self::valueType value;
 	self::valueType count;
 	self::valueType size;
 	
-	NODE():leftSon(NULL), rightSon(NULL), /*father(NULL),*/ priority(0), value(0), count(0), size(0){};
+	NODE():leftSon(NULL), rightSon(NULL), father(NULL), priority(0), value(0), count(0), size(0){};
 	
 	void init(){
-		this->leftSon = this->rightSon /*= this->father */= NULL;
+		this->leftSon = this->rightSon = this->father = NULL;
 		this->priority = ::getRand();
 		this->value = 0;
 		this->count = this->size = 1;
@@ -34,9 +34,13 @@ struct NODE{
 		return _rightSon_ ? this->rightSon : this->leftSon;
 	}
 	
-/*	bool isRightSon() const {
+	pointer &son(self::valueType key){
+		return key > this->value ? this->rightSon : this->leftSon;
+	}
+	
+	bool isRightSon() const {
 		return this == (this->father)->rightSon;
-	}*/
+	}
 	
 	void update(){
 		this->size = (this->leftSon != NULL ? (this->leftSon)->size : 0) + (this->rightSon != NULL ? (this->rightSon)->size : 0) + this->count;
@@ -70,99 +74,109 @@ public:
 	
 	TREAP(): root(NULL){};
 	
-private:
-	void rotate(pointer &current, bool left){
-		pointer tmp = current->son(left);
+	void rotate(const pointer &current){
+		pointer father = current->father;
+		bool isRightSon = current->isRightSon();
+		father->son(isRightSon) = current->son(!isRightSon);
 		
-		current->son(left) = tmp->son(!left);
-		tmp->son(!left) = current;
-		
-		tmp->update();
+		if(current->son(!isRightSon) != NULL){
+			(current->son(!isRightSon))->father = father;
+		}
+			
+			
+		if((current->father = father->father))
+			(current->father)->son(father->isRightSon()) = current;
+			
+		father->father = current;
+		current->son(!isRightSon) = father;
+		father->update();
 		current->update();
 		
-		current = tmp;
+		if(current->father == NULL)
+			this->root = current;
 	}
 	
-public:
+	void treap(const pointer &current){
+		while(current->father != NULL && current->father->priority > current->priority)
+			this->rotate(current);
+	}
+	
 	void insert(self::valueType key){
-		this->insert(this->root, key);
-	}
-	
-private:	
-	void insert(pointer &current, self::valueType key){
+		pointer current = this->root;
+		
+		while(current != NULL && key != current->value){
+			++current->size;
+			current = current->son(key);
+		}
+		
 		if(current == NULL){
 			current = this->newNode();
 			current->init();
-			current->value = key;
-			return;
-		} else if(key == current->value){
+			this->treap(current);
+		} else {
 			++current->count;
 			++current->size;
-		} else {
-			bool const isRightSon = key > current->value;
-			
-			this->insert(current->son(isRightSon), key);
-			if(current->son(isRightSon)->priority < current->priority)
-				this->rotate(current, isRightSon);
-			
-			current->update();
 		}
 	}
 	
-public:
 	void remove(self::valueType key){
-		this->remove(this->root, key);
-	}
-
-private:
-	void remove(pointer &current, self::valueType key){
-		if(key != current->value){
-			this->remove(current->son(key > current->value), key);
-			current->update();
-			return;
+		pointer current = this->root;
+		
+		while(/*current != NULL &&*/ key != current->value){
+			--current->size;
+			current = current->son(key);
 		}
 		
-		if(current->count > 1){
-			--current->count;
-			--current->size();
+		/*if(currnet == NULL)
+			exit(1)*/
+			
+		--current->size;
+		--current->count;
+		
+		if(current->count > 0)
 			return;
+			
+		while(current->leftSon != NULL && current->rightSon != NULL)
+			this->rotate(current->son(current->leftSon->priority > current->rightSon->priority));
+			
+		if(current->leftSon != NULL){
+			this->rotate(current->leftSon);
+			current->father->rightSon = NULL;
+//			this->delNode(current);
+		} else if(current->rightSon != NULL){
+			this->rotate(current->rightSon);
+			current->father->leftSon = NULL;
+//			this->delNode(current);
+		} else {
+			current->father->son(current->isRightSon()) = NULL;
+//			this->delNode(current);
 		}
 		
-		if(current->leftSon == NULL && current->rightSon == NULL){
-			this->delNode(current);
-			return;
-		}
-		
-		if(current->leftSon == NULL){
-			pointer tmp = current;
-			current = current->rightSon;
-			this->delNode(tmp);
-			return;
-		}
-		
-		if(current->rightSon == NULL){
-			pointer tmp = current;
-			current = current->leftSon;
-			this->delNode(tmp);
-			return;
-		}
-		
-		bool const direction = current->leftSon->priority > current->rightSon->priority;
-		
-		this->rotate(current, direction);
-		
-		this->remove(current->son(!direction), key);
-		
-		current->update();
+		this->delNode(current);
 	}
 	
-public:
-	self::valueType rank(self::valueType key){
-		return this->rank(this->root, key);
+	self::valueType rank(self::valueType key) const {
+		pointer current = this->root;
+		self::valueType result(1);
+		
+		while(current != NULL){
+			while(current != NULL && key >= current->value)
+				current = current->leftSon;
+			
+			while(current != NULL && key < current->value){
+				result += current->count;
+				
+				if(current->leftSon != NULL)
+					result += current->leftSon->size;
+				
+				current = current->rightSon;
+			}
+		}
+		
+		return result;
 	}
-
-private:
-	self::valueType rank(pointer current, self::valueType key){
+	
+	self::valueType kth(self::valueType key) const {
 		
 	}
 };
