@@ -4,7 +4,7 @@
 using namespace std;
 
 typedef int valueType;
-constexpr valueType maxN = 1e5 + 5;
+constexpr valueType maxN = 1e5 + 5, maxK = log2(maxN) + 1;
 
 struct SEGNODE{
 	typedef SEGNODE self;
@@ -141,11 +141,12 @@ struct EDGE {
     EDGE(int _next, int _to):next(_next), to(_to){};
 };
 
-
 array<valueType, maxN> dfn, father, deep;
 array<TREE, maxN> tree;
 array<EDGE, maxN << 1> edge;
+array<array<valueType, maxN>, maxK> st;
 
+void init();
 valueType LCA(int a, int b);
 void dfs(int x, int from);
 
@@ -153,9 +154,36 @@ int main(){
 	return 0;
 }
 
+void init(){
+	
+}
+
+void dfs(int x, int from){
+	
+}
+
 SEGNODE* newNode(){
 	static SEGNODE pool[maxN << 5];
 	static SEGNODE* allocp = pool - 1;
 	
 	return ++allocp; 
+}
+
+int MIN(const int &a, const int &b) {
+    if (dep[a] > dep[b])return b;
+    else return a;
+}
+
+int LCA(int a, int b) {
+    int l(dfn[a]), r(dfn[b]);
+ 
+    if (l > r)
+        swap(l, r);
+
+    int k(0);
+
+    while ((1 << (k + 1)) <= r - l + 1)
+        ++k;
+
+    return MIN(st[l][k], st[r - (1 << k) + 1][k]);
 }
