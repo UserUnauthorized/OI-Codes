@@ -3,8 +3,35 @@
 #include<bits/stdc++.h>
 using namespace std;
 
+namespace DEBUG {
+    template<typename T>
+    inline void _debug(const char *format, T t) {
+        std::cerr << format << '=' << t << std::endl;
+    }
+
+    template<class First, class... Rest>
+    inline void _debug(const char *format, First first, Rest... rest) {
+        while (*format != ',') std::cerr << *format++;
+        std::cerr << '=' << first << ",";
+        _debug(format + 1, rest...);
+    }
+
+    template<typename T>
+    std::ostream &operator<<(std::ostream &os, const std::vector<T> &V) {
+        os << "[ ";
+        for (const auto &vv: V) os << vv << ", ";
+        os << "]";
+        return os;
+    }
+
+//#define debug(...) _debug(#__VA_ARGS__, __VA_ARGS__)
+#define debug(...)
+}  // namespace DEBUG
+
+using namespace DEBUG;
+
 typedef int valueType;
-constexpr valueType maxN = 1e5 + 5, maxK = log2(maxN) + 1;
+constexpr valueType maxN = 1e5 + 5, maxK = log2(maxN) + 1, maxD = 1e9;
 
 struct SEGNODE{
 	typedef SEGNODE self;
@@ -15,10 +42,13 @@ struct SEGNODE{
 		self::valueType value;
 		self::valueType cnt;
 		
-		DATA(): value(INT_MAX), cnt(-1){};
+		DATA(): value(INT_MAX), cnt(0){};
 		DATA(self::valueType _value_, self::valueType _cnt_):value(_value_), cnt(_cnt_){};
 		
 		friend bool operator<(const DATA &a, const DATA &b){
+//			debug(a.cnt, a.value);
+//			debug(b.cnt, b.value);
+//			debug(a.cnt < b.cnt, a.value > b.value);
 			if(a.cnt != b.cnt)
 				return a.cnt < b.cnt;
 				
@@ -35,7 +65,7 @@ struct SEGNODE{
 		}
 	};
 	
-	self::valueType leftBound, rightBound, mid;
+	int leftBound, rightBound, mid;
 	pointer leftSon, rightSon;
 	DATA data;
 	
@@ -74,17 +104,19 @@ public:
 	
 public:
 	void insert(self::valueType pos, self::valueType key){
-		this->root = this->insert(this->root, pos, key, 1, maxN);
+		this->root = this->insert(this->root, pos, key, 1, maxD);
 	}
 	
 private:
 	pointer insert(pointer current, self::valueType pos, self::valueType key, self::valueType l, self::valueType r){
+		debug(current == NULL);
 		if(current == NULL){
 			current = newNode();
 			current->init(l, r);
 		}
-		
+		debug(current->leftBound, current->rightBound);
 		if(current->leftBound == current->rightBound){
+			current->data.value = current->leftBound;
 			current->data += key;
 			return current;
 		}
@@ -98,9 +130,10 @@ private:
 		
 		return current;
 	}
-	
+
+public:
 	self::valueType ans(){
-		if(this->root == NULL)
+		if(this->root == NULL || this->root->data.cnt < 1)
 			return 0;
 		
 		return this->root->data.value;
@@ -141,40 +174,122 @@ struct EDGE {
     EDGE(int _next, int _to):next(_next), to(_to){};
 };
 
-array<valueType, maxN> dfn, father, deep;
+valueType n, m, cnt(0);
+
+array<valueType, maxN> dfn, father, deep, head, ans;
+array<valueType, maxN << 1> source;
 array<TREE, maxN> tree;
 array<EDGE, maxN << 1> edge;
 array<array<valueType, maxN>, maxK> st;
 
 void init();
-valueType LCA(int a, int b);
-void dfs(int x, int from);
+valueType LCA(valueType a, valueType b);
+void dfs(valueType x, valueType from);
+valueType MIN(const valueType &a, const valueType &b);
+void calc(valueType x, valueType from);
 
 int main(){
+	#ifdef LOCAL
+	freopen("2.in", "r", stdin);
+	freopen("2.ans", "w", stdout);
+	freopen("2.err", "w", stderr);
+	#endif
+	init();
+	dfs(1, 0);
+	
+	deep[0] = INT_MAX;
+	
+	for(int i = 1; i <= cnt; ++i)
+		st[0][i] = source[i];
+	
+	for (int j = 1; j <= (int) log2(cnt); ++j)
+        for (int i = 1; i + (1 << j) <= cnt; ++i)
+        	st[j][i] = MIN(st[j - 1][i], st[j - 1][i + (1 << (j - 1))]);
+            
+    while(m--){
+    	int x(0), y(0), z(0);
+    	
+    	cin >> x >> y >> z;
+    	
+    	int lca(LCA(x, y));
+		debug(x, y, z, lca, father[lca]);
+    	tree[x].insert(z, 1);
+    	debug(x);
+    	tree[y].insert(z, 1);
+    	debug(y);
+    	tree[lca].insert(z, -1);
+    	debug(lca);
+    	if(father[lca]);
+    		tree[father[lca]].insert(z, -1);
+    	debug(father[lca]);
+	}
+
+	calc(1, 0);
+
+	for(int i = 1; i <= n; ++i)
+//		cout << tree[i].ans() << '\n';
+		cout << ans[i] << '\n';
+	
 	return 0;
 }
 
 void init(){
+	cin >> n >> m;
 	
+	for(int i = 1; i < n; ++i){
+		int a(0), b(0);
+		cin >> a >> b;
+		edge[i << 1] = EDGE(head[a], b);
+		edge[i << 1|1] = EDGE(head[b], a);
+		head[a] = i << 1;
+		head[b] = i << 1|1;
+	}
 }
 
-void dfs(int x, int from){
+void dfs(valueType x, valueType from){
+	dfn[x] += ++cnt;
+	source[cnt] = x;
+	deep[x] = deep[from] + 1;
+	father[x] = from;
 	
+	for(int i = head[x]; i != 0; i = edge[i].next){
+		const EDGE &e = edge[i];
+		
+		if(e.to == from)
+			continue;
+			
+		dfs(e.to, x);
+		
+		source[++cnt] = x;
+	}
 }
 
+void calc(valueType x, valueType from){
+	for(int i = head[x]; i != 0; i = edge[i].next){
+		const EDGE &e = edge[i];
+		
+		if(e.to == from)
+			continue;
+		calc(e.to, x);
+		
+		tree[x].merge(tree[e.to]);
+	}
+	
+	ans[x] = tree[x].ans();
+}
+SEGNODE pool[maxN * 60];
 SEGNODE* newNode(){
-	static SEGNODE pool[maxN << 5];
 	static SEGNODE* allocp = pool - 1;
 	
 	return ++allocp; 
 }
 
-int MIN(const int &a, const int &b) {
-    if (dep[a] > dep[b])return b;
+valueType MIN(const valueType &a, const valueType &b) {
+    if (deep[a] > deep[b])return b;
     else return a;
 }
 
-int LCA(int a, int b) {
+valueType LCA(valueType a, valueType b) {
     int l(dfn[a]), r(dfn[b]);
  
     if (l > r)
@@ -185,5 +300,5 @@ int LCA(int a, int b) {
     while ((1 << (k + 1)) <= r - l + 1)
         ++k;
 
-    return MIN(st[l][k], st[r - (1 << k) + 1][k]);
+    return MIN(st[k][l], st[k][r - (1 << k) + 1]);
 }
