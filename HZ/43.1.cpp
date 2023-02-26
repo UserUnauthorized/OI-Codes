@@ -20,9 +20,6 @@ struct SEGNODE{
 		DATA(self::valueType _value_, self::valueType _cnt_):value(_value_), cnt(_cnt_){};
 		
 		friend bool operator<(const DATA &a, const DATA &b){
-//			debug(a.cnt, a.value);
-//			debug(b.cnt, b.value);
-//			debug(a.cnt < b.cnt, a.value > b.value);
 			if(a.cnt != b.cnt)
 				return a.cnt < b.cnt;
 				
