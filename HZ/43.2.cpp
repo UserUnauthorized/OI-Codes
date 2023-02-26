@@ -2,27 +2,51 @@
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long valueType;
+
+namespace DEBUG {
+    template<typename T>
+    inline void _debug(const char *format, T t) {
+        std::cerr << format << '=' << t << std::endl;
+    }
+
+    template<class First, class... Rest>
+    inline void _debug(const char *format, First first, Rest... rest) {
+        while (*format != ',') std::cerr << *format++;
+        std::cerr << '=' << first << ",";
+        _debug(format + 1, rest...);
+    }
+
+    template<typename T>
+    std::ostream &operator<<(std::ostream &os, const std::vector<T> &V) {
+        os << "[ ";
+        for (const auto &vv: V) os << vv << ", ";
+        os << "]";
+        return os;
+    }
+
+#define debug(...) _debug(#__VA_ARGS__, __VA_ARGS__)
+}  // namespace DEBUG
+
+using namespace DEBUG;
+
 constexpr valueType maxN = 4e4 + 5, maxD = 1e9 + 5;
 struct SEGNODE{
 	typedef SEGNODE self;
 	typedef self* pointer;
 	typedef ::valueType valueType;
 
-	bool isLeaf;
 	int leftBound, rightBound, mid;
 	pointer leftSon, rightSon;
 	self::valueType data, lazy;
 	
-	SEGNODE():isLeaf(false), leftBound(-1), rightBound(-1), mid(-1), leftSon(NULL), rightSon(NULL), data(0), lazy(0){};
+	SEGNODE():leftBound(-1), rightBound(-1), mid(-1), leftSon(NULL), rightSon(NULL), data(0), lazy(0){};
 	
-	void init(self::valueType l, self::valueType r, self::valueType key){
+	void init(self::valueType l, self::valueType r){
 		this->leftBound = l;
 		this->rightBound = r;
-		this->isLeaf = (l == r);
 		this->mid = (this->leftBound + this->rightBound) >> 1;
 		this->leftSon = this->rightSon = NULL;
-		this->data = key * (r - l + 1);
-		this->lazy = key;
+		this->data = this->lazy = 0;
 	}
 	
 	void push(){
@@ -30,10 +54,10 @@ struct SEGNODE{
 			return;
 			
 		if(this->leftSon != NULL)
-			this->leftSon->data = this->leftSon->lazy = std::max(this->lazy, this->leftSon->lazy);
+			this->leftSon->lazy = std::max(this->lazy, this->leftSon->lazy);
 			
 		if(this->rightSon != NULL)
-			this->rightSon->data = this->rightSon->lazy = std::max(this->lazy, this->rightSon->lazy);
+			this->rightSon->lazy = std::max(this->lazy, this->rightSon->lazy);
 			
 		this->lazy = 0;
 	}
@@ -71,7 +95,7 @@ private:
 	pointer update(pointer current, self::valueType l ,self::valueType r, self::valueType key){
 		if(current == NULL){
 			current = newNode();
-			current->init(l, r, key);
+			current->init(l, r);
 		}
 		
 		if(l <= current->leftBound && current->rightBound <= r){
@@ -82,7 +106,7 @@ private:
 				return current;
 			}
 			
-			current->push();
+//			current->push();
 		}
 		
 		if(l <= current->mid)
@@ -137,7 +161,7 @@ int main(){
 		valueType a, b, k;
 		
 		cin >> a >> b >> k;
-		
+
 		tree.update(a, b, k);
 	}
 	
