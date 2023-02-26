@@ -24,14 +24,15 @@ namespace DEBUG {
         return os;
     }
 
-//#define debug(...) _debug(#__VA_ARGS__, __VA_ARGS__)
-#define debug(...)
+#define debug(...) _debug(#__VA_ARGS__, __VA_ARGS__)
+//#define debug(...)
 }  // namespace DEBUG
 
 using namespace DEBUG;
 
 typedef int valueType;
-constexpr valueType maxN = 1e5 + 5, maxK = log2(maxN) + 1, maxD = 1e9;
+constexpr valueType maxN = 1e5 + 5, maxK = log2(maxN) + 1;
+valueType L(INT_MAX), R(INT_MIN);
 
 struct SEGNODE{
 	typedef SEGNODE self;
@@ -104,7 +105,7 @@ public:
 	
 public:
 	void insert(self::valueType pos, self::valueType key){
-		this->root = this->insert(this->root, pos, key, 1, maxD);
+		this->root = this->insert(this->root, pos, key, L, R);
 	}
 	
 private:
@@ -174,56 +175,56 @@ struct EDGE {
     EDGE(int _next, int _to):next(_next), to(_to){};
 };
 
+struct QUERYEDGE{
+	int next;
+	int from;
+    int to;
+    int LCA;
+
+    QUERYEDGE() : LCA(-1) {};
+
+    QUERYEDGE(int _next, int _from, int _to) : next(_next), from(_from), to(_to), LCA(-1) {};
+};
+
+struct QUERY{
+	typedef QUERY self;
+	typedef ::valueType valueType;
+	
+	self::valueType x, y, z;
+	
+	QUERY():x(-1), y(-1), z(-1){};
+	QUERY(int _x_, int _y_, int _z_):x(_x_), y(_y_), z(_z_){};
+};
+
 valueType n, m, cnt(0);
 
-array<valueType, maxN> dfn, father, deep, head, ans;
-array<valueType, maxN << 1> source;
+array<valueType, maxN> father, parent, head, queryHead, ans;
+array<bool, maxN> visited;
 array<TREE, maxN> tree;
 array<EDGE, maxN << 1> edge;
-array<array<valueType, maxN>, maxK> st;
+array<QUERYEDGE, maxN << 1> queryEdge;
+array<QUERY, maxN> query;
 
 void init();
-valueType LCA(valueType a, valueType b);
 void dfs(valueType x, valueType from);
-valueType MIN(const valueType &a, const valueType &b);
 void calc(valueType x, valueType from);
+int find(int x);
 
 int main(){
-	#ifdef LOCAL
-	freopen("2.in", "r", stdin);
-	freopen("2.ans", "w", stdout);
-	freopen("2.err", "w", stderr);
-	#endif
 	init();
 	dfs(1, 0);
 	
-	deep[0] = INT_MAX;
-	
-	for(int i = 1; i <= cnt; ++i)
-		st[0][i] = source[i];
-	
-	for (int j = 1; j <= (int) log2(cnt); ++j)
-        for (int i = 1; i + (1 << j) <= cnt; ++i)
-        	st[j][i] = MIN(st[j - 1][i], st[j - 1][i + (1 << (j - 1))]);
-            
-    while(m--){
-    	int x(0), y(0), z(0);
-    	
-    	cin >> x >> y >> z;
-    	
-    	int lca(LCA(x, y));
-		debug(x, y, z, lca, father[lca]);
-    	tree[x].insert(z, 1);
-    	debug(x);
-    	tree[y].insert(z, 1);
-    	debug(y);
-    	tree[lca].insert(z, -1);
-    	debug(lca);
+	for(int i = 1; i <= m; ++i){
+		const QUERY &q = query[i];
+		const int lca(queryEdge[i >> 1].LCA);
+		debug(i ,q.x, q.y, q.z, lca);
+		tree[q.x].insert(q.z, 1);
+		tree[q.y].insert(q.z, 1);
+		tree[lca].insert(q.z, -1);
     	if(father[lca]);
-    		tree[father[lca]].insert(z, -1);
-    	debug(father[lca]);
+    		tree[father[lca]].insert(q.z, -1);
 	}
-
+	
 	calc(1, 0);
 
 	for(int i = 1; i <= n; ++i)
@@ -244,24 +245,41 @@ void init(){
 		head[a] = i << 1;
 		head[b] = i << 1|1;
 	}
+	
+	for(int i = 1; i <= m; ++i){
+		int x(0), y(0), z(0);
+		
+		cin >> x >> y >> z;
+		
+		L = min(L, z);
+		R = max(R, z);
+		
+		query[i] = QUERY(x, y, z);
+		
+		queryEdge[i << 1] = QUERYEDGE(queryHead[x], x, y);
+		queryEdge[i << 1|1] = QUERYEDGE(queryHead[y], y, x);
+		queryHead[x] = i << 1;
+		queryHead[y] = i << 1|1;
+	}
 }
 
 void dfs(valueType x, valueType from){
-	dfn[x] += ++cnt;
-	source[cnt] = x;
-	deep[x] = deep[from] + 1;
 	father[x] = from;
+	parent[x] = x;
+	visited[x] = true;
 	
 	for(int i = head[x]; i != 0; i = edge[i].next){
-		const EDGE &e = edge[i];
+		int to(edge[i].to);
 		
-		if(e.to == from)
-			continue;
-			
-		dfs(e.to, x);
-		
-		source[++cnt] = x;
+		if (!visited[to]) {
+            dfs(to, x);
+            parent[to] = x;
+        }
 	}
+	
+	for (int i = queryHead[x]; i; i = queryEdge[i].next)
+		if (visited[queryEdge[i].to])
+            queryEdge[i ^ 1].LCA = queryEdge[i].LCA = find(queryEdge[i].to);
 }
 
 void calc(valueType x, valueType from){
@@ -284,21 +302,7 @@ SEGNODE* newNode(){
 	return ++allocp; 
 }
 
-valueType MIN(const valueType &a, const valueType &b) {
-    if (deep[a] > deep[b])return b;
-    else return a;
-}
-
-valueType LCA(valueType a, valueType b) {
-    int l(dfn[a]), r(dfn[b]);
- 
-    if (l > r)
-        swap(l, r);
-
-    int k(0);
-
-    while ((1 << (k + 1)) <= r - l + 1)
-        ++k;
-
-    return MIN(st[k][l], st[k][r - (1 << k) + 1]);
+int find(int x) {
+    if (parent[x] == x)return x;
+    else return parent[x] = find(parent[x]);
 }
