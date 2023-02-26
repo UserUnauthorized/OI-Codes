@@ -37,39 +37,34 @@ struct SEGNODE{
 
 	int leftBound, rightBound, mid;
 	pointer leftSon, rightSon;
-	self::valueType data, lazy;
+	self::valueType data;
 	
-	SEGNODE():leftBound(-1), rightBound(-1), mid(-1), leftSon(NULL), rightSon(NULL), data(0), lazy(0){};
+	SEGNODE():leftBound(-1), rightBound(-1), mid(-1), leftSon(NULL), rightSon(NULL), data(0){};
 	
 	void init(self::valueType l, self::valueType r){
 		this->leftBound = l;
 		this->rightBound = r;
 		this->mid = (this->leftBound + this->rightBound) >> 1;
 		this->leftSon = this->rightSon = NULL;
-		this->data = this->lazy = 0;
-	}
-	
-	void push(){
-		if(this->lazy == 0)
-			return;
-			
-		if(this->leftSon != NULL)
-			this->leftSon->lazy = std::max(this->lazy, this->leftSon->lazy);
-			
-		if(this->rightSon != NULL)
-			this->rightSon->lazy = std::max(this->lazy, this->rightSon->lazy);
-			
-		this->lazy = 0;
+		this->data = 0;
 	}
 	
 	void update(){
+		debug(this->leftBound, this->rightBound);
+		debug(this->data);
+		debug(this->leftSon != NULL, this->rightSon != NULL);
 		this->data = 0;
 		
-		if(this->leftSon != NULL)
+		if(this->leftSon != NULL){
+			debug(this->leftSon->data);
 			this->data += this->leftSon->data;
+		}
 		
-		if(this->rightSon != NULL)
+		if(this->rightSon != NULL){
+			debug(this->rightSon->data);
 			this->data += this->rightSon->data;
+		}
+		debug(this->data);
 	}
 };
 
@@ -88,31 +83,28 @@ public:
 	
 public:
 	void update(self::valueType l ,self::valueType r, self::valueType key){
-		this->root = this->update(this->root, l, r - 1, key);
+		this->root = this->update(this->root, 1, maxD, l, r, key);
 	}
 	
 private:
-	pointer update(pointer current, self::valueType l ,self::valueType r, self::valueType key){
+	pointer update(pointer current, self::valueType l ,self::valueType r, self::valueType queryL, self::valueType queryR, self::valueType key){
 		if(current == NULL){
 			current = newNode();
 			current->init(l, r);
 		}
-		
-		if(l <= current->leftBound && current->rightBound <= r){
-			current->lazy = std::max(current->lazy, key);
-			
-			if(current->leftSon == NULL && current->rightSon == NULL){
-				current->data = key * (current->rightBound - current->leftBound + 1);
-				return current;
-			}
-			
-//			current->push();
+
+		if(queryL <= current->leftBound && current->rightBound <= queryR && current->leftSon == NULL && current->rightSon == NULL){
+			debug(current->data, l, r, queryL, queryR, key);
+			current->data = std::max(current->data, key * (current->rightBound - current->leftBound + 1));
+			debug(current->data);
+			return current;
 		}
 		
-		if(l <= current->mid)
-			current->leftSon = this->update(current->leftSon, l, current->mid, key);
-		if(r > current->mid)
-			current->rightSon = this->update(current->rightSon, current->mid + 1, r, key);
+		if(queryL <= current->mid)
+			current->leftSon = this->update(current->leftSon, l, current->mid, queryL, queryR, key);
+
+		if(queryR > current->mid)
+			current->rightSon = this->update(current->rightSon, current->mid + 1, r, queryL, queryR, key);
 		
 		current->update();
 		
