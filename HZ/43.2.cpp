@@ -67,11 +67,10 @@ struct SEGNODE{
 		
 		if(this->lazy == 0)
 			return;
-//		if(this->leftSon != NULL)
-			this->leftSon->lazy = std::max(this->leftSon->lazy, this->lazy);
 			
-//		if(this->rightSon != NULL)	
-			this->rightSon->lazy = std::max(this->rightSon->lazy, this->lazy);
+		this->leftSon->lazy = std::max(this->leftSon->lazy, this->lazy);
+			
+		this->rightSon->lazy = std::max(this->rightSon->lazy, this->lazy);
 
 		this->lazy = 0;
 	} 
@@ -105,7 +104,7 @@ public:
 			this->root->init(1, maxD);
 		}
 
-		this->update(this->root, l, r, key);
+		this->update(this->root, l, r - 1, key);
 	}
 	
 private:
@@ -130,12 +129,14 @@ private:
 			return;
 		}
 		
+		current->push();
+		
 		if(current->leftSon != NULL)
 			this->calc(current->leftSon);
 			
 		if(current->rightSon != NULL)
 			this->calc(current->rightSon);
-			
+		
 		current->update();
 	}
 	
@@ -145,7 +146,7 @@ public:
 			return 0;
 			
 		this->calc(this->root);
-		
+
 		return this->root->data;
 	}
 	
