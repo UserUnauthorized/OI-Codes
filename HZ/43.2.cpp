@@ -30,6 +30,11 @@ namespace DEBUG {
 using namespace DEBUG;
 
 constexpr valueType maxN = 4e4 + 5, maxD = 1e9 + 5;
+
+struct SEGNODE;
+
+SEGNODE* newNode();
+
 struct SEGNODE{
 	typedef SEGNODE self;
 	typedef self* pointer;
@@ -37,38 +42,50 @@ struct SEGNODE{
 
 	int leftBound, rightBound, mid;
 	pointer leftSon, rightSon;
-	self::valueType data;
+	self::valueType data, lazy;
 	
-	SEGNODE():leftBound(-1), rightBound(-1), mid(-1), leftSon(NULL), rightSon(NULL), data(0){};
+	SEGNODE():leftBound(-1), rightBound(-1), mid(-1), leftSon(NULL), rightSon(NULL), data(0), lazy(0){};
 	
 	void init(self::valueType l, self::valueType r){
 		this->leftBound = l;
 		this->rightBound = r;
 		this->mid = (this->leftBound + this->rightBound) >> 1;
 		this->leftSon = this->rightSon = NULL;
-		this->data = 0;
+		this->data = this->lazy = 0;
 	}
 	
+	void push(){
+		if(this->leftSon == NULL){
+			this->leftSon = newNode();
+			this->leftSon->init(this->leftBound, this->mid);
+		}
+		
+		if(this->rightSon == NULL){
+			this->rightSon = newNode();
+			this->rightSon->init(this->mid + 1, this->rightBound);
+		}
+		
+		if(this->lazy == 0)
+			return;
+//		if(this->leftSon != NULL)
+			this->leftSon->lazy = std::max(this->leftSon->lazy, this->lazy);
+			
+//		if(this->rightSon != NULL)	
+			this->rightSon->lazy = std::max(this->rightSon->lazy, this->lazy);
+
+		this->lazy = 0;
+	} 
+	
 	void update(){
-		debug(this->leftBound, this->rightBound);
-		debug(this->data);
-		debug(this->leftSon != NULL, this->rightSon != NULL);
 		this->data = 0;
 		
-		if(this->leftSon != NULL){
-			debug(this->leftSon->data);
+		if(this->leftSon != NULL)
 			this->data += this->leftSon->data;
-		}
 		
-		if(this->rightSon != NULL){
-			debug(this->rightSon->data);
+		if(this->rightSon != NULL)
 			this->data += this->rightSon->data;
-		}
-		debug(this->data);
 	}
 };
-
-SEGNODE* newNode();
 
 class TREE{
 public:
@@ -83,38 +100,51 @@ public:
 	
 public:
 	void update(self::valueType l ,self::valueType r, self::valueType key){
-		this->root = this->update(this->root, 1, maxD, l, r, key);
+		if(this->root == NULL){
+			this->root = newNode();
+			this->root->init(1, maxD);
+		}
+
+		this->update(this->root, l, r, key);
 	}
 	
 private:
-	pointer update(pointer current, self::valueType l ,self::valueType r, self::valueType queryL, self::valueType queryR, self::valueType key){
-		if(current == NULL){
-			current = newNode();
-			current->init(l, r);
-		}
-
-		if(queryL <= current->leftBound && current->rightBound <= queryR && current->leftSon == NULL && current->rightSon == NULL){
-			debug(current->data, l, r, queryL, queryR, key);
-			current->data = std::max(current->data, key * (current->rightBound - current->leftBound + 1));
-			debug(current->data);
-			return current;
+	void update(pointer current, self::valueType queryL, self::valueType queryR, self::valueType key){
+		if(queryL <= current->leftBound && current->rightBound <= queryR){
+			current->lazy = std::max(current->lazy, key);
+			return;
 		}
 		
+		current->push();
+
 		if(queryL <= current->mid)
-			current->leftSon = this->update(current->leftSon, l, current->mid, queryL, queryR, key);
+			this->update(current->leftSon, queryL, queryR, key);
 
 		if(queryR > current->mid)
-			current->rightSon = this->update(current->rightSon, current->mid + 1, r, queryL, queryR, key);
-		
-		current->update();
-		
-		return current;
+			this->update(current->rightSon, queryL, queryR, key);
 	}
-
+	
+	void calc(pointer current){
+		if(current->leftSon == NULL && current->rightSon == NULL){
+			current->data = current->lazy * (current->rightBound - current->leftBound + 1);
+			return;
+		}
+		
+		if(current->leftSon != NULL)
+			this->calc(current->leftSon);
+			
+		if(current->rightSon != NULL)
+			this->calc(current->rightSon);
+			
+		current->update();
+	}
+	
 public:
 	self::valueType ans(){
 		if(this->root == NULL)
 			return 0;
+			
+		this->calc(this->root);
 		
 		return this->root->data;
 	}
