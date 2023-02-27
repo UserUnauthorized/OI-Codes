@@ -60,7 +60,7 @@ private:
 			current = newNode();
 			current->init(l, r);
 		}
-
+		
 		if(current->leftBound == current->rightBound){
 			current->data += key;
 			return current;
@@ -78,11 +78,17 @@ private:
 
 public:
 	self::valueType query(self::valueType l, self::valueType r){
+		if(r < l)
+			return 0;
+		
 		return this->query(this->root, l, r);
 	}
 
 private:
 	self::valueType query(pointer current, self::valueType l, self::valueType r){
+		if(current == NULL)
+			return 0;
+
 		if(l <= current->leftBound && current->rightBound <= r)
 			return current->data;
 		
@@ -131,9 +137,12 @@ struct EDGE {
     EDGE(int _next, int _to):next(_next), to(_to){};
 };
 
-valueType n;
+valueType N;
 
-array<valueType, maxN> head, ans, source;
+array<valueType, maxN> head, ans, source_;
+vector<valueType> point_;
+const vector<valueType> &point = point_;
+const array<valueType, maxN> &source = source_;
 array<TREE, maxN> tree;
 array<EDGE, maxN> edge;
 
@@ -144,22 +153,29 @@ int main(){
 	init();
 	calc(1, 0);
 	
-	for(int i = 1; i <= n; ++i)
+	for(int i = 1; i <= N; ++i)
 		cout << ans[i] << '\n';
 	
 	return 0;
 }
 
 void init(){
-	cin >> n;
+	cin >> N;
 	
-	for(int i = 1; i <= n; ++i){
-		cin >> source[i];
-		L = min(L, source[i]);
-		R = max(R, source[i]);
-	}
+	for(int i = 1; i <= N; ++i)
+		cin >> source_[i];
 	
-	for(int i = 1; i < n; ++i){
+	point_.assign(source.begin() + 1, source.begin() + N + 1);
+	sort(point_.begin(), point_.end());
+	point_.erase(unique(point_.begin(), point_.end()), point_.end());
+
+	for(int i = 1 ; i <= N; ++i)
+		source_[i] = distance(point.begin(), lower_bound(point.begin(), point.end(), source[i])) + 1;
+	
+	L = 1;
+	R = point.size();
+	
+	for(int i = 2; i <= N; ++i){
 		int x;
 		cin >> x;
 		
@@ -167,8 +183,8 @@ void init(){
 		head[x] = i;
 	}
 	
-	for(int i = 1; i <= n; ++i)
-		tree[i].insert(source[i], 1);
+	for(int i = 1; i <= N; ++i)
+		tree[i].insert(source[i], 1);		
 }
 
 void calc(valueType x, valueType from){
@@ -178,14 +194,13 @@ void calc(valueType x, valueType from){
 		if(e.to == from)
 			continue;
 		calc(e.to, x);
-		
 		tree[x].merge(tree[e.to]);
 	}
 	
 	ans[x] = tree[x].query(source[x] + 1, R);
 }
 
-SEGNODE pool[maxN * 60];
+SEGNODE pool[maxN * 20];
 SEGNODE* newNode(){
 	static SEGNODE* allocp = pool - 1;
 	
