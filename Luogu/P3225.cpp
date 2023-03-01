@@ -39,12 +39,12 @@ int main() {
                 tarjan(i, -1);
         }
         out();
-        
+
         unsigned long long result(1);
         for (unsigned long long t: ans) {
             result *= t;
         }
-        
+
         printf("Case %d: %d %lld\n", t, ansnum, result);
     }
     return 0;
@@ -60,10 +60,10 @@ bool init() {
     memset(cut, 0, sizeof(cut));
     memset(dcc, 0, sizeof(dcc));
     memset(head, 0, sizeof(head));
-    
+
     while (!ans.empty()) ans.pop_back();
     while (!st.empty()) st.pop();
-    
+
     m = dccnum = cnt = ansnum = 0;
 
     scanf("%d", &n);

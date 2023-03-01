@@ -169,7 +169,7 @@ private:
         return result;
     }
 
-	/**@brief Sub only digits (sign and carry are ignored).*/
+    /**@brief Sub only digits (sign and carry are ignored).*/
     bigInteger _subtraction_(const bigInteger &Object) const {
         bigInteger result;
         result._positive_ = this->_positive_;
@@ -215,7 +215,7 @@ private:
         return result;
     }
 
-	/**@brief intercepts the number at the specified position
+    /**@brief intercepts the number at the specified position
      * @param first An input iterator.
      * @param last An input iterator.
      * @warning The input interval is processed according to A right half-open interval*/
@@ -442,8 +442,9 @@ public:
         return result;
     }
 
-	template<typename T>
-	friend bigInteger factorial(std::vector<T> _factors_);
+    template<typename T>
+    friend bigInteger factorial(std::vector<T> _factors_);
+
     friend bigInteger factorial(int _n_);
 
     explicit operator bool() const {
@@ -452,19 +453,19 @@ public:
 };
 
 template<typename T>
-bigInteger factorial(std::vector<T> _factors_){
-	bigInteger result(1);
-	const int _size_ = _factors_.size();
-	int _count_ = 0;
-	for(int i = 2; i < _size_; ++i){
-		while(_factors_[i]--){
-			result = result._multiplication_(i);
-			/*++_count_;
-			if(_count_ & 1)*/
-				result.carry();
-		}
-	}
-	return result;
+bigInteger factorial(std::vector<T> _factors_) {
+    bigInteger result(1);
+    const int _size_ = _factors_.size();
+    int _count_ = 0;
+    for (int i = 2; i < _size_; ++i) {
+        while (_factors_[i]--) {
+            result = result._multiplication_(i);
+            /*++_count_;
+            if(_count_ & 1)*/
+            result.carry();
+        }
+    }
+    return result;
 }
 
 bigInteger factorial(int _n_) {
@@ -485,25 +486,25 @@ bigInteger factorial(int _n_) {
 
 using namespace std;
 int n, m;
-vector<int> factors; 
+vector<int> factors;
 
 int main() {
     cin >> n >> m;
-    bigInteger a(1),b(1);
-    factors.resize(n + 5,0);
-    for(int i = 2; i <= n + 2; ++i) ++factors[i];
-    for(int i = n + 3 - m + 1; i <= n + 3; ++i) ++factors[i];
+    bigInteger a(1), b(1);
+    factors.resize(n + 5, 0);
+    for (int i = 2; i <= n + 2; ++i) ++factors[i];
+    for (int i = n + 3 - m + 1; i <= n + 3; ++i) ++factors[i];
     a = factorial(factors);
-    
-    fill(factors.begin(),factors.end(),0);
+
+    fill(factors.begin(), factors.end(), 0);
     ++factors[2];
-    for(int i = 2; i <= n + 1; ++i) ++factors[i];
-    for(int i = n + 2 - m + 1; i <= n + 2; ++i) ++factors[i];
+    for (int i = 2; i <= n + 1; ++i) ++factors[i];
+    for (int i = n + 2 - m + 1; i <= n + 2; ++i) ++factors[i];
     b = factorial(factors);
-	//bigInteger a = factorial(n + 2) * factorial(n + 3) / factorial(n + 3 - m);
+    //bigInteger a = factorial(n + 2) * factorial(n + 3) / factorial(n + 3 - m);
     //bigInteger b = bigInteger(2) * factorial(n + 1) * factorial(n + 2) / factorial(n + 2 - m);
     bigInteger result = a - b;
     //result.carry();
-	cout << result;
+    cout << result;
     return 0;
 }
