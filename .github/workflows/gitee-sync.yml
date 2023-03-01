@@ -1,4 +1,4 @@
-name: Gitlab Sync
+name: Gitee Sync
 
 on:
   - push
