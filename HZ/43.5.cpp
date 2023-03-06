@@ -32,12 +32,12 @@ using namespace DEBUG;
 
 typedef int valueType;
 typedef unsigned long long productType;
-constexpr valueType maxN = 1e5 + 5;
+constexpr valueType maxN = 4e5 + 5, maxM = 1e5 + 5;
 constexpr valueType L = 1, R = 1e9;
 
-valueType N, M, Q;
+valueType N, M;
 
-array<valueType, maxN> head, ans, source, father, point;
+array<valueType, maxN> head, father;
 
 void init();
 
@@ -63,11 +63,6 @@ struct SEGNODE {
             this->count += Object.count;
             this->product *= Object.count;
         }
-        
-//        void merge(const DATA &a, const DATA &b = DATA()){
-//        	this->count = a.count + b.count;
-//        	this->product = a.product * b.product;
-//		}
     };
     
     int leftBound, rightBound, mid;
@@ -135,27 +130,82 @@ private:
 
         return current;
     }
+    
+protected:
+	self::valueType countAndDelete(self::valueType l, self::valueType r){
+		return this->countAndDelete(this->root, l, r);
+	}
+
+private:
+	self::valueType countAndDelete(pointer current, self::valueType l, self::valueType r){
+		if(current == NULL)
+			return 0;
+		
+		if(l <= current->leftBound && current->rightBound <= r){
+			self::valueType const result = current->data.count;
+			current->data = node::DATA();
+			return result;
+		}
+		
+		self::valueType result;
+		
+		if(r <= current->mid)
+			result = this->countAndDelete(current->leftSon, l, r);
+		else if(l > current->mid)
+			result = this->countAndDelete(current->rightSon, l, r);
+		else 
+			result = this->countAndDelete(current->leftSon, l, r) + this->countAndDelete(current->rightSon, l, r);
+	
+		current->update();
+		
+		return result;
+	}
+	
+public:
+	void update(int type, self::valueType key){
+		if(type == 3){
+			self::valueType const count = this->countAndDelete(L, key - 1);
+			this->insert(key, count);
+		} else if(type == 4){
+			self::valueType const count = this->countAndDelete(key + 1, R);
+			this->insert(key, count);
+		}
+	}
 
 public:
-    self::valueType query(self::valueType key) {
+    self::valueType kth(self::valueType key) {
         if (key > this->root->data.count)
             return -1;
 
-        return this->query(this->root, key);
+        return this->kth(this->root, key);
     }
+    
+    self::valueType product(){
+    	if(this->root == NULL)
+    		return INT_MIN;
+    	
+    	return this->root->data.product;
+	}
+	
+	self::valueType size(){
+    	if(this->root == NULL)
+    		return 0;
+    	
+    	return this->root->data.count;
+	}
 
 private:
-    self::valueType query(pointer current, self::valueType key) {
+    self::valueType kth(pointer current, self::valueType key) {
         if (current->leftBound == current->rightBound)
             return current->rightBound;
 
         if (current->leftSon == NULL)
-            return this->query(current->rightSon, key);
+            return this->kth(current->rightSon, key);
 
         if (current->leftSon->data.count < key)
-            return this->query(current->rightSon, key - current->leftSon->data.count);
+            return this->kth(current->rightSon, key - current->leftSon->data.count);
 
-        return this->query(current->leftSon, key);
+        return this->kth(current->leftSon, key);
     }
 
 public:
@@ -185,12 +235,17 @@ private:
     }
 };
 
-//valueType N, M, Q;
+struct QUERY{
+	int opt;
+	valueType a, b, x;
+};
 
-//array<valueType, maxN> head, ans, source, father, point;
-array<TREE, maxN> tree;
+array<QUERY, maxM> query;
+vector<TREE> tree;
 
 void init();
+
+void read();
 
 int find(int x);
 
@@ -199,42 +254,48 @@ void merge(int x, int y);
 int main() {
     init();
 
-    while (Q--) {
-        char order;
-        int x, y;
-        cin >> order >> x >> y;
-        if (order == 'Q')
-            cout << tree[find(x)].query(y) << '\n';
-        else if (order == 'B')
-            merge(x, y);
-        else
-            exit(1);
-    }
+	while(M--){
+		int opt;
+		cin >> opt;
+		
+		if(opt == 1){
+			valueType x;
+			cin >> x;
+			tree[++N].insert(x, 1);
+		} else if(opt == 2){
+			valueType a, b;
+			cin >> a >> b;
+			merge(a, b);
+		} else if(opt == 3 || opt == 4){
+			valueType a, x;
+			cin >> a >> x;
+			tree[find(a)].update(opt, x);
+		} else if(opt == 5){
+			valueType a, k;
+			cin >> a >> k;
+			cout << tree[find(a)].kth(k) << '\n';
+		} else if(opt == 6){
+			valueType a, b;
+			cin >> a >> b;
+			cout << (tree[find(a)].product() > tree[find(b)].product()) << '\n';
+		} else if(opt == 7){
+			valueType a;
+			cin >> a;
+			cout << tree[find(a)].size() << '\n';
+		} else if(opt == 8){
+			read(); read();
+		} else if(opt == 9){
+			read();
+		}
+	}
 
     return 0;
 }
 
 void init() {
-    cin >> N >> M;
-
-//    L = 1;
-//    R = N;
-
-    for (int i = 1; i <= N; ++i) {
-        cin >> source[i];
-        tree[i].insert(source[i], 1);
-        point[source[i]] = i;
-    }
+    cin >> M;
 
     std::iota(father.begin(), father.end(), 0);
-
-    while (M--) {
-        int x, y;
-        cin >> x >> y;
-        merge(x, y);
-    }
-
-    cin >> Q;
 }
 
 void merge(int x, int y) {
@@ -245,7 +306,7 @@ void merge(int x, int y) {
     father[rootY] = rootX;
 }
 
-SEGNODE pool[maxN * 20];
+SEGNODE pool[maxN * 13];
 
 SEGNODE *newNode() {
     static SEGNODE *allocp = pool - 1;
@@ -256,4 +317,12 @@ SEGNODE *newNode() {
 int find(int x) {
     if (father[x] == x)return x;
     else return father[x] = find(father[x]);
+}
+
+void read(){
+	int ch(getchar());
+	while(ch < '0' || ch > '9')
+		ch = getchar();
+	while(ch >='0' && ch <='9')
+		ch = getchar();
 }
