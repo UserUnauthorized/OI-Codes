@@ -240,7 +240,7 @@ struct QUERY{
 	valueType a, b, x;
 };
 
-array<QUERY, maxM> query;
+//array<QUERY, maxM> query;
 vector<TREE> tree;
 
 void init();

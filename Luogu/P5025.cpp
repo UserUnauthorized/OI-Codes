@@ -38,8 +38,9 @@ posType position[maxN << 2], radius[maxN << 2];
 array<numType, maxN> inId, leftN, rightN;
 array<numType, maxN << 2> belong, dfn, low, leftBound, rightBound;
 array<bool, maxN << 2> vis;
+bitset<maxN << 2> isRoot;
 
-vector<int> oldEdge[maxN << 2], edge[maxN << 2];
+list<int> oldEdge[maxN << 2], edge[maxN << 2];
 stack<int> st;
 
 class INTREE {
@@ -67,28 +68,43 @@ void build();
 void dfs(int x);
 
 int main() {
+//	#ifdef LOCAL
+//	freopen("bomb9.in", "r", stdin);
+//	freopen("bomb9.ans", "w", stdout);
+//	#endif
     init();
 
-    for (int i = 1; i <= N; ++i)
-        if (!dfn[inId[i]])
-            tarjan(inId[i]);
-//	tarjan(1);
-
+//    for (int i = 1; i <= N; ++i)
+//        if (!dfn[inId[i]])
+//            tarjan(inId[i]);
+	tarjan(1);
+	
+	isRoot.set();
     build();
 
-    vis.fill(false);
-    for (int i = 1; i <= sccnum; ++i)
-        if (!vis[i])
-            dfs(i);
+	int ROOT(0);
+	for(int i = 1; i <= sccnum; ++i){
+		if(isRoot[i]){
+			ROOT = i;
+			break;
+		}
+	}
 
-    unsigned long long ans;
+    vis.fill(false);
+//    for (int i = 1; i <= sccnum; ++i)
+//        if (!vis[i])
+//            dfs(i);
+
+	dfs(ROOT);
+
+    unsigned long long ans = 0;
     for (int i = 1; i <= N; ++i) {
         ans += (unsigned long long) i *
                (unsigned long long) (rightBound[belong[inId[i]]] - leftBound[belong[inId[i]]] + 1);
         ans %= MOD;
     }
 
-    cout << ans;
+    cout << ans % MOD;
     return 0;
 }
 
@@ -115,8 +131,9 @@ void init() {
         int r = distance(position + 1, upper_bound(position + 1, position + N + 1, position[i] + radius[i]));
 //		debug(i,l,r);
         inTree.connect(l, r, inId[i]);
-        leftN[inId[i]] = l;
-        rightN[inId[i]] = r;
+//        leftN[inId[i]] = l;
+//        rightN[inId[i]] = r;
+//		leftN[inId[i]] = rightN[inId[i]] = i;
     }
 }
 
@@ -196,14 +213,17 @@ void tarjan(int x) {
 void build() {
     for (int i = 1; i <= D; ++i)
         for (auto iter: oldEdge[i])
-            if (belong[i] != belong[iter])
-                edge[belong[i]].emplace_back(belong[iter]);
+            if (belong[i] != belong[iter]){
+            	isRoot[belong[iter]] = false;
+            	edge[belong[i]].emplace_back(belong[iter]);
+			}
+                
 
-    for (int i = 1; i <= sccnum; ++i) {
-        vector<int> &iter = edge[i];
-        sort(iter.begin(), iter.end());
-        iter.erase(unique(iter.begin(), iter.end()), iter.end());
-    }
+//    for (int i = 1; i <= sccnum; ++i) {
+//        vector<int> &iter = edge[i];
+//        sort(iter.begin(), iter.end());
+//        iter.erase(unique(iter.begin(), iter.end()), iter.end());
+//    }
 }
 
 void dfs(int x) {
