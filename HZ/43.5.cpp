@@ -31,13 +31,14 @@ namespace DEBUG {
 using namespace DEBUG;
 
 typedef int valueType;
-typedef unsigned long long productType;
-constexpr valueType maxN = 4e5 + 5, maxM = 1e5 + 5;
+typedef double productType;
+constexpr valueType maxN = 4e5 + 5, maxM = 4e5 + 5;
 constexpr valueType L = 1, R = 1e9;
 
 valueType N, M;
 
 array<valueType, maxN> head, father;
+//vector<valueType> value;
 
 void init();
 
@@ -57,11 +58,11 @@ struct SEGNODE {
 
         DATA() : count(0), product(1) {};
 
-        DATA(self::valueType _count_, self::productType _product_) : count(_count_), product(_product_) {};
+        DATA(self::valueType _count_, self::productType _product_) : count(_count_), product(log(_product_)) {};
 
         void operator+=(const DATA &Object) {
             this->count += Object.count;
-            this->product *= Object.count;
+            this->product += Object.product;
         }
     };
     
@@ -98,6 +99,7 @@ public:
     typedef SEGNODE node;
     typedef node *pointer;
     typedef node::valueType valueType;
+    typedef node::productType productType;
 
     pointer root;
 
@@ -117,7 +119,7 @@ private:
 
         if (current->leftBound == current->rightBound) {
             current->data.count += key;
-            current->data.product *= current->leftBound * key;
+            current->data.product += log(current->leftBound) * (double)key;
             return current;
         }
 
@@ -237,11 +239,13 @@ private:
 
 struct QUERY{
 	int opt;
-	valueType a, b, x;
+	valueType a, b;
 };
 
 //array<QUERY, maxM> query;
-vector<TREE> tree;
+//vector<TREE> tree;
+SEGNODE* pool;
+array<TREE, maxN> tree;
 
 void init();
 
@@ -254,7 +258,7 @@ void merge(int x, int y);
 int main() {
     init();
 
-	while(M--){
+	for(int i = 1; i <= M; ++i){
 		int opt;
 		cin >> opt;
 		
@@ -295,7 +299,7 @@ int main() {
 void init() {
     cin >> M;
 
-    std::iota(father.begin(), father.end(), 0);
+    std::iota(father.begin(), father.end(), 1);
 }
 
 void merge(int x, int y) {
@@ -306,12 +310,12 @@ void merge(int x, int y) {
     father[rootY] = rootX;
 }
 
-SEGNODE pool[maxN * 13];
-
 SEGNODE *newNode() {
-    static SEGNODE *allocp = pool - 1;
-
-    return ++allocp;
+//    static SEGNODE *allocp = pool;
+//
+//    return ++allocp;
+//	return (SEGNODE*)malloc(sizeof(SEGNODE));
+	return new SEGNODE;
 }
 
 int find(int x) {
