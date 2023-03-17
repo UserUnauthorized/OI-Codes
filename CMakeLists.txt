@@ -6,6 +6,7 @@ MATH(EXPR stack_size "1024*1024*1024")
 set(CMAKE_EXE_LINKER_FLAGS "-Wl,--stack,${stack_size}")
 
 include_directories(LocalInclude)
+add_compile_definitions(CLION)
 add_compile_definitions(LOCAL)
 
-add_executable(P3223 Luogu/P3223.cpp)
+add_executable(P2633 Luogu/P2633.cpp)
