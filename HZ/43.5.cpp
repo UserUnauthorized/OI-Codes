@@ -51,8 +51,8 @@ struct SEGNODE {
     typedef self *pointer;
     typedef ::valueType valueType;
     typedef ::productType productType;
-    
-	struct DATA {
+
+    struct DATA {
         self::valueType count;
         self::productType product;
 
@@ -65,7 +65,7 @@ struct SEGNODE {
             this->product += Object.product;
         }
     };
-    
+
     int leftBound, rightBound, mid;
     pointer leftSon, rightSon;
     DATA data;
@@ -119,7 +119,7 @@ private:
 
         if (current->leftBound == current->rightBound) {
             current->data.count += key;
-            current->data.product += log(current->leftBound) * (double)key;
+            current->data.product += log(current->leftBound) * (double) key;
             return current;
         }
 
@@ -132,47 +132,47 @@ private:
 
         return current;
     }
-    
+
 protected:
-	self::valueType countAndDelete(self::valueType l, self::valueType r){
-		return this->countAndDelete(this->root, l, r);
-	}
+    self::valueType countAndDelete(self::valueType l, self::valueType r) {
+        return this->countAndDelete(this->root, l, r);
+    }
 
 private:
-	self::valueType countAndDelete(pointer current, self::valueType l, self::valueType r){
-		if(current == NULL)
-			return 0;
-		
-		if(l <= current->leftBound && current->rightBound <= r){
-			self::valueType const result = current->data.count;
-			current->data = node::DATA();
-			return result;
-		}
-		
-		self::valueType result;
-		
-		if(r <= current->mid)
-			result = this->countAndDelete(current->leftSon, l, r);
-		else if(l > current->mid)
-			result = this->countAndDelete(current->rightSon, l, r);
-		else 
-			result = this->countAndDelete(current->leftSon, l, r) + this->countAndDelete(current->rightSon, l, r);
-	
-		current->update();
-		
-		return result;
-	}
-	
+    self::valueType countAndDelete(pointer current, self::valueType l, self::valueType r) {
+        if (current == NULL)
+            return 0;
+
+        if (l <= current->leftBound && current->rightBound <= r) {
+            self::valueType const result = current->data.count;
+            current->data = node::DATA();
+            return result;
+        }
+
+        self::valueType result;
+
+        if (r <= current->mid)
+            result = this->countAndDelete(current->leftSon, l, r);
+        else if (l > current->mid)
+            result = this->countAndDelete(current->rightSon, l, r);
+        else
+            result = this->countAndDelete(current->leftSon, l, r) + this->countAndDelete(current->rightSon, l, r);
+
+        current->update();
+
+        return result;
+    }
+
 public:
-	void update(int type, self::valueType key){
-		if(type == 3){
-			self::valueType const count = this->countAndDelete(L, key - 1);
-			this->insert(key, count);
-		} else if(type == 4){
-			self::valueType const count = this->countAndDelete(key + 1, R);
-			this->insert(key, count);
-		}
-	}
+    void update(int type, self::valueType key) {
+        if (type == 3) {
+            self::valueType const count = this->countAndDelete(L, key - 1);
+            this->insert(key, count);
+        } else if (type == 4) {
+            self::valueType const count = this->countAndDelete(key + 1, R);
+            this->insert(key, count);
+        }
+    }
 
 public:
     self::valueType kth(self::valueType key) {
@@ -181,20 +181,20 @@ public:
 
         return this->kth(this->root, key);
     }
-    
-    self::valueType product(){
-    	if(this->root == NULL)
-    		return INT_MIN;
-    	
-    	return this->root->data.product;
-	}
-	
-	self::valueType size(){
-    	if(this->root == NULL)
-    		return 0;
-    	
-    	return this->root->data.count;
-	}
+
+    self::valueType product() {
+        if (this->root == NULL)
+            return INT_MIN;
+
+        return this->root->data.product;
+    }
+
+    self::valueType size() {
+        if (this->root == NULL)
+            return 0;
+
+        return this->root->data.count;
+    }
 
 private:
     self::valueType kth(pointer current, self::valueType key) {
@@ -237,14 +237,14 @@ private:
     }
 };
 
-struct QUERY{
-	int opt;
-	valueType a, b;
+struct QUERY {
+    int opt;
+    valueType a, b;
 };
 
 //array<QUERY, maxM> query;
 //vector<TREE> tree;
-SEGNODE* pool;
+SEGNODE *pool;
 array<TREE, maxN> tree;
 
 void init();
@@ -258,40 +258,41 @@ void merge(int x, int y);
 int main() {
     init();
 
-	for(int i = 1; i <= M; ++i){
-		int opt;
-		cin >> opt;
-		
-		if(opt == 1){
-			valueType x;
-			cin >> x;
-			tree[++N].insert(x, 1);
-		} else if(opt == 2){
-			valueType a, b;
-			cin >> a >> b;
-			merge(a, b);
-		} else if(opt == 3 || opt == 4){
-			valueType a, x;
-			cin >> a >> x;
-			tree[find(a)].update(opt, x);
-		} else if(opt == 5){
-			valueType a, k;
-			cin >> a >> k;
-			cout << tree[find(a)].kth(k) << '\n';
-		} else if(opt == 6){
-			valueType a, b;
-			cin >> a >> b;
-			cout << (tree[find(a)].product() > tree[find(b)].product()) << '\n';
-		} else if(opt == 7){
-			valueType a;
-			cin >> a;
-			cout << tree[find(a)].size() << '\n';
-		} else if(opt == 8){
-			read(); read();
-		} else if(opt == 9){
-			read();
-		}
-	}
+    for (int i = 1; i <= M; ++i) {
+        int opt;
+        cin >> opt;
+
+        if (opt == 1) {
+            valueType x;
+            cin >> x;
+            tree[++N].insert(x, 1);
+        } else if (opt == 2) {
+            valueType a, b;
+            cin >> a >> b;
+            merge(a, b);
+        } else if (opt == 3 || opt == 4) {
+            valueType a, x;
+            cin >> a >> x;
+            tree[find(a)].update(opt, x);
+        } else if (opt == 5) {
+            valueType a, k;
+            cin >> a >> k;
+            cout << tree[find(a)].kth(k) << '\n';
+        } else if (opt == 6) {
+            valueType a, b;
+            cin >> a >> b;
+            cout << (tree[find(a)].product() > tree[find(b)].product()) << '\n';
+        } else if (opt == 7) {
+            valueType a;
+            cin >> a;
+            cout << tree[find(a)].size() << '\n';
+        } else if (opt == 8) {
+            read();
+            read();
+        } else if (opt == 9) {
+            read();
+        }
+    }
 
     return 0;
 }
@@ -315,7 +316,7 @@ SEGNODE *newNode() {
 //
 //    return ++allocp;
 //	return (SEGNODE*)malloc(sizeof(SEGNODE));
-	return new SEGNODE;
+    return new SEGNODE;
 }
 
 int find(int x) {
@@ -323,10 +324,10 @@ int find(int x) {
     else return father[x] = find(father[x]);
 }
 
-void read(){
-	int ch(getchar());
-	while(ch < '0' || ch > '9')
-		ch = getchar();
-	while(ch >='0' && ch <='9')
-		ch = getchar();
+void read() {
+    int ch(getchar());
+    while (ch < '0' || ch > '9')
+        ch = getchar();
+    while (ch >= '0' && ch <= '9')
+        ch = getchar();
 }

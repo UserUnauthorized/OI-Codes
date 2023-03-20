@@ -178,7 +178,8 @@ query(pointer xNode, pointer yNode, pointer lcaNode, pointer lcaFatherNode, valu
     if (k <= preCount)
         return query(xNode->leftSon, yNode->leftSon, lcaNode->leftSon, lcaFatherNode->leftSon, l, mid, k);
     else
-        return query(xNode->rightSon, yNode->rightSon, lcaNode->rightSon, lcaFatherNode->rightSon, mid + 1, r, k - preCount);
+        return query(xNode->rightSon, yNode->rightSon, lcaNode->rightSon, lcaFatherNode->rightSon, mid + 1, r,
+                     k - preCount);
 }
 
 pointer newNode() {

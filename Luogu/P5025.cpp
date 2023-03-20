@@ -77,25 +77,25 @@ int main() {
 //    for (int i = 1; i <= N; ++i)
 //        if (!dfn[inId[i]])
 //            tarjan(inId[i]);
-	tarjan(1);
-	
-	isRoot.set();
+    tarjan(1);
+
+    isRoot.set();
     build();
 
-	int ROOT(0);
-	for(int i = 1; i <= sccnum; ++i){
-		if(isRoot[i]){
-			ROOT = i;
-			break;
-		}
-	}
+    int ROOT(0);
+    for (int i = 1; i <= sccnum; ++i) {
+        if (isRoot[i]) {
+            ROOT = i;
+            break;
+        }
+    }
 
     vis.fill(false);
 //    for (int i = 1; i <= sccnum; ++i)
 //        if (!vis[i])
 //            dfs(i);
 
-	dfs(ROOT);
+    dfs(ROOT);
 
     unsigned long long ans = 0;
     for (int i = 1; i <= N; ++i) {
@@ -213,11 +213,11 @@ void tarjan(int x) {
 void build() {
     for (int i = 1; i <= D; ++i)
         for (auto iter: oldEdge[i])
-            if (belong[i] != belong[iter]){
-            	isRoot[belong[iter]] = false;
-            	edge[belong[i]].emplace_back(belong[iter]);
-			}
-                
+            if (belong[i] != belong[iter]) {
+                isRoot[belong[iter]] = false;
+                edge[belong[i]].emplace_back(belong[iter]);
+            }
+
 
 //    for (int i = 1; i <= sccnum; ++i) {
 //        vector<int> &iter = edge[i];
