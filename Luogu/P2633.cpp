@@ -174,7 +174,7 @@ query(pointer xNode, pointer yNode, pointer lcaNode, pointer lcaFatherNode, valu
     int const mid = (l + r) >> 1;
 
     int const preCount = xNode->count + yNode->count - lcaNode->count - lcaFatherNode->count;
-
+    debug(xNode->count, yNode->count, lcaNode->count, lcaFatherNode->count, preCount, l, r, k);
     if (k <= preCount)
         return query(xNode->leftSon, yNode->leftSon, lcaNode->leftSon, lcaFatherNode->leftSon, l, mid, k);
     else
