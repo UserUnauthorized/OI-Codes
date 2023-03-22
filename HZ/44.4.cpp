@@ -43,7 +43,7 @@ namespace DEBUG {
 using namespace DEBUG;
 
 typedef int valueType;
-constexpr int maxN = 8e4 + 5, maxK = 20;
+constexpr int maxN = 8e4 + 1, maxK = 18;
 typedef std::array<valueType, maxN> ARRAY;
 typedef std::array<ARRAY, maxK> STArray;
 typedef std::vector<valueType> VECTOR;
@@ -103,8 +103,6 @@ STArray st;
 PointerArray tree;
 EdgeArray edge;
 VECTOR point;
-QUEUE que;
-BITSET inQueue;
 
 void init();
 
@@ -131,12 +129,6 @@ int main() {
     	std::cin >> order;
     	
     	if(order == 'Q'){
-    		while(!que.empty()){
-    			dfs(que.front(), father[que.front()]);
-    			inQueue[que.front()] = false;
-    			que.pop();
-			}
-    		
     		int x = 0, y = 0, k = 0;
         	std::cin >> x >> y >> k;
         	std::cout << (lastAns = point[query(x ^ lastAns, y ^ lastAns, k ^ lastAns)]) << '\n';
@@ -218,26 +210,6 @@ pointer insert(const pointer &current, valueType nodeL, valueType nodeR, valueTy
     return result;
 }
 
-void update(const pointer &current, const pointer &preNode, valueType pos, valueType l, valueType r){
-	current->count = preNode->count;
-	
-	if(l == r)
-		return;
-	
-	int const mid = (l + r) >> 1;
-	
-	if(pos <= mid)
-		update(current->leftSon, preNode->leftSon, pos, l, mid);
-	else
-		update(current->rightSon, preNode->rightSon, pos, mid + 1, r);
-	
-	current->update();
-}
-
-void update(const pointer &current, const pointer &preNode, valueType pos){
-	update(current, preNode, pos, L, R);
-}
-
 valueType query(valueType x, valueType y, valueType k) {
     valueType const LCA = lca(x, y);
     return query(tree[x], tree[y], tree[LCA], tree[father[LCA]], L, R, k);
@@ -260,8 +232,6 @@ query(pointer xNode, pointer yNode, pointer lcaNode, pointer lcaFatherNode, valu
 }
 
 pointer newNode() {
-//    static SEGNODE pool[maxN * 264], *allocp = pool - 1;
-//    return ++allocp;
 	return new SEGNODE;
 }
 
@@ -318,9 +288,8 @@ void merge(int x, int y){
     head[x] = M << 1;
     head[y] = M << 1 | 1;
         
-    dfs(x, father[x]);
-//	if(!inQueue[x]){
-//		que.push(x);
-//		inQueue[x] = true;
-//	}
+    dfs(y, x);
+    
+    while((x = father[x]))
+    	size[x] += size[y];
 }
