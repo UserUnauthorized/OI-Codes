@@ -133,7 +133,7 @@ namespace HJT{
     	pointer current = newNode();
 
     	if (l == r) {
-    		tree[current].data = DATA(-1);
+    		tree[current].data = DATA(1);
     	    return current;
     	}
 
@@ -167,6 +167,9 @@ namespace HJT{
 	}
 	
 	DATA query(const pointer &current, posType nodeL, posType nodeR, posType queryL, posType queryR){
+		if(queryL > queryR)
+			return DATA(0);
+		
 		if(queryL <= nodeL && nodeR <= queryR)
 			return tree[current].data;
 		
@@ -254,38 +257,37 @@ void init(){
 		table[source[i]].push(i);
 	}
 	
-	tree[0] = HJT::build(L, R);
+	tree[1] = HJT::build(L, R);
 	
 	for(int i = 1; i <= S; ++i){
 		while(!table[i].empty()){
-			tree[i] = HJT::insert(tree[i - 1], L, R, table[i].front(), 1);
+			tree[i + 1] = HJT::insert(tree[i], L, R, table[i].front(), -1);
 			table[i].pop();
 		}
-		debug(i, HJT[tree[tree[i]]].data.sum);
 	}
 }
 
 valueType query(valueType k, INPUT const &data){
-	return HJT::query(tree[k], L, R, data[0], data[1]).rightMax + HJT::query(tree[k], L, R, data[1], data[2]).sum + HJT::query(tree[k], L, R, data[2], data[3]).leftMax;
+	return HJT::query(tree[k], L, R, data[0], data[1]).rightMax + HJT::query(tree[k], L, R, data[1] + 1, data[2] - 1).sum + HJT::query(tree[k], L, R, data[2], data[3]).leftMax;
 }
 
 valueType solve(INPUT const &data){
-	valueType l = L, r = S;
+	valueType l = L, r = S, ans = S;
 	while(l < r){
-		int const mid = (l + r + 1) >> 1;
+		int const mid = (l + r) >> 1;
 		
 		if(check(mid, data))
-			l = mid;
+			ans = mid, l = mid + 1;
 		else
 			r = mid - 1;
 	}
 	
-	return l;
+	return ans;
 }
 
 const INPUT& decrypt(INPUT &data, valueType const &lastAns){
 	for(int i = 0; i < 4; ++i)
-		data[i] = (data[i] + lastAns) % N;
+		data[i] = (data[i] + lastAns) % N + 1;
 	
 	std::sort(data.begin(), data.end());
 	
@@ -293,7 +295,7 @@ const INPUT& decrypt(INPUT &data, valueType const &lastAns){
 }
 
 bool check(valueType k, INPUT const &data){
-	return query(k, data) <= 0;
+	return query(k, data) >= 0;
 }
 
 std::istream& operator>>(std::istream& os, INPUT &v){
