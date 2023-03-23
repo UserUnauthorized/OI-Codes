@@ -43,6 +43,7 @@ namespace DEBUG {
 using namespace DEBUG;
 
 typedef int valueType;
+typedef unsigned int posType;
 constexpr int maxN = 8e4 + 1, maxK = 18;
 typedef std::array<valueType, maxN> ARRAY;
 typedef std::array<ARRAY, maxK> STArray;
@@ -55,24 +56,28 @@ const int &L = L_, &R = R_, &N = N_, &M = M_, &Q = Q_, &K = K_;
 
 struct SEGNODE {
     typedef SEGNODE self;
-    typedef self *pointer;
+    typedef posType pointer;
     typedef ::valueType valueType;
 
     pointer leftSon, rightSon;
     self::valueType count;
 
-    SEGNODE() : leftSon(nullptr), rightSon(nullptr), count(0) {};
+    SEGNODE() : leftSon(0), rightSon(0), count(0) {};
 
-    void update() {
-        this->count = 0;
-
-        if (this->leftSon != nullptr)
-            this->count += this->leftSon->count;
-
-        if (this->rightSon != nullptr)
-            this->count += this->rightSon->count;
-    }
+    void update();
 };
+
+std::array<SEGNODE, maxN * 200> node;
+
+void SEGNODE::update() {
+    this->count = 0;
+    
+    if (this->leftSon != 0)
+		this->count += node[this->leftSon].count;
+
+	if (this->rightSon != 0)
+		this->count += node[this->rightSon].count;
+}
 
 struct EDGE {
     int next;
@@ -176,36 +181,36 @@ void init() {
 pointer build(valueType l, valueType r) {
     pointer current = newNode();
 
-    current->count = 0;
+    node[current].count = 0;
 
     if (l == r)
         return current;
 
     int const mid = (l + r) >> 1;
 
-    current->leftSon = build(l, mid);
-    current->rightSon = build(mid + 1, r);
+    node[current].leftSon = build(l, mid);
+    node[current].rightSon = build(mid + 1, r);
 
     return current;
 }
 
 pointer insert(const pointer &current, valueType nodeL, valueType nodeR, valueType pos) {
     pointer result = newNode();
-    *result = *current;
+    node[result] = node[current];
 
     if (nodeL == nodeR) {
-        ++result->count;
+        ++node[result].count;
         return result;
     }
 
     int const mid = (nodeL + nodeR) >> 1;
 
     if (pos <= mid)
-        result->leftSon = insert(current->leftSon, nodeL, mid, pos);
+        node[result].leftSon = insert(node[current].leftSon, nodeL, mid, pos);
     else
-        result->rightSon = insert(current->rightSon, mid + 1, nodeR, pos);
+        node[result].rightSon = insert(node[current].rightSon, mid + 1, nodeR, pos);
 
-    result->update();
+    node[result].update();
 
     return result;
 }
@@ -222,17 +227,18 @@ query(pointer xNode, pointer yNode, pointer lcaNode, pointer lcaFatherNode, valu
 
     int const mid = (l + r) >> 1;
 
-    int const preCount = xNode->leftSon->count + yNode->leftSon->count - lcaNode->leftSon->count - lcaFatherNode->leftSon->count;
+    int const preCount = node[node[xNode].leftSon].count + node[node[yNode].leftSon].count - node[node[lcaNode].leftSon].count - node[node[lcaFatherNode].leftSon].count;
     
     if (k <= preCount)
-        return query(xNode->leftSon, yNode->leftSon, lcaNode->leftSon, lcaFatherNode->leftSon, l, mid, k);
+        return query(node[xNode].leftSon, node[yNode].leftSon, node[lcaNode].leftSon, node[lcaFatherNode].leftSon, l, mid, k);
     else
-        return query(xNode->rightSon, yNode->rightSon, lcaNode->rightSon, lcaFatherNode->rightSon, mid + 1, r,
+        return query(node[xNode].rightSon, node[yNode].rightSon, node[lcaNode].rightSon, node[lcaFatherNode].rightSon, mid + 1, r,
                      k - preCount);
 }
 
 pointer newNode() {
-	return new SEGNODE;
+	static pointer count = 0;
+	return count++;
 }
 
 void dfs(int x, int from) {
