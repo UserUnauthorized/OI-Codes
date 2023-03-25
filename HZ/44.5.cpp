@@ -65,7 +65,7 @@ struct SEGNODE {
     SEGNODE() : leftSon(NULL), rightSon(NULL), count(0), lazy(0) {};
 
     void update() {
-        this->count = this->lazy);
+        this->count = this->lazy;
 
         if (this->leftSon != NULL)
             this->count += this->leftSon->count;
@@ -101,6 +101,8 @@ void getBound();
 int main() {
     init();
 
+    getBound();
+
     for (int i = 0; i < M; ++i) {
         posType l, r;
         std::cin >> l >> r;
@@ -116,11 +118,27 @@ void init() {
 
     for (int i = 1; i <= N; ++i)
         std::cin >> source[i];
+        
+    source[N + 1] = INT_MAX;
+    source[0] = INT_MIN;
 
     L_ = 1;
     R_ = N;
 
     tree[0] = build(L, R);
+}
+
+void getBound(){
+	std::stack<int> st;
+	
+	for(int i = 1; i <= N + 1; ++i){
+		while(!st.empty() && source[st.top()] < source[i]){
+			rightBound[st.top()] = i;
+			st.pop();
+		}
+		
+		st.push(i);
+	}
 }
 
 pointer build(posType l, posType r) {
