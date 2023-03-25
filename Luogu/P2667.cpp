@@ -74,6 +74,8 @@ void push(int id);
 valueType query(int id, int pos);
 
 int main(){
+//	freopen("attack.in", "r", stdin);
+//	freopen("attack.out", "w", stdout);
 	init();
 
 	build(1, 1, N);
@@ -94,7 +96,6 @@ int main(){
 			std::cin >> x;
 			ans += query(1, x);
 			ans %= MOD;
-			std::cerr << query(1, x) << '\n';
 		}
 	}
 	
@@ -147,26 +148,22 @@ void attack(int id, int l, int r, valueType key){
 }
 
 void attack(int id, valueType key){
-	if(/*tree[id].before + */key < tree[id].remain){
-//		if(!tree[id].leaf())
+	if(tree[id].remain == MAX){
+		tree[id].after += key;
+		return;
+	}
+	
+	if(key < tree[id].remain){
 		tree[id].remain -= key;	
 		tree[id].before += key;
 		tree[id].after += key;
-//		tree[id].after %= MOD;
 		return;
 	}
 	
-	if(tree[id].remain == MAX){
-//		tree[id].before += key;
-		tree[id].after += key;
-//		tree[id].before %= MOD;
-//		tree[id].after %= MOD;
-		return;
-	}
+	
 	
 	if(tree[id].leaf()){
 		tree[id].before += key;
-		debug(tree[id].r, tree[id].before, tree[id].remain);
 		before[tree[id].r] = tree[id].before;
 		tree[id].remain = MAX;
 		tree[id].after = 0;
@@ -185,6 +182,13 @@ void attack(int id, valueType key){
 void push(int id){
 	tree[id << 1].before += tree[id].before;
 	tree[id << 1|1].before += tree[id].before;
+	
+	if(tree[id << 1].remain != MAX)
+		tree[id << 1].remain -= tree[id].before;
+	
+	if(tree[id << 1|1].remain != MAX)
+		tree[id << 1|1].remain -= tree[id].before;
+	
 	tree[id << 1].after += tree[id].after;
 	tree[id << 1|1].after += tree[id].after;
 	tree[id].before = tree[id].after = 0;
