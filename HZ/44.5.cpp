@@ -47,6 +47,7 @@ typedef long long valueType;
 typedef int posType;
 constexpr int maxN = 2e5 + 5;
 typedef std::array<valueType, maxN> ARRAY;
+typedef std::array<posType, maxN> PosArray;
 
 int L_, R_, N_, M_, P1_, P2_;
 const int &L = L_, &R = R_, &N = N_, &M = M_, &P1 = P1_, &P2 = P2_;
@@ -59,11 +60,12 @@ struct SEGNODE {
 
     pointer leftSon, rightSon;
     self::valueType count;
+    self::valueType lazy;
 
-    SEGNODE() : leftSon(NULL), rightSon(NULL), count(0) {};
+    SEGNODE() : leftSon(NULL), rightSon(NULL), count(0), lazy(0) {};
 
     void update() {
-        this->count = 0;
+        this->count = this->lazy);
 
         if (this->leftSon != NULL)
             this->count += this->leftSon->count;
@@ -80,18 +82,21 @@ pointer newNode();
 
 pointer build(posType l, posType r);
 
-pointer insert(const pointer &current, posType nodeL, posType nodeR, posType pos);
+pointer insert(const pointer &current, posType nodeL, posType nodeR, posType pos, valueType key);
 
-valueType query(pointer leftNode, pointer rightNode, posType nodeL, posType nodeR, posType l, posType r);
+pointer insert(const pointer &current, posType nodeL, posType nodeR, posType queryL, posType queryR, valueType key);
 
-valueType query(posType l, posType r, posType k);
+valueType query(pointer leftNode, pointer rightNode, posType nodeL, posType nodeR, posType queryL, posType queryR);
+
+valueType query(posType l, posType r);
 
 ARRAY source;
+PosArray leftBound, rightBound;
 PointerArray tree;
 
 void init();
 
-valueType solve(posType l, posType r);
+void getBound();
 
 int main() {
     init();
@@ -100,28 +105,10 @@ int main() {
         posType l, r;
         std::cin >> l >> r;
 
-        std::cout << solve(l, r) << '\n';
+        std::cout << query(l, r) << '\n';
     }
 
     return 0;
-}
-
-valueType solve(posType l, posType r) {
-    if (r - l == 1)
-        return P1;
-
-    if (l == r)
-        return 0;
-
-    posType const mid = (l + r) >> 1, leftSize = mid - l, rightSize = r - mid;
-
-    valueType const leftRank = query(l, mid, source[mid]), rightRank = query(mid, r, source[mid]);
-
-    valueType const result =
-            P2 * ((leftSize - leftRank + 1) * (rightRank - 1) + (rightSize - rightRank + 1) * (leftRank - 1)) +
-            P1 * ((leftSize - leftRank + 1) * (rightSize - rightRank + 1));
-
-    return result + solve(l, mid) + solve(mid, r);
 }
 
 void init() {
@@ -134,16 +121,13 @@ void init() {
     R_ = N;
 
     tree[0] = build(L, R);
-
-    for (int i = 1; i <= N; ++i)
-        tree[i] = insert(tree[i - 1], L, R, source[i]);
 }
 
 pointer build(posType l, posType r) {
     pointer current = newNode();
 
     if (l == r) {
-        current->count = 0;
+        current->count = current->lazy = 0;
         return current;
     }
 
@@ -155,53 +139,7 @@ pointer build(posType l, posType r) {
     return current;
 }
 
-pointer insert(const pointer &current, posType nodeL, posType nodeR, posType pos) {
-    pointer result = newNode();
-    *result = *current;
-
-    if (nodeL == nodeR) {
-        ++result->count;
-        return result;
-    }
-
-    int const mid = (nodeL + nodeR) >> 1;
-
-    if (pos <= mid)
-        result->leftSon = insert(current->leftSon, nodeL, mid, pos);
-    else
-        result->rightSon = insert(current->rightSon, mid + 1, nodeR, pos);
-
-    result->update();
-
-    return result;
-}
-
-valueType query(posType l, posType r, posType k) {
-    if (k == L)
-        return 1;
-
-    return query(tree[l - 1], tree[r], L, R, L, k - 1) + 1;
-}
-
-valueType query(pointer leftNode, pointer rightNode, posType nodeL, posType nodeR, posType l, posType r) {
-    if (leftNode->count == rightNode->count)
-        return 0;
-
-    if (l <= nodeL && nodeR <= r)
-        return rightNode->count - leftNode->count;
-
-    posType const mid = (nodeL + nodeR) >> 1;
-
-    if (r <= mid)
-        return query(leftNode->leftSon, rightNode->leftSon, nodeL, mid, l, r);
-    else if (l > mid)
-        return query(leftNode->rightSon, rightNode->rightSon, mid + 1, nodeR, l, r);
-    else
-        return query(leftNode->leftSon, rightNode->leftSon, nodeL, mid, l, r) +
-               query(leftNode->rightSon, rightNode->rightSon, mid + 1, nodeR, l, r);
-}
-
 pointer newNode() {
-    static SEGNODE pool[maxN << 5], *allocp = pool - 1;
+    static SEGNODE pool[maxN << 6], *allocp = pool - 1;
     return ++allocp;
 }
