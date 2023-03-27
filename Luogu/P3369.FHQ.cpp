@@ -2,7 +2,7 @@
 #include<bits/stdc++.h>
 
 constexpr unsigned int seed = 22516;
-mt19937 getRand(seed);
+std::mt19937 getRand(seed);
 	
 struct NODE {
     typedef NODE self;
@@ -18,12 +18,19 @@ struct NODE {
     self::valueType count;
     self::valueType size;
 
-    NODE() : leftSon(NULL), rightSon(NULL), father(NULL), priority(0), value(0), count(0), size(0) {};
+    NODE() : leftSon(NULL), rightSon(NULL), priority(0), value(0), count(0), size(0) {};
 
     void init() {
         this->leftSon = this->rightSon = nullptr;
         this->priority = ::getRand();
         this->value = 0;
+        this->count = this->size = 1;
+    }
+    
+    void init(valueType key) {
+        this->leftSon = this->rightSon = nullptr;
+        this->priority = ::getRand();
+        this->value = key;
         this->count = this->size = 1;
     }
 
@@ -70,7 +77,7 @@ class FHQ{
 public:
     typedef NODE node;
     typedef node::pointer pointer;
-    typedef TREAP self;
+    typedef FHQ self;
     typedef node::valueType valueType;
     
 private:
@@ -81,6 +88,10 @@ private:
     static const self::valueType minNotFoundValue = self::minValue;
     static const self::valueType maxNotFoundValue = self::maxValue;
     
+    pointer newNode() {
+        return (pointer) malloc(sizeof(NODE));
+    }
+    
     void delNode(pointer &p) {
 //        free(p);
         p = nullptr;
@@ -89,7 +100,100 @@ private:
 public:
     pointer root;
 
-    TREAP() : root(NULL) {};
+    FHQ() : root(NULL) {};
     
-    
+    std::pair<pointer, pointer> split(pointer current, valueType key) {
+    	if(current == nullptr)
+    		return std::make_pair(nullptr, nullptr);
+    	
+    	if(current->value <= key) {
+    		auto const temp = this->split(current->rightSon, key);
+    		
+    		current->rightSon = temp.first;
+    		
+    		current->update();
+    		
+    		return std::make_pair(current, temp.second);
+		} else {
+			auto const temp = this->split(current->rightSon, key);
+    		
+    		current->leftSon = temp.first;
+    		
+    		current->update();
+    		
+    		return std::make_pair(temp.first, current);
+		}
+	}
+	
+	std::tuple<pointer, pointer, pointer> splitByRank(pointer current, valueType rank) {
+		if(current == nullptr)
+			return std::make_tuple(nullptr, nullptr, nullptr);
+			
+		valueType const leftSize = current->leftSon == nullptr ? 0 : current->leftSon->size;
+		
+		if(rank <= leftSize){
+			pointer left, mid, right;
+			
+			std::tie(left, mid, right) = this->splitByRank(current->leftSon, rank);
+			
+			current->leftSon = right;
+			
+			current->update();
+			
+			return std::make_tuple(left, mid, current);
+		} else if(rank <= leftSize + current->count) {
+			pointer left = current->leftSon;
+			pointer right = current->rightSon;
+			
+			current->leftSon = current->rightSon = nullptr;
+			
+			return std::make_tuple(left, current, right);
+		} else {
+			pointer left, mid, right;
+			
+			std::tie(left, mid, right) = this->splitByRank(current->rightSon, rank - leftSize - current->count);
+			
+			current->rightSon = left;
+			
+			return std::make_tuple(current, mid, right);
+		}
+	}
+	
+	pointer merge(pointer left, pointer right){
+		if(left == nullptr && right == nullptr) return nullptr;
+		if(right == nullptr) return left;
+		if(left == nullptr) return right;
+		
+		if(left->priority < right->priority) {
+			left->rightSon = this->merge(left->rightSon, right);
+			
+			left->update();
+			
+			return left;
+		} else {
+			right->leftSon = this->merge(left, right->leftSon);
+			
+			right->update();
+			
+			return right;
+		}
+	}
+	
+	void insert(valueType key){
+		auto const temp = this->split(this->root, key);
+		
+		auto left = this->split(temp.first, key - 1);
+		
+		if(left.second == nullptr){
+			left.second = this->newNode();
+			left.second->init(key);
+		} else {
+			++left.second->count;
+			left.second->update();
+		}
+		
+		pointer leftCombined = this->merge(left.first, left.second);
+		
+		this->root = this->merge(leftCombined, temp.second);
+	}
 };
