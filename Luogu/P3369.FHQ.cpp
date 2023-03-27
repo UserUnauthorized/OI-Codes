@@ -89,7 +89,8 @@ private:
     static const self::valueType maxNotFoundValue = self::maxValue;
     
     pointer newNode() {
-        return (pointer) malloc(sizeof(NODE));
+//        return (pointer) malloc(sizeof(NODE));
+		return new NODE;
     }
     
     void delNode(pointer &p) {
@@ -196,4 +197,131 @@ public:
 		
 		this->root = this->merge(leftCombined, temp.second);
 	}
-};
+	
+	void remove(valueType key) {
+		auto temp = this->split(this->root, key);
+		
+		auto left = this->split(temp.first, key - 1);
+		
+		if(left.second->count > 1){
+			--left.second->count;
+			left.second->update();
+			left.first = this->merge(left.first, left.second);
+		} else {
+//			if (temp.first == left.second){
+//				temp.first = nullptr;
+//			}
+			/* TAG */
+			
+			this->delNode(left.second);
+		}
+		
+		this->root = this->merge(left.first, temp.second);
+	}
+	
+	self::valueType rank(self::valueType key) const {
+        pointer current = this->root;
+        self::valueType result(1);
+
+        while (current != NULL) {
+            while (current != NULL && key <= current->value)
+                current = current->leftSon;
+
+            while (current != NULL && key > current->value) {
+                result += current->count;
+
+                if (current->leftSon != NULL)
+                    result += current->leftSon->size;
+
+                current = current->rightSon;
+            }
+        }
+
+        return result;
+    }
+
+    self::valueType kth(self::valueType key) const {
+        pointer current = this->root;
+
+        while (true) {
+            if (current->leftSon != NULL && key <= (current->leftSon)->size) {
+                current = current->leftSon;
+                continue;
+            }
+
+            if (current->leftSon != NULL)
+                key -= (current->leftSon)->size;
+
+            key -= current->count;
+
+            if (key <= 0)
+                return current->value;
+
+            current = current->rightSon;
+        }
+    }
+
+    self::valueType pre(self::valueType key) const {
+        pointer current = this->root;
+        self::valueType result = this->minValue;
+
+        while (current != NULL) {
+            while (current != NULL && current->value >= key)
+                current = current->leftSon;
+
+            while (current != NULL && current->value < key) {
+                result = std::max(result, current->value);
+                current = current->rightSon;
+            }
+        }
+
+        if (result == this->minValue)
+            return this->preNotFoundValue;
+
+        return result;
+    }
+
+    self::valueType next(self::valueType key) const {
+        pointer current = this->root;
+        self::valueType result = this->maxValue;
+
+        while (current != NULL) {
+            while (current != NULL && current->value <= key)
+                current = current->rightSon;
+
+            while (current != NULL && current->value > key) {
+                result = std::min(result, current->value);
+                current = current->leftSon;
+            }
+        }
+
+        if (result == this->maxValue)
+            return this->nextNotFoundValue;
+
+        return result;
+    }
+} tree;
+
+int main() {
+    int n;
+    std::cin >> n;
+    while (n--) {
+        int opt, x;
+        std::cin >> opt >> x;
+
+        if (opt == 1)
+            tree.insert(x);
+        else if (opt == 2)
+            tree.remove(x);
+        else if (opt == 3)
+            std::cout << tree.rank(x) << '\n';
+        else if (opt == 4)
+            std::cout << tree.kth(x) << '\n';
+        else if (opt == 5)
+            std::cout << tree.pre(x) << '\n';
+        else if (opt == 6)
+            std::cout << tree.next(x) << '\n';
+    }
+
+    return 0;
+}
