@@ -116,9 +116,9 @@ public:
     		
     		return std::make_pair(current, temp.second);
 		} else {
-			auto const temp = this->split(current->rightSon, key);
+			auto const temp = this->split(current->leftSon, key);
     		
-    		current->leftSon = temp.first;
+    		current->leftSon = temp.second;
     		
     		current->update();
     		
