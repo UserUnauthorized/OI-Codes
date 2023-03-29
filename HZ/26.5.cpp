@@ -1,8 +1,7 @@
-//HZ - 26.1
-//Luogu - P7368
+//HZ - 26.5
 #include<bits/stdc++.h>
 
-constexpr int maxN = 550;
+constexpr int maxN = 55 * 55;
 constexpr int maxM = maxN * maxN;
 
 typedef std::list<int> LIST;
