@@ -2,7 +2,7 @@
 //Luogu - P7368
 #include<bits/stdc++.h>
 
-constexpr int maxN = 55;
+constexpr int maxN = 550;
 constexpr int maxM = maxN * maxN;
 
 typedef std::list<int> LIST;
@@ -44,17 +44,17 @@ void init(){
 	
 	for(int i = 1; i <= M; ++i) 
 		for(int j = 1; j <= N; ++j)
-			if(source[i][j - 1] == '*' && source[i][j - 1] == 'o')
+			if(source[i][j - 1] == '*' || source[i][j - 1] == 'o')
 				belongX[i][j] = belongX[i][j - 1];
 			else 
 				belongX[i][j] = ++X_;
 				
 	for(int j = 1; j <= N; ++j)
-		for(int i = 1; i <= M; ++i) 
-			if(source[i - 1][j] == '*' && source[i - 1][j] == 'o')
-				belongX[i][j] = belongX[i - 1][j];
+		for(int i = 1; i <= M; ++i)
+			if(source[i - 1][j] == '*' || source[i - 1][j] == 'o')
+				belongY[i][j] = belongY[i - 1][j];
 			else 
-				belongX[i][j] = ++Y_;
+				belongY[i][j] = ++Y_;
 				
 	for(int i = 1; i <= M; ++i)
 		for(int j = 1; j <= N; ++j)
