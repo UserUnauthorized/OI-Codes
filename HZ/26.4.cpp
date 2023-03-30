@@ -86,7 +86,7 @@ void init(){
 			if(t == 1){
 				if(nowClass[i] && preClass[j])
 					edge[i].emplace_back(j);
-				else if(nowClass[j] && preClass[i])
+				if(nowClass[j] && preClass[i])
 					edge[j].emplace_back(i);
 			}
 		}
