@@ -26,14 +26,11 @@ int main(){
 	for(int i = 1; i <= K; ++i){
 		visited.reset();
 		
-		if(dfs(i)){
+		if(dfs(i))
 			++ans;
-			std::cerr << i << ' ' << ans << std::endl;
-		}
-			
 	}
 	
-	std::cout << (K - ans / 2);
+	std::cout << ans;
 }
 
 void init(){
@@ -56,19 +53,14 @@ void init(){
 	
 	for(int i = 1; i <= A; ++i)
 		for(auto like : likeC[i])
-			for(auto dislike : dislikeC[i]){
+			for(auto dislike : dislikeC[i])
 				edge[like].emplace_back(dislike);
-				std::cerr << like << ' ' << dislike << std::endl;
-			}
 				
 				
 	for(int i = 1; i <= B; ++i)
 		for(auto like : likeD[i])
-			for(auto dislike : dislikeD[i]){
+			for(auto dislike : dislikeD[i])
 				edge[like].emplace_back(dislike);
-				std::cerr << like << ' ' << dislike << std::endl;
-			}
-				
 }
 
 bool dfs(int x){
