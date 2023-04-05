@@ -1,5 +1,6 @@
 //Luogu - P2633
 #include<bits/stdc++.h>
+
 #define debug(...)
 typedef int valueType;
 constexpr int maxN = 1e5 + 5, maxK = 20;
@@ -165,7 +166,8 @@ query(pointer xNode, pointer yNode, pointer lcaNode, pointer lcaFatherNode, valu
 
     int const mid = (l + r) >> 1;
 
-    int const preCount = xNode->leftSon->count + yNode->leftSon->count - lcaNode->leftSon->count - lcaFatherNode->leftSon->count;
+    int const preCount =
+            xNode->leftSon->count + yNode->leftSon->count - lcaNode->leftSon->count - lcaFatherNode->leftSon->count;
     debug(xNode->count, yNode->count, lcaNode->count, lcaFatherNode->count, preCount, l, r, k);
     if (k <= preCount)
         return query(xNode->leftSon, yNode->leftSon, lcaNode->leftSon, lcaFatherNode->leftSon, l, mid, k);

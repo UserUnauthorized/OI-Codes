@@ -22,18 +22,18 @@ namespace DEBUG {
         os << "]";
         return os;
     }
-    
+
     std::ostream &operator<<(std::ostream &os, __int128 V) {
-        if(V < 0){
-        	os << '-';
-        	V = -V;
-		}
-		
-		if(V > 9)	
-			os << V / 10;
-		
-		os << (int)(V % 10);
-		
+        if (V < 0) {
+            os << '-';
+            V = -V;
+        }
+
+        if (V > 9)
+            os << V / 10;
+
+        os << (int) (V % 10);
+
         return os;
     }
 
@@ -71,12 +71,12 @@ std::array<SEGNODE, maxN * 200> node;
 
 void SEGNODE::update() {
     this->count = 0;
-    
-    if (this->leftSon != 0)
-		this->count += node[this->leftSon].count;
 
-	if (this->rightSon != 0)
-		this->count += node[this->rightSon].count;
+    if (this->leftSon != 0)
+        this->count += node[this->leftSon].count;
+
+    if (this->rightSon != 0)
+        this->count += node[this->rightSon].count;
 }
 
 struct EDGE {
@@ -120,24 +120,24 @@ valueType lca(valueType x, valueType y);
 int main() {
     init();
 
-	for(int i = 1; i <= N; ++i)
-		if(!depth[i])
-    		dfs(i, 0, i);
+    for (int i = 1; i <= N; ++i)
+        if (!depth[i])
+            dfs(i, 0, i);
 
     int lastAns = 0;
     for (int i = 0; i < Q; ++i) {
-    	char order;
-    	std::cin >> order;
-    	
-    	if(order == 'Q'){
-    		int x = 0, y = 0, k = 0;
-        	std::cin >> x >> y >> k;
-        	std::cout << (lastAns = point[query(x ^ lastAns, y ^ lastAns, k ^ lastAns)]) << '\n';
-		} else if(order == 'L'){
-			int x = 0, y = 0;
-			std::cin >> x >> y;
-			merge(x ^ lastAns, y ^ lastAns);
-		}
+        char order;
+        std::cin >> order;
+
+        if (order == 'Q') {
+            int x = 0, y = 0, k = 0;
+            std::cin >> x >> y >> k;
+            std::cout << (lastAns = point[query(x ^ lastAns, y ^ lastAns, k ^ lastAns)]) << '\n';
+        } else if (order == 'L') {
+            int x = 0, y = 0;
+            std::cin >> x >> y;
+            merge(x ^ lastAns, y ^ lastAns);
+        }
     }
 
     return 0;
@@ -223,29 +223,33 @@ query(pointer xNode, pointer yNode, pointer lcaNode, pointer lcaFatherNode, valu
 
     int const mid = (l + r) >> 1;
 
-    int const preCount = node[node[xNode].leftSon].count + node[node[yNode].leftSon].count - node[node[lcaNode].leftSon].count - node[node[lcaFatherNode].leftSon].count;
-    
+    int const preCount =
+            node[node[xNode].leftSon].count + node[node[yNode].leftSon].count - node[node[lcaNode].leftSon].count -
+            node[node[lcaFatherNode].leftSon].count;
+
     if (k <= preCount)
-        return query(node[xNode].leftSon, node[yNode].leftSon, node[lcaNode].leftSon, node[lcaFatherNode].leftSon, l, mid, k);
+        return query(node[xNode].leftSon, node[yNode].leftSon, node[lcaNode].leftSon, node[lcaFatherNode].leftSon, l,
+                     mid, k);
     else
-        return query(node[xNode].rightSon, node[yNode].rightSon, node[lcaNode].rightSon, node[lcaFatherNode].rightSon, mid + 1, r,
+        return query(node[xNode].rightSon, node[yNode].rightSon, node[lcaNode].rightSon, node[lcaFatherNode].rightSon,
+                     mid + 1, r,
                      k - preCount);
 }
 
 pointer newNode() {
-	static pointer count = 0;
-	return count++;
+    static pointer count = 0;
+    return count++;
 }
 
 void dfs(int x, int from, const int &ROOT) {
-	size[x] = 1;
-	
+    size[x] = 1;
+
     depth[x] = depth[from] + 1;
-    
+
     tree[x] = insert(tree[from], L, R, source[x]);
-    	
+
     st[0][x] = father[x] = from;
-    
+
     root[x] = ROOT;
 
     for (int i = 1; i <= K; ++i)
@@ -257,7 +261,7 @@ void dfs(int x, int from, const int &ROOT) {
         if (to == from) continue;
 
         dfs(to, x, ROOT);
-        
+
         size[x] += size[to];
     }
 }
@@ -281,19 +285,19 @@ valueType lca(valueType x, valueType y) {
 }
 
 
-void merge(int x, int y){
-	if(size[root[x]] < size[root[y]])	
-		std::swap(x, y);
-	
-	++M_;
-	
+void merge(int x, int y) {
+    if (size[root[x]] < size[root[y]])
+        std::swap(x, y);
+
+    ++M_;
+
     edge[M << 1] = EDGE(head[x], y);
     edge[M << 1 | 1] = EDGE(head[y], x);
     head[x] = M << 1;
     head[y] = M << 1 | 1;
-        
+
     dfs(y, x, root[x]);
-    
-    while((x = father[x]))
-    	size[x] += size[y];
+
+    while ((x = father[x]))
+        size[x] += size[y];
 }

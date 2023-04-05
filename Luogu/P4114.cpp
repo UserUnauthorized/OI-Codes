@@ -48,12 +48,12 @@ int main() {
             insert(1, dfn[to[id]], key);
         } else if (order == "QUERY") {
             int x(read()), y(read());
-            
-            if(x == y){
-            	printf("0\n");
-            	continue;
-			}
-            
+
+            if (x == y) {
+                printf("0\n");
+                continue;
+            }
+
             int result(INT_MIN);
 
             while (top[x] != top[y]) {

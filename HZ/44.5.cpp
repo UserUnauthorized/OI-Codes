@@ -118,7 +118,7 @@ void init() {
 
     for (int i = 1; i <= N; ++i)
         std::cin >> source[i];
-        
+
     source[N + 1] = INT_MAX;
     source[0] = INT_MIN;
 
@@ -128,17 +128,17 @@ void init() {
     tree[0] = build(L, R);
 }
 
-void getBound(){
-	std::stack<int> st;
-	
-	for(int i = 1; i <= N + 1; ++i){
-		while(!st.empty() && source[st.top()] < source[i]){
-			rightBound[st.top()] = i;
-			st.pop();
-		}
-		
-		st.push(i);
-	}
+void getBound() {
+    std::stack<int> st;
+
+    for (int i = 1; i <= N + 1; ++i) {
+        while (!st.empty() && source[st.top()] < source[i]) {
+            rightBound[st.top()] = i;
+            st.pop();
+        }
+
+        st.push(i);
+    }
 }
 
 pointer build(posType l, posType r) {

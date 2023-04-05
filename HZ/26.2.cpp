@@ -17,56 +17,56 @@ bool dfs(int x);
 
 void init();
 
-int main(){
-	init();
-	
-	int ans = 0;
-	
-	for(int i = 1; i <= M; ++i){
-		visited.reset();
-		
-		if(dfs(i))
-			++ans;
-		else
-			break;
-	}
-	
-	std::cout << ans << '\n';
-	
+int main() {
+    init();
+
+    int ans = 0;
+
+    for (int i = 1; i <= M; ++i) {
+        visited.reset();
+
+        if (dfs(i))
+            ++ans;
+        else
+            break;
+    }
+
+    std::cout << ans << '\n';
+
 //	for(int i = 1; i <= ans; ++i)
 //		std::cout << use[i] - 1 << '\n';
-	
-	return 0;
+
+    return 0;
 }
 
-void init(){
-	std::cin >> N_ >> M_;
-	
-	for(int i = 1; i <= M; ++i){
-		int x, y;
-		
-		std::cin >> x >> y;
-		
-		++x;
-		++y;
-		
-		edge[i].emplace_back(x);
-		edge[i].emplace_back(y);
-	}
+void init() {
+    std::cin >> N_ >> M_;
+
+    for (int i = 1; i <= M; ++i) {
+        int x, y;
+
+        std::cin >> x >> y;
+
+        ++x;
+        ++y;
+
+        edge[i].emplace_back(x);
+        edge[i].emplace_back(y);
+    }
 }
 
-bool dfs(int x){
-	for(auto iter : edge[x]){
-		if(!visited[iter]){
-			visited[iter] = true;
-			
-			if(!match[iter] || dfs(match[iter])){
-				match[iter] = x;
-				use[x] = iter;
-				return true;
-			}
-		}
-	}
-	
-	return false;
+bool dfs(int x) {
+    for (auto iter: edge[x]) {
+        if (!visited[iter]) {
+            visited[iter] = true;
+
+            if (!match[iter] || dfs(match[iter])) {
+                match[iter] = x;
+                use[x] = iter;
+                return true;
+            }
+        }
+    }
+
+    return false;
 }

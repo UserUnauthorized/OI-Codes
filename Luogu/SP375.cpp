@@ -36,57 +36,57 @@ struct TREE {
 } tree[maxn << 2];
 
 int main() {
-	cin >> T;
-	while(T--){
-		init();
-    	initDfs(1, 0);
-    	dfs(1, 1);
-    	build(1, 1, n);
+    cin >> T;
+    while (T--) {
+        init();
+        initDfs(1, 0);
+        dfs(1, 1);
+        build(1, 1, n);
 
-    	for (string order; order != "DONE"; cin >> order) {
-    	    if (order == "CHANGE") {
-        	    int id(read()), key(read());
-            	insert(1, dfn[to[id]], key);
-        	} else if (order == "QUERY") {
-	            int x(read()), y(read());
-	
-	            int result(INT_MIN);
+        for (string order; order != "DONE"; cin >> order) {
+            if (order == "CHANGE") {
+                int id(read()), key(read());
+                insert(1, dfn[to[id]], key);
+            } else if (order == "QUERY") {
+                int x(read()), y(read());
 
-           		while (top[x] != top[y]) {
-	                if (dep[top[x]] < dep[top[y]])
-	                    swap(x, y);
-	                result = max(result, query(1, dfn[top[x]], dfn[x]));
-	                x = father[top[x]];
-	            }
-	
-	            if (dfn[x] > dfn[y])
-	                swap(x, y);
-	
-	            if (dfn[x] != dfn[y])
-    	            result = max(result, query(1, dfn[x] + 1, dfn[y]));
+                int result(INT_MIN);
 
-	            printf("%d\n", result);
-	        }
-	    }	
-	}
-    
+                while (top[x] != top[y]) {
+                    if (dep[top[x]] < dep[top[y]])
+                        swap(x, y);
+                    result = max(result, query(1, dfn[top[x]], dfn[x]));
+                    x = father[top[x]];
+                }
+
+                if (dfn[x] > dfn[y])
+                    swap(x, y);
+
+                if (dfn[x] != dfn[y])
+                    result = max(result, query(1, dfn[x] + 1, dfn[y]));
+
+                printf("%d\n", result);
+            }
+        }
+    }
+
 
     return 0;
 }
 
 void init() {
-	memset(weight, 0, sizeof(weight));
-	memset(source, 0, sizeof(source));
-	memset(to, 0, sizeof(to));
-	memset(top, 0, sizeof(top));
-	memset(head, 0, sizeof(head));
-	memset(size, 0, sizeof(size));
-	memset(dfn, 0, sizeof(dfn));
-	memset(nodeId, 0, sizeof(nodeId));
-	memset(son, 0, sizeof(son));
-	memset(dep, 0, sizeof(dep));
-	memset(father, 0, sizeof(father));
-	
+    memset(weight, 0, sizeof(weight));
+    memset(source, 0, sizeof(source));
+    memset(to, 0, sizeof(to));
+    memset(top, 0, sizeof(top));
+    memset(head, 0, sizeof(head));
+    memset(size, 0, sizeof(size));
+    memset(dfn, 0, sizeof(dfn));
+    memset(nodeId, 0, sizeof(nodeId));
+    memset(son, 0, sizeof(son));
+    memset(dep, 0, sizeof(dep));
+    memset(father, 0, sizeof(father));
+
     n = read();
 
     for (int i = 1; i < n; ++i) {

@@ -18,62 +18,62 @@ bool dfs(int x);
 
 void init();
 
-int main(){
-	init();
-	
-	int ans = 0;
-	
-	for(int i = 1; i <= K; ++i){
-		visited.reset();
-		
-		if(dfs(i))
-			++ans;
-	}
-	
-	std::cout << ans;
+int main() {
+    init();
+
+    int ans = 0;
+
+    for (int i = 1; i <= K; ++i) {
+        visited.reset();
+
+        if (dfs(i))
+            ++ans;
+    }
+
+    std::cout << ans;
 }
 
-void init(){
-	std::cin >> A_ >> B_ >> K_;
-	
-	for(int i = 1; i <= K; ++i) {
-		char likeChar, dislikeChar;
-		int likeN, dislikeN;
-		
-		std::cin >> likeChar >> likeN >> dislikeChar >> dislikeN;
-		
-		if(likeChar == 'C') {
-			likeC[likeN].emplace_back(i);
-			dislikeD[dislikeN].emplace_back(i);
-		} else {
-			likeD[likeN].emplace_back(i);
-			dislikeC[dislikeN].emplace_back(i);
-		}
-	}
-	
-	for(int i = 1; i <= A; ++i)
-		for(auto like : likeC[i])
-			for(auto dislike : dislikeC[i])
-				edge[like].emplace_back(dislike);
-				
-				
-	for(int i = 1; i <= B; ++i)
-		for(auto like : likeD[i])
-			for(auto dislike : dislikeD[i])
-				edge[like].emplace_back(dislike);
+void init() {
+    std::cin >> A_ >> B_ >> K_;
+
+    for (int i = 1; i <= K; ++i) {
+        char likeChar, dislikeChar;
+        int likeN, dislikeN;
+
+        std::cin >> likeChar >> likeN >> dislikeChar >> dislikeN;
+
+        if (likeChar == 'C') {
+            likeC[likeN].emplace_back(i);
+            dislikeD[dislikeN].emplace_back(i);
+        } else {
+            likeD[likeN].emplace_back(i);
+            dislikeC[dislikeN].emplace_back(i);
+        }
+    }
+
+    for (int i = 1; i <= A; ++i)
+        for (auto like: likeC[i])
+            for (auto dislike: dislikeC[i])
+                edge[like].emplace_back(dislike);
+
+
+    for (int i = 1; i <= B; ++i)
+        for (auto like: likeD[i])
+            for (auto dislike: dislikeD[i])
+                edge[like].emplace_back(dislike);
 }
 
-bool dfs(int x){
-	for(auto iter : edge[x]){
-		if(!visited[iter]){
-			visited[iter] = true;
-			
-			if(!match[iter] || dfs(match[iter])){
-				match[iter] = x;
-				return true;
-			}
-		}
-	}
-	
-	return false;
+bool dfs(int x) {
+    for (auto iter: edge[x]) {
+        if (!visited[iter]) {
+            visited[iter] = true;
+
+            if (!match[iter] || dfs(match[iter])) {
+                match[iter] = x;
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
