@@ -30,7 +30,7 @@ int main() {
             ++ans;
     }
 
-    std::cout << ans;
+    std::cout << K - ans / 2;
 }
 
 void init() {
@@ -54,13 +54,13 @@ void init() {
     for (int i = 1; i <= A; ++i)
         for (auto like: likeC[i])
             for (auto dislike: dislikeC[i])
-                edge[like].emplace_back(dislike);
+                edge[like].emplace_back(dislike), edge[dislike].emplace_back(like);
 
 
     for (int i = 1; i <= B; ++i)
         for (auto like: likeD[i])
             for (auto dislike: dislikeD[i])
-                edge[like].emplace_back(dislike);
+                edge[like].emplace_back(dislike), edge[dislike].emplace_back(like);
 }
 
 bool dfs(int x) {

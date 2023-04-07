@@ -33,6 +33,8 @@ int main() {
 }
 
 void init() {
+	std::cin >> K_ >> source;
+	
 	
 }
 
