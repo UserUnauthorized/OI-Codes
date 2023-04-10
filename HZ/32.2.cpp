@@ -66,6 +66,9 @@ std::array<valueType, maxN> maxS, dp;
 std::array<QUE, maxN> out;
 
 int main() {
+//	freopen("business.in", "r", stdin);
+//	freopen("business.out", "w", stdout);
+	
 	std::cin >> T_ >> MaxP_ >> W_;
 	
 	maxS.fill(MIN);
@@ -126,6 +129,55 @@ int main() {
 				queB.pop_front();
 				
 			valueType const tempOut = std::max(queA.front().value - AP * t, queB.front().value - BP * t);
+
+			ans_ = std::max(ans, tempOut);
+			
+			if(maxS[t] < tempOut && (out[t].empty() || out[t].back().value < tempOut))
+				out[t].emplace_back(i, tempOut);
+		}
+		
+		for(int j = MaxP + 1; j <= MaxP + BS; ++j) {
+			int const t = j - BS;
+			
+			while(!queA.empty() && queA.front().pos < t - AS)
+				queA.pop_front();
+			
+			valueType const tempOut = queA.front().value - AP * t;
+
+			ans_ = std::max(ans, tempOut);
+			
+			if(maxS[t] < tempOut && (out[t].empty() || out[t].back().value < tempOut))
+				out[t].emplace_back(i, tempOut);
+		}
+		
+		for(int j = MaxP + Bs; j > MaxP; --j) {
+			int const t = j - BS;
+			
+			while(!queB.empty() && queB.front().pos <= t)
+				queB.pop_front();
+				
+			valueType const tempOut = queB.front().value - BP * t;
+
+			ans_ = std::max(ans, tempOut);
+			
+			if(maxS[t] < tempOut && (out[t].empty() || out[t].back().value < tempOut))
+				out[t].emplace_back(i, tempOut);
+		}
+		
+		for(int j = MaxP; j >= BS; --j) {
+			valueType const tempB = maxS[j] + BP * j;
+			
+			while(!queB.empty() && queB.back().value < tempB)
+				queB.pop_back();
+			
+			queB.emplace_back(j, tempB);
+			
+			int const t = j - BS;
+			
+			while(!queB.empty() && queB.front().pos <= t)
+				queB.pop_front();
+				
+			valueType const tempOut = queB.front().value - BP * t;
 
 			ans_ = std::max(ans, tempOut);
 			
