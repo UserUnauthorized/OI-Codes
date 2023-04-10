@@ -2,6 +2,46 @@
 //Luogu - P2569
 #include<bits/stdc++.h>
 
+namespace DEBUG {
+    template<typename T>
+    inline void _debug(const char *format, T t) {
+        std::cerr << format << '=' << t << std::endl;
+    }
+
+    template<class First, class... Rest>
+    inline void _debug(const char *format, First first, Rest... rest) {
+        while (*format != ',') std::cerr << *format++;
+        std::cerr << '=' << first << ",";
+        _debug(format + 1, rest...);
+    }
+
+    template<typename T>
+    std::ostream &operator<<(std::ostream &os, const std::vector<T> &V) {
+        os << "[ ";
+        for (const auto &vv: V) os << vv << ", ";
+        os << "]";
+        return os;
+    }
+    
+    std::ostream &operator<<(std::ostream &os, __int128 V) {
+        if(V < 0){
+        	os << '-';
+        	V = -V;
+		}
+		
+		if(V > 9)	
+			os << V / 10;
+		
+		os << (int)(V % 10);
+		
+        return os;
+    }
+
+#define debug(...) _debug(#__VA_ARGS__, __VA_ARGS__)
+}  // namespace DEBUG
+
+using namespace DEBUG;
+
 constexpr int maxN = 2023;
 
 typedef int valueType;
@@ -46,35 +86,51 @@ int main() {
             }
 		}
 		
-		QUE que;
+		QUE queA, queB;
 		
 		for(int j = 0; j < BS; ++j) {
-			valueType const temp = maxS[j] + BP * j;
+			valueType const tempA = maxS[j] + AP * j;
+			valueType const tempB = maxS[j] + BP * j;
 			
-			while(!que.empty() && que.back().value < temp)
-				que.pop_back();
+			while(!queA.empty() && queA.back().value < tempA)
+				queA.pop_back();
 			
-			que.emplace_back(j, temp);
+			queA.emplace_back(j, tempA);
+			
+			while(!queB.empty() && queB.back().value < tempB)
+				queB.pop_back();
+			
+			queB.emplace_back(j, tempB);
 		}
 		
 		for(int j = BS; j <= MaxP; ++j) {
+			valueType const tempA = maxS[j] + AP * j;
+			valueType const tempB = maxS[j] + BP * j;
+			
+			while(!queA.empty() && queA.back().value < tempA)
+				queA.pop_back();
+			
+			queA.emplace_back(j, tempA);
+			
+			while(!queB.empty() && queB.back().value < tempB)
+				queB.pop_back();
+			
+			queB.emplace_back(j, tempB);
+			
 			int const t = j - BS;
 			
-			while(!que.empty() && que.front().pos < t - AS)
-				que.pop_front();
-				
-			valueType const tempOut = que.front().value - AP * t;
-			valueType const temp = maxS[j] + BP * j;
+			while(!queA.empty() && queA.front().pos < t - AS)
+				queA.pop_front();
 			
+			while(!queB.empty() && queB.front().pos <= t)
+				queB.pop_front();
+				
+			valueType const tempOut = std::max(queA.front().value - AP * t, queB.front().value - BP * t);
+
 			ans_ = std::max(ans, tempOut);
 			
 			if(maxS[t] < tempOut && (out[t].empty() || out[t].back().value < tempOut))
 				out[t].emplace_back(i, tempOut);
-				
-			while(!que.empty() && que.back().value < temp)
-				que.pop_back();
-			
-			que.emplace_back(j, temp);
 		}
 	}
 	
