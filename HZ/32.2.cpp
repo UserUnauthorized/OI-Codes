@@ -108,27 +108,18 @@ int main() {
 		
 		for(int j = BS; j <= MaxP; ++j) {
 			valueType const tempA = maxS[j] + AP * j;
-			valueType const tempB = maxS[j] + BP * j;
 			
 			while(!queA.empty() && queA.back().value < tempA)
 				queA.pop_back();
 			
 			queA.emplace_back(j, tempA);
 			
-			while(!queB.empty() && queB.back().value < tempB)
-				queB.pop_back();
-			
-			queB.emplace_back(j, tempB);
-			
 			int const t = j - BS;
 			
 			while(!queA.empty() && queA.front().pos < t - AS)
 				queA.pop_front();
 			
-			while(!queB.empty() && queB.front().pos <= t)
-				queB.pop_front();
-				
-			valueType const tempOut = std::max(queA.front().value - AP * t, queB.front().value - BP * t);
+			valueType const tempOut = queA.front().value - AP * t;
 
 			ans_ = std::max(ans, tempOut);
 			
