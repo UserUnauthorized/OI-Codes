@@ -1,6 +1,46 @@
 //Luogu - P3690
 #include<bits/stdc++.h>
 
+namespace DEBUG {
+    template<typename T>
+    inline void _debug(const char *format, T t) {
+        std::cerr << format << '=' << t << std::endl;
+    }
+
+    template<class First, class... Rest>
+    inline void _debug(const char *format, First first, Rest... rest) {
+        while (*format != ',') std::cerr << *format++;
+        std::cerr << '=' << first << ",";
+        _debug(format + 1, rest...);
+    }
+
+    template<typename T>
+    std::ostream &operator<<(std::ostream &os, const std::vector<T> &V) {
+        os << "[ ";
+        for (const auto &vv: V) os << vv << ", ";
+        os << "]";
+        return os;
+    }
+    
+    std::ostream &operator<<(std::ostream &os, __int128 V) {
+        if(V < 0){
+        	os << '-';
+        	V = -V;
+		}
+		
+		if(V > 9)	
+			os << V / 10;
+		
+		os << (int)(V % 10);
+		
+        return os;
+    }
+
+#define debug(...) _debug(#__VA_ARGS__, __VA_ARGS__)
+}  // namespace DEBUG
+
+using namespace DEBUG;
+
 constexpr int maxN = 1e5 + 5;
 typedef int valueType;
 
@@ -39,12 +79,14 @@ public:
 			this->leftSon = this->rightSon = this->father = nullptr;
 			this->value = 0;
 			this->size = 1;
+			this->tag = false;
 		}
 		
 		void init(valueType key) {
 			this->leftSon = this->rightSon = this->father = nullptr;
 			this->value = key;
 			this->size = 1;
+			this->tag = false;
 		}
 		
 		void init(valueType key, posType id) {
@@ -52,6 +94,7 @@ public:
 			this->value = key;
 			this->size = 1;
 			this->nodeId = id;
+			this->tag = false;
 		}
 		
 		bool isRoot() {
@@ -87,7 +130,10 @@ protected:
 public:
 	LCT():_size_(0){};
 	
-	LCT(size_t size):_size_(size), node(_size_ + 1){};
+	LCT(size_t size):_size_(size), node(_size_ + 1){
+		node[0] = this->newNode();
+		node[0]->init();
+	};
 
 private:
 	pointer newNode(){
@@ -99,7 +145,9 @@ public:
 		if(node[x] == nullptr) {
 			node[x] = this->newNode();
 			node[x]->init(key, x);
+			node[x]->update();
 		} else {
+			this->splay(node[x]);
 			node[x]->value = key;
 			node[x]->update();
 		}
@@ -152,12 +200,15 @@ protected:
 	void splay(pointer current) {
 		update(current);
 		
-		for(pointer father = current->father; !(father = current->father)->isRoot(); rotate(current))
-			if(!(father->father)->isRoot())
+		for(pointer father = current->father; (father = current->father) != nullptr && !(father = current->father)->isRoot(); rotate(current))
+			if((father->father) != nullptr && !(father->father)->isRoot())
 				rotate(current->isRightSon() == father->isRightSon() ? father : current);
 	}
 	
 	void update(pointer current) {
+		if(current == nullptr)
+			return;
+		
 		if(!current->isRoot())
 			update(current->father);
 		
@@ -165,6 +216,7 @@ protected:
 	}
 	
 	posType access(pointer current) {
+		
 		pointer pre = nullptr;
 		
 		for(pre = nullptr; current != nullptr; pre = current, current = current->father) {
@@ -175,7 +227,7 @@ protected:
 			current->update();
 		}
 		
-		return pre->nodeId;
+		return pre == nullptr ? 0 : pre->nodeId;
 	}
 	
 	void makeRoot(pointer current) {
@@ -193,7 +245,7 @@ protected:
 		
 		if(this->find(y->nodeId) == x->nodeId)
 			return;
-		
+
 		x -> father = y;
 	}
 	
@@ -224,8 +276,8 @@ protected:
 		this->splay(current);
 		
 		current->push();
-		
-		while(current != nullptr) {
+
+		while(current->leftSon != nullptr) {
 			current = current->leftSon;
 			
 			current->push();
