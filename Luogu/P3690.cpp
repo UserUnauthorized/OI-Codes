@@ -117,9 +117,17 @@ public:
 		this->link(node[x], node[y]);
 	}
 	
-	void cut(posType x, posType y);
+	void cut(posType x, posType y) {
+		this->cut(node[x], node[y]);
+	}
 	
-	valueType ans(posType x, posType y);
+	valueType ans(posType x, posType y) {
+		return this->split(node[x], node[y])->sum;
+	}
+	
+	posType find(posType x) {
+		return this->find(node[x]);
+	}
 	
 protected:
 	void rotate(pointer current) {
@@ -183,6 +191,9 @@ protected:
 		
 		this->splay(x);
 		
+		if(this->find(y->nodeId) == x->nodeId)
+			return;
+		
 		x -> father = y;
 	}
 	
@@ -195,4 +206,82 @@ protected:
 		
 		return y;
 	}
+	
+	void cut(pointer x, pointer y) {
+		this->makeRoot(x);
+		
+		this->access(y);
+		
+		this->splay(y);
+		
+		if(this->find(y->nodeId) == x->nodeId && y->leftSon == x && x->rightSon == nullptr)
+			y->leftSon = x->father = nullptr;
+	}
+	
+	posType find(pointer current) {
+		this->access(current);
+		
+		this->splay(current);
+		
+		current->push();
+		
+		while(current != nullptr) {
+			current = current->leftSon;
+			
+			current->push();
+		}
+		
+		this->splay(current);
+		
+		return current->nodeId;
+	}
 };
+
+int main() {
+	int n, m;
+	
+	std::cin >> n >> m;
+	
+	LCT tree(n);
+	
+	for(int i = 1; i <= n; ++i) {
+		valueType key;
+		std::cin >> key;
+		tree.set(i, key);
+	}
+	
+	for(int i = 0; i < m; ++i) {
+		int op;
+		
+		std::cin >> op;
+		
+		if(op == 0) {
+			LCT::posType x, y;
+			
+			std::cin >> x >> y;
+			
+			std::cout << tree.ans(x, y) << '\n';
+		} else if(op == 1) {
+			LCT::posType x, y;
+			
+			std::cin >> x >> y;
+			
+			tree.link(x, y);
+		} else if(op == 2) {
+			LCT::posType x, y;
+			
+			std::cin >> x >> y;
+			
+			tree.cut(x, y);
+		} else if(op == 3) {
+			LCT::posType x;
+			valueType y;
+			
+			std::cin >> x >> y;
+			
+			tree.set(x, y);
+		}
+	}
+	
+	return 0;
+}
