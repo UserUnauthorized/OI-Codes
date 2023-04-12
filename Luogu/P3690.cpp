@@ -109,9 +109,13 @@ public:
 		return this->access(node[x]);
 	}
 	
-	void makeRoot(posType x);
+	void makeRoot(posType x) {
+		this->makeRoot(node[x]);
+	}
 	
-	void link(posType x, posType y);
+	void link(posType x, posType y) {
+		this->link(node[x], node[y]);
+	}
 	
 	void cut(posType x, posType y);
 	
@@ -180,5 +184,15 @@ protected:
 		this->splay(x);
 		
 		x -> father = y;
+	}
+	
+	pointer split(pointer x, pointer y) {
+		this->makeRoot(x);
+		
+		this->access(y);
+		
+		this->splay(y);
+		
+		return y;
 	}
 };
