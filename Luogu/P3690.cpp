@@ -105,7 +105,9 @@ public:
 		}
 	}
 	
-	posType access(posType x);
+	posType access(posType x) {
+		return this->access(node[x]);
+	}
 	
 	void makeRoot(posType x);
 	
@@ -133,5 +135,50 @@ protected:
 		current->son(!isRightSon) = father;
 		father->update();
 		current->update();
+	}
+	
+	void splay(pointer current) {
+		update(current);
+		
+		for(pointer father = current->father; !(father = current->father)->isRoot(); rotate(current))
+			if(!(father->father)->isRoot())
+				rotate(current->isRightSon() == father->isRightSon() ? father : current);
+	}
+	
+	void update(pointer current) {
+		if(!current->isRoot())
+			update(current->father);
+		
+		current->push();
+	}
+	
+	posType access(pointer current) {
+		pointer pre = nullptr;
+		
+		for(pre = nullptr; current != nullptr; pre = current, current = current->father) {
+			this->splay(current);
+			
+			current->rightSon = pre;
+			
+			current->update();
+		}
+		
+		return pre->nodeId;
+	}
+	
+	void makeRoot(pointer current) {
+		current = node[this->access(current)];
+		
+		std::swap(current->leftSon, current->rightSon);
+		
+		current->tag = !current->tag;
+	}
+	
+	void link(pointer x, pointer y) {
+		this->makeRoot(x);
+		
+		this->splay(x);
+		
+		x -> father = y;
 	}
 };
