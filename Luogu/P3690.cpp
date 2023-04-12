@@ -243,7 +243,7 @@ protected:
 		
 		this->splay(x);
 		
-		if(this->find(y->nodeId) == x->nodeId)
+		if(this->find(y) == x->nodeId)
 			return;
 
 		x -> father = y;
