@@ -120,7 +120,18 @@ protected:
 		pointer father = current->father;
 		bool const isRightSon = current->isRightSon();
 		
-		if(!father->isRoot())
+		father->son(isRightSon) = current->son(!isRightSon);
+		
+		if(current->son(!isRightSon) != NULL) {
+			(current->son(!isRightSon))->father = father;
+		}
+		
+		if((current->father = father->father) && !current->isRoot())
 			(current->father)->son(father->isRightSon()) = current;
+			
+		father->father = current;
+		current->son(!isRightSon) = father;
+		father->update();
+		current->update();
 	}
 };
