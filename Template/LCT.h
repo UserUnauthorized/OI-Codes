@@ -1,45 +1,7 @@
-//Luogu - P3690
+#ifndef OI_CODES_LCT_H
+#define OI_CODES_LCT_H
+
 #include<bits/stdc++.h>
-
-namespace DEBUG {
-    template<typename T>
-    inline void _debug(const char *format, T t) {
-        std::cerr << format << '=' << t << std::endl;
-    }
-
-    template<class First, class... Rest>
-    inline void _debug(const char *format, First first, Rest... rest) {
-        while (*format != ',') std::cerr << *format++;
-        std::cerr << '=' << first << ",";
-        _debug(format + 1, rest...);
-    }
-
-    template<typename T>
-    std::ostream &operator<<(std::ostream &os, const std::vector<T> &V) {
-        os << "[ ";
-        for (const auto &vv: V) os << vv << ", ";
-        os << "]";
-        return os;
-    }
-    
-    std::ostream &operator<<(std::ostream &os, __int128 V) {
-        if(V < 0){
-        	os << '-';
-        	V = -V;
-		}
-		
-		if(V > 9)	
-			os << V / 10;
-		
-		os << (int)(V % 10);
-		
-        return os;
-    }
-
-#define debug(...) _debug(#__VA_ARGS__, __VA_ARGS__)
-}  // namespace DEBUG
-
-using namespace DEBUG;
 
 constexpr int maxN = 1e5 + 5;
 typedef int valueType;
@@ -317,51 +279,4 @@ public:
 	}
 };
 
-int main() {
-	int n, m;
-	
-	std::cin >> n >> m;
-	
-	LCT tree(n);
-	
-	for(int i = 1; i <= n; ++i) {
-		valueType key;
-		std::cin >> key;
-		tree.set(i, key);
-	}
-
-	for(int i = 0; i < m; ++i) {
-		int op;
-		
-		std::cin >> op;
-		
-		if(op == 0) {
-			LCT::posType x, y;
-			
-			std::cin >> x >> y;
-
-			std::cout << tree.ans(x, y) << '\n';
-		} else if(op == 1) {
-			LCT::posType x, y;
-			
-			std::cin >> x >> y;
-
-			tree.link(x, y);
-		} else if(op == 2) {
-			LCT::posType x, y;
-			
-			std::cin >> x >> y;
-			
-			tree.cut(x, y);
-		} else if(op == 3) {
-			LCT::posType x;
-			valueType y;
-			
-			std::cin >> x >> y;
-
-			tree.set(x, y);
-		}
-	}
-	
-	return 0;
-}
+#endif //OI_CODES_LCT_H
