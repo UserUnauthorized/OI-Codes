@@ -116,6 +116,24 @@ public:
 				this->tag = false;
 			}
 		}
+		
+		friend std::ostream &operator<<(std::ostream &output, pointer Object) {
+			if(Object == nullptr)
+				return output;
+			
+			output << "nodeId:" << Object->nodeId;
+        	output << "\tisRoot:" << Object->isRoot() << std::endl;
+        	output << Object->value << ' ' << Object->sum << ' ';
+        	output << "leftSon:" << (Object->leftSon != nullptr ? Object->leftSon->nodeId : 0) << "\trightSon:" << (Object->rightSon != nullptr ? Object->rightSon->nodeId : 0) << std::endl << std::endl << std::endl;
+        	
+//        	if(Object->leftSon != nullptr) 
+//        		output << Object->leftSon;
+//        		
+//        	if(Object->rightSon != nullptr)
+//        		output << Object->rightSon;
+        	
+        	return output;
+    	}
 	}; 
 
 	typedef NODE::pointer pointer;
@@ -200,15 +218,12 @@ protected:
 	void splay(pointer current) {
 		update(current);
 		
-		for(pointer father = current->father; (father = current->father) != nullptr && !(father = current->father)->isRoot(); rotate(current))
-			if((father->father) != nullptr && !(father->father)->isRoot())
+		for(pointer father = current->father; !current->isRoot(); rotate(current))
+			if(!(father = current->father)->isRoot())
 				rotate(current->isRightSon() == father->isRightSon() ? father : current);
 	}
 	
 	void update(pointer current) {
-		if(current == nullptr)
-			return;
-		
 		if(!current->isRoot())
 			update(current->father);
 		
@@ -216,12 +231,15 @@ protected:
 	}
 	
 	posType access(pointer current) {
-		
+//		std::cerr << "DEBUG\n";
+//		debug(current->nodeId);
 		pointer pre = nullptr;
 		
 		for(pre = nullptr; current != nullptr; pre = current, current = current->father) {
 			this->splay(current);
-			
+//			debug(current->nodeId);
+//			if(pre != nullptr)
+//				debug(pre->nodeId);
 			current->rightSon = pre;
 			
 			current->update();
@@ -231,10 +249,19 @@ protected:
 	}
 	
 	void makeRoot(pointer current) {
-		current = node[this->access(current)];
+//		debug(current->nodeId);
+		posType const p = this->access(current);
+//		debug(p);
+		if(p == 0)
+			return;
 		
+		current = node[p];
+//		debug(current);
 		std::swap(current->leftSon, current->rightSon);
-		
+//		pointer const temp = current->leftSon;
+//		current->leftSon = current->rightSon;
+//		current->rightSon = temp;
+//		debug(current);
 		current->tag = !current->tag;
 	}
 	
@@ -246,14 +273,16 @@ protected:
 		if(this->find(y) == x->nodeId)
 			return;
 
-		x -> father = y;
+		x->father = y;
 	}
 	
 	pointer split(pointer x, pointer y) {
 		this->makeRoot(x);
-		
+//		std::cerr << "begin Access\n";
+//		this->out();
 		this->access(y);
-		
+//		std::cerr << "after Access\n";
+//		this->out();
 		this->splay(y);
 		
 		return y;
@@ -266,8 +295,16 @@ protected:
 		
 		this->splay(y);
 		
-		if(this->find(y->nodeId) == x->nodeId && y->leftSon == x && x->rightSon == nullptr)
-			y->leftSon = x->father = nullptr;
+		if(this->find(y->nodeId) != x->nodeId)
+			return;
+			
+		this->splay(y);
+		
+		if(y->leftSon == x && x->rightSon == nullptr)
+			
+		y->leftSon = x->father = nullptr;
+			
+		y->update();
 	}
 	
 	posType find(pointer current) {
@@ -287,9 +324,16 @@ protected:
 		
 		return current->nodeId;
 	}
+
+public:
+	void out() {
+		for(size_t i = 1; i <= _size_; ++i)
+			std::cerr << node[i];
+	}
 };
 
 int main() {
+	freopen("P3690.err", "w", stderr);
 	int n, m;
 	
 	std::cin >> n >> m;
@@ -301,7 +345,7 @@ int main() {
 		std::cin >> key;
 		tree.set(i, key);
 	}
-	
+	tree.out();
 	for(int i = 0; i < m; ++i) {
 		int op;
 		
@@ -311,27 +355,35 @@ int main() {
 			LCT::posType x, y;
 			
 			std::cin >> x >> y;
-			
+			debug(op, x, y);
 			std::cout << tree.ans(x, y) << '\n';
+			
+			tree.out();
 		} else if(op == 1) {
 			LCT::posType x, y;
 			
 			std::cin >> x >> y;
-			
+			debug(op, x, y);
 			tree.link(x, y);
+			
+			tree.out();
 		} else if(op == 2) {
 			LCT::posType x, y;
 			
 			std::cin >> x >> y;
-			
+			debug(op, x, y);
 			tree.cut(x, y);
+			
+			tree.out();
 		} else if(op == 3) {
 			LCT::posType x;
 			valueType y;
 			
 			std::cin >> x >> y;
-			
+			debug(op, x, y);
 			tree.set(x, y);
+			
+			tree.out();
 		}
 	}
 	
