@@ -3,7 +3,6 @@
 
 #include<bits/stdc++.h>
 
-constexpr int maxN = 1e5 + 5;
 typedef int valueType;
 
 class LCT {
@@ -107,6 +106,26 @@ public:
 	LCT(size_t size):_size_(size), node(_size_ + 1){
 		node[0] = this->newNode();
 		node[0]->init();
+	};
+	
+	class NoSuchEdgeException : protected std::exception {
+   		private:
+			const char *message;
+
+		public:
+    		explicit NoSuchEdgeException(const char *msg) : message(msg) {}
+
+    		const char *what() const noexcept override { return message; }
+	};
+	
+    class AlreadyConnectedException : protected std::exception {
+   		private:
+			const char *message;
+
+		public:
+    		explicit AlreadyConnectedException(const char *msg) : message(msg) {}
+
+    		const char *what() const noexcept override { return message; }
 	};
 
 private:
@@ -220,7 +239,7 @@ protected:
 		this->splay(x);
 		
 		if(this->find(y) == x->nodeId)
-			return;
+			throw AlreadyConnectedException("Already Connected");
 
 		x->father = y;
 	}
@@ -243,11 +262,12 @@ protected:
 		this->splay(y);
 		
 		if(this->find(y->nodeId) != x->nodeId)
-			return;
+			throw NoSuchEdgeException("Disconnected");
 			
 		this->splay(y);
 		
-		if(y->leftSon == x && x->rightSon == nullptr)
+		if(y->leftSon != x || x->rightSon != nullptr)
+			throw NoSuchEdgeException("There are other edges between the nodes.");
 			
 		y->leftSon = x->father = nullptr;
 			

@@ -146,6 +146,26 @@ public:
 		node[0] = this->newNode();
 		node[0]->init();
 	};
+	
+	class NoSuchEdgeException : protected std::exception {
+   		private:
+			const char *message;
+
+		public:
+    		explicit NoSuchEdgeException(const char *msg) : message(msg) {}
+
+    		const char *what() const noexcept override { return message; }
+	};
+	
+    class AlreadyConnectedException : protected std::exception {
+   		private:
+			const char *message;
+
+		public:
+    		explicit AlreadyConnectedException(const char *msg) : message(msg) {}
+
+    		const char *what() const noexcept override { return message; }
+	};
 
 private:
 	pointer newNode(){
@@ -258,7 +278,7 @@ protected:
 		this->splay(x);
 		
 		if(this->find(y) == x->nodeId)
-			return;
+			throw AlreadyConnectedException("Already Connected");
 
 		x->father = y;
 	}
@@ -281,11 +301,12 @@ protected:
 		this->splay(y);
 		
 		if(this->find(y->nodeId) != x->nodeId)
-			return;
+			throw NoSuchEdgeException("Disconnected");
 			
 		this->splay(y);
 		
-		if(y->leftSon == x && x->rightSon == nullptr)
+		if(y->leftSon != x || x->rightSon != nullptr)
+			throw NoSuchEdgeException("There are other edges between the nodes.");
 			
 		y->leftSon = x->father = nullptr;
 			
@@ -345,14 +366,18 @@ int main() {
 			LCT::posType x, y;
 			
 			std::cin >> x >> y;
-
-			tree.link(x, y);
+			
+			try {
+				tree.link(x, y);
+			} catch (...) {}
 		} else if(op == 2) {
 			LCT::posType x, y;
 			
 			std::cin >> x >> y;
 			
-			tree.cut(x, y);
+			try {
+				tree.cut(x, y);
+			} catch (...) {}
 		} else if(op == 3) {
 			LCT::posType x;
 			valueType y;
