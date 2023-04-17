@@ -44,6 +44,8 @@ using namespace DEBUG;
 constexpr int maxN = 1e5 + 5;
 typedef int valueType;
 
+constexpr valueType MIN = INT_MIN >> 1;
+
 class LCT {
 public:
 	struct NODE {
@@ -58,7 +60,7 @@ public:
 		bool tag;
 		valueType value;
 		valueType size;
-		valueType sum;
+		valueType max;
 		
 		posType nodeId;
 		
@@ -72,12 +74,12 @@ public:
 		
 		void update(){
 			this->size = (this->leftSon != nullptr ? (this->leftSon)->size : 0) + (this->rightSon != nullptr ? (this->rightSon)->size : 0) + 1;
-			this->sum = (this->leftSon != nullptr ? (this->leftSon)->sum : 0) ^ (this->rightSon != nullptr ? (this->rightSon)->sum : 0) ^ this->value;
+			this->max = std::max({(this->leftSon != nullptr ? (this->leftSon)->max : MIN), (this->rightSon != nullptr ? (this->rightSon)->max : MIN), this->value});
 		}
 		
 		void init(){
 			this->leftSon = this->rightSon = this->father = nullptr;
-			this->value = 0;
+			this->value = MIN;
 			this->size = 1;
 			this->tag = false;
 		}
@@ -123,7 +125,7 @@ public:
 			
 			output << "nodeId:" << Object->nodeId;
         	output << "\tisRoot:" << Object->isRoot() << std::endl;
-        	output << Object->value << ' ' << Object->sum << ' ';
+        	output << Object->value << ' ' << Object->max << ' ';
         	output << "leftSon:" << (Object->leftSon != nullptr ? Object->leftSon->nodeId : 0) << "\trightSon:" << (Object->rightSon != nullptr ? Object->rightSon->nodeId : 0) << "\tfather:" << (Object->father != nullptr ? Object->father->nodeId : 0) << std::endl << std::endl << std::endl;
         	
         	return output;
@@ -145,6 +147,26 @@ public:
 	LCT(size_t size):_size_(size), node(_size_ + 1){
 		node[0] = this->newNode();
 		node[0]->init();
+	};
+	
+	class NoSuchEdgeException : protected std::exception {
+   		private:
+			const char *message;
+
+		public:
+    		explicit NoSuchEdgeException(const char *msg) : message(msg) {}
+
+    		const char *what() const noexcept override { return message; }
+	};
+	
+    class AlreadyConnectedException : protected std::exception {
+   		private:
+			const char *message;
+
+		public:
+    		explicit AlreadyConnectedException(const char *msg) : message(msg) {}
+
+    		const char *what() const noexcept override { return message; }
 	};
 
 private:
@@ -182,7 +204,7 @@ public:
 	}
 	
 	valueType ans(posType x, posType y) {
-		return this->split(node[x], node[y])->sum;
+		return this->split(node[x], node[y])->max;
 	}
 	
 	posType find(posType x) {
@@ -258,7 +280,7 @@ protected:
 		this->splay(x);
 		
 		if(this->find(y) == x->nodeId)
-			return;
+			throw AlreadyConnectedException("Already Connected");
 
 		x->father = y;
 	}
@@ -281,11 +303,12 @@ protected:
 		this->splay(y);
 		
 		if(this->find(y->nodeId) != x->nodeId)
-			return;
+			throw NoSuchEdgeException("Disconnected");
 			
 		this->splay(y);
 		
-		if(y->leftSon == x && x->rightSon == nullptr)
+		if(y->leftSon != x || x->rightSon != nullptr)
+			throw NoSuchEdgeException("There are other edges between the nodes.");
 			
 		y->leftSon = x->father = nullptr;
 			
@@ -316,14 +339,16 @@ public:
 			std::cerr << node[i];
 	}
 };
-
-int N_, M_, C_;
-int const &N = N_, &M = M_, &C = C_;
-
 constexpr int maxC = 12;
 
+int N_, M_, C_, Q_;
+int const &N = N_, &M = M_, &C = C_, &Q = Q_;
+
+std::map<std::pair<LCT::posType, LCT::posType>, int> color;
+std::array<std::array<int, maxN>, maxC> degree;
+
 int main() {
-	std::cin >> N_ >> M_ >> C_;
+	std::cin >> N_ >> M_ >> C_ >> Q_;
 	
 	std::array<LCT, maxC> tree;
 	
@@ -337,46 +362,91 @@ int main() {
 		for(int c = 1; c <= C; ++c)
 			tree[c].set(i, key);
 	}
-	
+
 	for(int i = 1; i <= M; ++i) {
 		LCT::posType a, b;
 		int c;
 		
 		std::cin >> a >> b >> c;
 		
-		tree
+		++c;
+		
+		color[std::make_pair(std::min(a, b), std::max(a, b))] = c;
+		
+		++degree[c][a];
+		++degree[c][b];
+		
+		tree[c].link(a, b);
 	}
 
-	for(int i = 0; i < m; ++i) {
+	for(int i = 0; i < Q; ++i) {
 		int op;
 		
 		std::cin >> op;
 		
 		if(op == 0) {
-			LCT::posType x, y;
-			
-			std::cin >> x >> y;
-
-			std::cout << tree.ans(x, y) << '\n';
-		} else if(op == 1) {
-			LCT::posType x, y;
-			
-			std::cin >> x >> y;
-
-			tree.link(x, y);
-		} else if(op == 2) {
-			LCT::posType x, y;
-			
-			std::cin >> x >> y;
-			
-			tree.cut(x, y);
-		} else if(op == 3) {
 			LCT::posType x;
 			valueType y;
 			
 			std::cin >> x >> y;
 
-			tree.set(x, y);
+			for(int c = 1; c <= C; ++c)
+				tree[c].set(x, y);
+				
+		} else if(op == 1) {
+			LCT::posType x, y;
+			int c;
+			
+			std::cin >> x >> y >> c;
+			
+			++c;
+			
+			int const pre = color[std::make_pair(std::min(x, y), std::max(x, y))];
+			
+			if(pre == c) {
+//				return 114;
+				std::cout << "Success.\n";
+				continue;
+			}
+			
+			try{
+				tree[pre].cut(x, y);
+			} catch (const LCT::NoSuchEdgeException &e) {
+				std::cout << "No such edge.\n";
+				continue;
+			}
+			
+			if(degree[c][x] == 2 || degree[c][y] == 2) {
+				std::cout << "Error 1.\n";
+				continue;
+			}
+			
+			try{
+				tree[c].link(x, y);
+			} catch (const LCT::AlreadyConnectedException &e) {
+				std::cout << "Error 2.\n";
+				continue;
+			}
+			
+			--degree[pre][x];
+			--degree[pre][y];
+			++degree[c][x];
+			++degree[c][y];
+			color[std::make_pair(std::min(x, y), std::max(x, y))] = c;
+			
+			std::cout << "Success.\n";
+		} else if(op == 2) {
+			LCT::posType x, y;
+			int c;
+			
+			std::cin >> c >> x >> y;
+
+			++c;
+			
+			if(tree[c].find(x) == tree[c].find(y))
+				std::cout << tree[c].ans(x, y) << '\n';
+			else
+				std::cout << "-1\n";
 		}
 	}
 	
