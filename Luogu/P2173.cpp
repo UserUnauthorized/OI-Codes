@@ -370,7 +370,7 @@ int main() {
 		std::cin >> a >> b >> c;
 		
 		++c;
-		
+
 		color[std::make_pair(std::min(a, b), std::max(a, b))] = c;
 		
 		++degree[c][a];
@@ -402,21 +402,21 @@ int main() {
 			++c;
 			
 			int const pre = color[std::make_pair(std::min(x, y), std::max(x, y))];
-			
+			debug(x, y, c, pre);
 			if(pre == c) {
-//				return 114;
 				std::cout << "Success.\n";
 				continue;
 			}
 			
-			try{
-				tree[pre].cut(x, y);
-			} catch (const LCT::NoSuchEdgeException &e) {
+			if(pre == 0) {
 				std::cout << "No such edge.\n";
 				continue;
 			}
 			
+			tree[pre].cut(x, y);
+			
 			if(degree[c][x] == 2 || degree[c][y] == 2) {
+				tree[pre].link(x, y);
 				std::cout << "Error 1.\n";
 				continue;
 			}
@@ -424,6 +424,7 @@ int main() {
 			try{
 				tree[c].link(x, y);
 			} catch (const LCT::AlreadyConnectedException &e) {
+				tree[pre].link(x, y);
 				std::cout << "Error 2.\n";
 				continue;
 			}
