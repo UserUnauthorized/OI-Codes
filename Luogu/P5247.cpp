@@ -485,11 +485,14 @@ int main() {
 				LCT::posType const id = que.front() - N - shifting;
 				
 				LCT::posType x = connection[id].first, y = connection[id].second;
+
 				debug(id, x, y);
 				tree.cut(x, id + N + shifting);
 				debug(x, id);
 				tree.cut(y, id + N + shifting);
-				debug(x, id);
+				debug(y, id);
+				
+				que.pop();
 			}
 		} else if(op == 2) {
 			bool const connected = tree.find(x) == tree.find(y);
