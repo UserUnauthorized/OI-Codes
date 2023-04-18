@@ -459,7 +459,7 @@ int main() {
 		if(x == 0 || y == 0)
 			throw std::range_error("zero id.");
 			
-		debug(i, op, x, y);
+//		debug(i, op, x, y);
 		if(op == 0) {
 			if(x == y)
 //				throw std::range_error("self edge.");
@@ -486,11 +486,11 @@ int main() {
 				
 				LCT::posType x = connection[id].first, y = connection[id].second;
 
-				debug(id, x, y);
+//				debug(id, x, y);
 				tree.cut(x, id + N + shifting);
-				debug(x, id);
+//				debug(x, id);
 				tree.cut(y, id + N + shifting);
-				debug(y, id);
+//				debug(y, id);
 				
 				que.pop();
 			}
