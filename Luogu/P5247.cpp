@@ -1,6 +1,46 @@
 //Luogu - P5247
 #include<bits/stdc++.h>
 
+namespace DEBUG {
+    template<typename T>
+    inline void _debug(const char *format, T t) {
+        std::cerr << format << '=' << t << std::endl;
+    }
+
+    template<class First, class... Rest>
+    inline void _debug(const char *format, First first, Rest... rest) {
+        while (*format != ',') std::cerr << *format++;
+        std::cerr << '=' << first << ",";
+        _debug(format + 1, rest...);
+    }
+
+    template<typename T>
+    std::ostream &operator<<(std::ostream &os, const std::vector<T> &V) {
+        os << "[ ";
+        for (const auto &vv: V) os << vv << ", ";
+        os << "]";
+        return os;
+    }
+    
+    std::ostream &operator<<(std::ostream &os, __int128 V) {
+        if(V < 0){
+        	os << '-';
+        	V = -V;
+		}
+		
+		if(V > 9)	
+			os << V / 10;
+		
+		os << (int)(V % 10);
+		
+        return os;
+    }
+
+#define debug(...) _debug(#__VA_ARGS__, __VA_ARGS__)
+}  // namespace DEBUG
+
+using namespace DEBUG;
+
 constexpr int maxN = 5005, maxM = 5e5 + 5;
 
 typedef int valueType;
@@ -35,6 +75,8 @@ public:
 		}
 		
 		void update(){
+			this->push();
+			
 			this->size = (this->leftSon != nullptr ? (this->leftSon)->size : 0) + (this->rightSon != nullptr ? (this->rightSon)->size : 0) + 1;
 			this->min = std::min({(this->leftSon != nullptr ? (this->leftSon)->min : MAX), (this->rightSon != nullptr ? (this->rightSon)->min : MAX), this->value});
 		}
@@ -157,6 +199,9 @@ private:
 
 public:
 	void set(posType x, valueType key) {
+		if(x > this->_size_)
+			throw std::range_error("larger than size.");
+		
 		if(node[x] == nullptr) {
 			node[x] = this->newNode();
 			node[x]->init(key, x);
@@ -169,34 +214,56 @@ public:
 	}
 	
 	posType access(posType x) {
+		if(x > this->_size_)
+			throw std::range_error("larger than size.");
+		
 		return this->access(node[x]);
 	}
 	
 	void makeRoot(posType x) {
+		if(x > this->_size_)
+			throw std::range_error("larger than size.");
+			
 		this->makeRoot(node[x]);
 	}
 	
 	void link(posType x, posType y) {
+		if(x > this->_size_ || y > this->_size_)
+			throw std::range_error("larger than size.");
+		
 		this->link(node[x], node[y]);
 	}
 	
 	void cut(posType x, posType y) {
+		if(x > this->_size_ || y > this->_size_)
+			throw std::range_error("larger than size.");
+		
 		this->cut(node[x], node[y]);
 	}
 	
 	valueType ans(posType x, posType y) {
+		if(x > this->_size_ || y > this->_size_)
+			throw std::range_error("larger than size.");
+		
 		return this->split(node[x], node[y])->min;
 	}
 	
 	posType find(posType x) {
+		if(x > this->_size_)
+			throw std::range_error("larger than size.");
+		
 		return this->find(node[x]);
 	}
 	
 	std::queue<LCT::posType> add(posType x, posType y, valueType key) {
+		if(x > this->_size_ || y > this->_size_)
+			throw std::range_error("larger than size.");
+		
 		pointer current = this->split(node[x], node[y]);
 		current->value = current->value + key;
 		current->add = current->add + key;
 		current->min = current->min + key;
+//		current->push();
 		current->update();
 		
 		std::queue<LCT::posType> result;
@@ -353,19 +420,30 @@ public:
 int N_, M_;
 int const &N = N_, &M = M_;
 
-std::map<std::pair<LCT::posType, LCT::posType>, int> id;
+//std::map<std::pair<LCT::posType, LCT::posType>, int> id;
 std::array<std::pair<LCT::posType, LCT::posType>, maxM> connection;
 
-int main() {
+constexpr LCT::posType shifting = 100;
+
+int main() { 
+//#ifdef LOCAL
+//	freopen("dgraph3.in", "r", stdin);
+//	freopen("dgraph3.ans", "w", stdout);
+//	freopen("dgraph3.err", "w", stderr);
+//#endif
+	
 	std::cin >> N_ >> M_;
 	
-	LCT tree(N + M);
+	LCT tree(N + M + shifting);
 	
 	for(int i = 1; i <= N; ++i)
-		tree.set(i, MAX);
+		tree.set(i + shifting, MAX);
+		
+	for(int i = 1; i <= M; ++i)
+		tree.set(N + i + shifting, 0);
 	
 	int lastAns = 0;
-	
+
 	for(int i = 1; i <= M; ++i) {
 		LCT::posType x, y;
 		int op;
@@ -375,25 +453,57 @@ int main() {
 		x ^= lastAns;
 		y ^= lastAns;
 		
+		x += shifting;
+		y += shifting;
+		
+		if(x == 0 || y == 0)
+			throw std::range_error("zero id.");
+			
+		debug(i, op, x, y);
 		if(op == 0) {
-			id[std::make_pair(std::min(x, y), std::max(x, y))] = i;
+			if(x == y)
+//				throw std::range_error("self edge.");
+				continue;
+				
+//			connection[i] = std::make_pair(x, y);
 			
 			if(tree.find(x) == tree.find(y)) {
 				tree.add(x, y, 1);
 			} else {
-				tree.link(x, N + i);
-				tree.link(y, N + i);
+//				debug(x, y, N + i);
+				tree.link(x, N + i + shifting);
+				tree.link(y, N + i + shifting);
+				connection[i] = std::make_pair(x, y);
 			}
 		} else if(op == 1) {
-			int const edgeId = id[std::make_pair(std::min(x, y), std::max(x, y))] + N;
+			std::queue<LCT::posType> que = tree.add(x, y, -1);
 			
-			if(tree.ans(x, y) < 1){
-				try {
-					tree.cut(x, edgeId);
-					tree.cut(y, edgeId);
-				} catch (const LCT::NoSuchEdgeException &e) {
-					std::queue<LCT::posType> que = tree.add(x, y, -1);
-				}
+			while(!que.empty()) {
+				if(que.front() <= (unsigned int)N + shifting)
+					throw std::underflow_error("Not an edge node.");
+				
+				LCT::posType const id = que.front() - N - shifting;
+				
+				LCT::posType x = connection[id].first, y = connection[id].second;
+				debug(id, x, y);
+				tree.cut(x, id + N + shifting);
+				debug(x, id);
+				tree.cut(y, id + N + shifting);
+				debug(x, id);
+			}
+		} else if(op == 2) {
+			bool const connected = tree.find(x) == tree.find(y);
+			
+			bool const haveEdge = tree.ans(x, y) >= 0;
+			
+			bool const result = connected && haveEdge;
+			
+			if(result) {
+				std::cout << "Y\n";
+				lastAns = x - shifting;
+			} else {
+				std::cout << "N\n";
+				lastAns = y - shifting;
 			}
 		}
 	}
