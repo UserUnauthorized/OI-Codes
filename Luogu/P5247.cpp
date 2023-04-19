@@ -426,17 +426,17 @@ std::array<std::pair<LCT::posType, LCT::posType>, maxM> connection;
 constexpr LCT::posType shifting = 100;
 
 int main() { 
-//#ifdef LOCAL
-//	freopen("dgraph3.in", "r", stdin);
-//	freopen("dgraph3.ans", "w", stdout);
-//	freopen("dgraph3.err", "w", stderr);
-//#endif
+#ifdef LOCAL
+	freopen("ex_negiizhao_3.in", "r", stdin);
+	freopen("ex_negiizhao_3.ans", "w", stdout);
+	freopen("ex_negiizhao_3.err", "w", stderr);
+#endif
 	
 	std::cin >> N_ >> M_;
-	
+	debug(N, M);
 	LCT tree(N + M + shifting);
 	
-	for(int i = 1; i <= N; ++i)
+	for(int i = 0; i <= N; ++i)
 		tree.set(i + shifting, MAX);
 		
 	for(int i = 1; i <= M; ++i)
@@ -449,17 +449,20 @@ int main() {
 		int op;
 		
 		std::cin >> op >> x >> y;
-		
+		debug(op, i, x, y);
 		x ^= lastAns;
 		y ^= lastAns;
-		
+		debug(x, y, lastAns);
+		if(x > N || y > N)
+			throw std::range_error("out of size");
+			
 		x += shifting;
 		y += shifting;
 		
 		if(x == 0 || y == 0)
 			throw std::range_error("zero id.");
-			
-//		debug(i, op, x, y);
+		
+		debug(i, op, x, y);
 		if(op == 0) {
 			if(x == y)
 //				throw std::range_error("self edge.");
@@ -469,6 +472,7 @@ int main() {
 			
 			if(tree.find(x) == tree.find(y)) {
 				tree.add(x, y, 1);
+				connection[i] = std::make_pair(x, y);
 			} else {
 //				debug(x, y, N + i);
 				tree.link(x, N + i + shifting);
@@ -486,11 +490,11 @@ int main() {
 				
 				LCT::posType x = connection[id].first, y = connection[id].second;
 
-//				debug(id, x, y);
+				debug(id, x, y);
 				tree.cut(x, id + N + shifting);
-//				debug(x, id);
+				debug(x, id);
 				tree.cut(y, id + N + shifting);
-//				debug(y, id);
+				debug(y, id);
 				
 				que.pop();
 			}
