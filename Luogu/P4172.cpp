@@ -79,7 +79,7 @@ public:
 		
 		void init(){
 			this->leftSon = this->rightSon = this->father = nullptr;
-			this->value = 0;
+			this->value = MIN;
 			this->size = 1;
 			this->tag = false;
 		}
@@ -372,7 +372,7 @@ int main() {
 	LCT tree(N + M);
 	
 	for(int i = 1; i <= N; ++i)
-		tree.set(i, MIN);
+		tree.set(i, -1);
 		
 	for(int i = 0; i < M; ++i)
 		tree.set(i + N + 1, i);
@@ -415,7 +415,7 @@ int main() {
 		debug(i, oper[i].k, oper[i].a, oper[i].b);
 		if(oper[i].k == 1) {
 			int const pos = tree.ans(oper[i].a, oper[i].b) - N - 1;
-			
+			debug(pos);
 			ans.push(edge[tree.ans(oper[i].a, oper[i].b) - N - 1].first);
 		} else {
 			int const pre = tree.ans(oper[i].a, oper[i].b);
