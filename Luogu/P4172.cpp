@@ -349,7 +349,7 @@ struct OPERATOR {
 	OPERATOR(int _k_, int _a_, int _b_):k(_k_), a(_a_), b(_b_){};
 };
 
-constexpr int maxN = 1005, maxM = 1e5 + 5;
+constexpr int maxQ = 1e5 + 5;
 
 int N_, M_, Q_ = 0;
 int const &N = N_, &M = M_, &Q = Q_;
@@ -364,7 +364,7 @@ std::map<PAIR, int> table;
 
 std::vector<EDGE> edge;
 
-std::array<OPERATOR, maxM> oper;
+std::array<OPERATOR, maxQ> oper;
 
 int main() {
 	std::cin >> N_ >> M_ >> Q_;
@@ -380,7 +380,7 @@ int main() {
 	edge.resize(M);
 	
 	for(auto &iter : edge) {
-		std::cin >> iter.first >> iter.second.first >> iter.second.second;
+		std::cin >> iter.second.first >> iter.second.second >> iter.first;
 		
 		if(iter.second.first > iter.second.second)
 			std::swap(iter.second.first, iter.second.second);
@@ -412,11 +412,8 @@ int main() {
 	std::stack<int> ans;
 	
 	for(int i = Q; i > 0; --i) {
-		debug(i, oper[i].k, oper[i].a, oper[i].b);
 		if(oper[i].k == 1) {
-			int const pos = tree.ans(oper[i].a, oper[i].b) - N - 1;
-			debug(pos);
-			ans.push(edge[tree.ans(oper[i].a, oper[i].b) - N - 1].first);
+			ans.push(edge[tree.ans(oper[i].a, oper[i].b)].first);
 		} else {
 			int const pre = tree.ans(oper[i].a, oper[i].b);
 			

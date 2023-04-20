@@ -1,5 +1,5 @@
-//HZ - 80.3
-//Luogu - P1501
+//HZ - 80.4
+//Luogu - P4172
 #include<bits/stdc++.h>
 
 namespace DEBUG {
@@ -42,15 +42,16 @@ namespace DEBUG {
 
 using namespace DEBUG;
 
-constexpr int maxN = 1005, maxM = 1e5;
 typedef int valueType;
+
+constexpr valueType MIN = INT_MIN >> 1;
 
 class LCT {
 public:
 	struct NODE {
 		typedef NODE self;
 		typedef self* pointer;
-		typedef unsigned int posType;
+		typedef int posType;
 		
 		pointer father;
 		pointer leftSon;
@@ -59,9 +60,7 @@ public:
 		bool tag;
 		valueType value;
 		valueType size;
-		valueType add;
-		valueType mul;
-		valueType sum;
+		valueType max;
 		
 		posType nodeId;
 		
@@ -75,17 +74,14 @@ public:
 		
 		void update(){
 			this->size = (this->leftSon != nullptr ? (this->leftSon)->size : 0) + (this->rightSon != nullptr ? (this->rightSon)->size : 0) + 1;
-			this->sum = (this->leftSon != nullptr ? (this->leftSon)->sum : 0) + (this->rightSon != nullptr ? (this->rightSon)->sum : 0) + this->value;
-			this->sum %= MOD;
+			this->max = std::max({(this->leftSon != nullptr ? (this->leftSon)->max : MIN), (this->rightSon != nullptr ? (this->rightSon)->max : MIN), this->value});
 		}
 		
 		void init(){
 			this->leftSon = this->rightSon = this->father = nullptr;
-			this->value = 0;
+			this->value = MIN;
 			this->size = 1;
 			this->tag = false;
-			this->add = this->sum = 0;
-			this->mul = 1;
 		}
 		
 		void init(valueType key) {
@@ -93,8 +89,6 @@ public:
 			this->value = key;
 			this->size = 1;
 			this->tag = false;
-			this->add = this->sum = 0;
-			this->mul = 1;
 		}
 		
 		void init(valueType key, posType id) {
@@ -103,8 +97,6 @@ public:
 			this->size = 1;
 			this->nodeId = id;
 			this->tag = false;
-			this->add = this->sum = 0;
-			this->mul = 1;
 		}
 		
 		bool isRoot() {
@@ -125,40 +117,6 @@ public:
 				
 				this->tag = false;
 			}
-			
-			if(this->mul != 1) {
-				if(this->leftSon != nullptr) {
-					this->leftSon->mul = (this->leftSon->mul * this->mul) % MOD;
-					this->leftSon->value = (this->leftSon->value * this->mul) % MOD;
-					this->leftSon->sum = (this->leftSon->sum * this->mul) % MOD;
-					this->leftSon->add = (this->leftSon->add * this->mul) % MOD;
-				}
-				
-				if(this->rightSon != nullptr) {
-					this->rightSon->mul = (this->rightSon->mul * this->mul) % MOD;
-					this->rightSon->value = (this->rightSon->value * this->mul) % MOD;
-					this->rightSon->sum = (this->rightSon->sum * this->mul) % MOD;
-					this->rightSon->add = (this->rightSon->add * this->mul) % MOD;
-				}
-				
-				this->mul = 1;
-			}
-			
-			if(this->add != 0) {
-				if(this->leftSon != nullptr) {
-					this->leftSon->value = (this->leftSon->value + this->add) % MOD;
-					this->leftSon->sum = (this->leftSon->sum + this->add * this->leftSon->size) % MOD;
-					this->leftSon->add = (this->leftSon->add + this->add) % MOD;
-				}
-				
-				if(this->rightSon != nullptr) {
-					this->rightSon->value = (this->rightSon->value + this->add) % MOD;
-					this->rightSon->sum = (this->rightSon->sum + this->add * this->rightSon->size) % MOD;
-					this->rightSon->add = (this->rightSon->add + this->add) % MOD;
-				}
-				
-				this->add = 0;
-			}
 		}
 		
 		friend std::ostream &operator<<(std::ostream &output, pointer Object) {
@@ -167,7 +125,7 @@ public:
 			
 			output << "nodeId:" << Object->nodeId;
         	output << "\tisRoot:" << Object->isRoot() << std::endl;
-        	output << Object->value << ' ' << Object->sum << ' ';
+        	output << Object->value << ' ' << Object->max << ' ';
         	output << "leftSon:" << (Object->leftSon != nullptr ? Object->leftSon->nodeId : 0) << "\trightSon:" << (Object->rightSon != nullptr ? Object->rightSon->nodeId : 0) << "\tfather:" << (Object->father != nullptr ? Object->father->nodeId : 0) << std::endl << std::endl << std::endl;
         	
         	return output;
@@ -189,6 +147,26 @@ public:
 	LCT(size_t size):_size_(size), node(_size_ + 1){
 		node[0] = this->newNode();
 		node[0]->init();
+	};
+	
+	class NoSuchEdgeException : protected std::exception {
+   		private:
+			const char *message;
+
+		public:
+    		explicit NoSuchEdgeException(const char *msg) : message(msg) {}
+
+    		const char *what() const noexcept override { return message; }
+	};
+	
+    class AlreadyConnectedException : protected std::exception {
+   		private:
+			const char *message;
+
+		public:
+    		explicit AlreadyConnectedException(const char *msg) : message(msg) {}
+
+    		const char *what() const noexcept override { return message; }
 	};
 
 private:
@@ -226,23 +204,7 @@ public:
 	}
 	
 	valueType ans(posType x, posType y) {
-		return this->split(node[x], node[y])->sum % MOD;
-	}
-	
-	void add(posType x, posType y, valueType key) {
-		pointer current = this->split(node[x], node[y]);
-		current->value = (current->value + key) % MOD;
-		current->add = (current->add + key) % MOD;
-		current->sum = (current->sum + key * current->size) % MOD;
-		current->update();
-	}
-	
-	void mul(posType x, posType y, valueType key) {
-		pointer current = this->split(node[x], node[y]);
-		current->value = (current->value * key) % MOD;
-		current->mul = (current->mul * key) % MOD;
-		current->sum = (current->sum * key) % MOD;
-		current->update();
+		return this->split(node[x], node[y])->max;
 	}
 	
 	posType find(posType x) {
@@ -318,7 +280,7 @@ protected:
 		this->splay(x);
 		
 		if(this->find(y) == x->nodeId)
-			return;
+			throw AlreadyConnectedException("Already Connected");
 
 		x->father = y;
 	}
@@ -341,11 +303,12 @@ protected:
 		this->splay(y);
 		
 		if(this->find(y->nodeId) != x->nodeId)
-			return;
+			throw NoSuchEdgeException("Disconnected");
 			
 		this->splay(y);
 		
-		if(y->leftSon == x && x->rightSon == nullptr)
+		if(y->leftSon != x || x->rightSon != nullptr)
+			throw NoSuchEdgeException("There are other edges between the nodes.");
 			
 		y->leftSon = x->father = nullptr;
 			
@@ -377,60 +340,96 @@ public:
 	}
 };
 
-int N_, M_, Q_;
+struct OPERATOR {
+	int k;
+	int a, b;
+	
+	OPERATOR():k(0), a(0), b(0){};
+	
+	OPERATOR(int _k_, int _a_, int _b_):k(_k_), a(_a_), b(_b_){};
+};
+
+constexpr int maxQ = 1e5 + 5;
+
+int N_, M_, Q_ = 0;
 int const &N = N_, &M = M_, &Q = Q_;
 
+typedef std::pair<int, int> PAIR;
+
+typedef std::pair<int, PAIR> EDGE;
+
+std::map<PAIR, bool> removed;
+
+std::map<PAIR, int> table;
+
+std::vector<EDGE> edge;
+
+std::array<OPERATOR, maxQ> oper;
+
 int main() {
-	std::cin >> N_ >> M_ >> Q_;;
+	std::cin >> N_ >> M_ >> Q_;
 	
-	LCT tree(n);
+	LCT tree(N + M);
 	
-	for(int i = 1; i <= n; ++i) {
-		tree.set(i, 0);
+	for(int i = 1; i <= N; ++i)
+		tree.set(i, -1);
+		
+	for(int i = 0; i < M; ++i)
+		tree.set(i + N + 1, i);
+	
+	edge.resize(M);
+	
+	for(auto &iter : edge) {
+		std::cin >> iter.second.first >> iter.second.second >> iter.first;
+		
+		if(iter.second.first > iter.second.second)
+			std::swap(iter.second.first, iter.second.second);
 	}
 	
-	for(int i = 1; i < n; ++i) {
-		LCT::posType a, b;
+	for(int i = 1; i <= Q; ++i) {
+		std::cin >> oper[i].k >> oper[i].a >> oper[i].b;
 		
-		std::cin >> a >> b;
+		if(oper[i].a > oper[i].b)
+			std::swap(oper[i].a, oper[i].b);
 		
-		tree.link(a, b);
+		if(oper[i].k == 2)
+			removed[std::make_pair(std::min(oper[i].a, oper[i].b), std::max(oper[i].a, oper[i].b))] = true;
 	}
-
-	for(int i = 0; i < m; ++i) {
-		char op;
+	
+	std::sort(edge.begin(), edge.end());
+	
+	for(int i = 0; i < M; ++i) {
+		table[std::make_pair(edge[i].second.first, edge[i].second.second)] = i;
 		
-		std::cin >> op;
-		
-		if(op == '+') {
-			LCT::posType x, y;
-			valueType c;
-			
-			std::cin >> x >> y >> c;
-
-			tree.add(x, y, c);
-		} else if(op == '-') {
-			LCT::posType x, y, a, b;
-			
-			std::cin >> x >> y >> a >> b;
-
-			tree.cut(x, y);
-			
-			tree.link(a, b);
-		} else if(op == '*') {
-			LCT::posType x, y;
-			valueType c;
-			
-			std::cin >> x >> y >> c;
-			
-			tree.mul(x, y, c);
-		} else if(op == '/') {
-			LCT::posType x, y;
-			
-			std::cin >> x >> y;
-
-			std::cout << tree.ans(x, y) << '\n';
+		if(!removed[std::make_pair(edge[i].second.first, edge[i].second.second)]) {
+			if(tree.find(edge[i].second.first) != tree.find(edge[i].second.second)) {
+				tree.link(N + i + 1, edge[i].second.first);
+				tree.link(N + i + 1, edge[i].second.second);
+			}
 		}
+	}
+	
+	std::stack<int> ans;
+	
+	for(int i = Q; i > 0; --i) {
+		if(oper[i].k == 1) {
+			ans.push(edge[tree.ans(oper[i].a, oper[i].b)].first);
+		} else {
+			int const pre = tree.ans(oper[i].a, oper[i].b);
+			
+			int const now = table[std::make_pair(oper[i].a, oper[i].b)];
+			
+			if(now < pre) {
+				tree.cut(edge[pre].second.first, pre + N + 1);
+				tree.cut(edge[pre].second.second, pre + N + 1);
+				tree.link(edge[now].second.first, now + N + 1);
+				tree.link(edge[now].second.second, now + N + 1);
+			}
+		}
+	}
+	while(!ans.empty()) {
+		std::cout << ans.top() << '\n';
+		ans.pop();
 	}
 	
 	return 0;
