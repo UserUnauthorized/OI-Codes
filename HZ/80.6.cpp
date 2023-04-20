@@ -1,4 +1,4 @@
-//HZ - 80.2
+//HZ - 80.6
 #include<bits/stdc++.h>
 
 typedef int valueType;
