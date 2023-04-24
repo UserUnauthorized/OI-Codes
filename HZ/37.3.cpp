@@ -29,15 +29,15 @@ hashType table(char ch);
 void init();
 
 int main() {
-	init();
+    init();
 }
 
 void init() {
-	std::cin >> K_ >> source;
-	
-	
+    std::cin >> K_ >> source;
+
+
 }
 
-hashType table(char ch){
-	return ch - 'a' + 1;
+hashType table(char ch) {
+    return ch - 'a' + 1;
 }

@@ -21,18 +21,18 @@ namespace DEBUG {
         os << "]";
         return os;
     }
-    
+
     std::ostream &operator<<(std::ostream &os, __int128 V) {
-        if(V < 0){
-        	os << '-';
-        	V = -V;
-		}
-		
-		if(V > 9)	
-			os << V / 10;
-		
-		os << (int)(V % 10);
-		
+        if (V < 0) {
+            os << '-';
+            V = -V;
+        }
+
+        if (V > 9)
+            os << V / 10;
+
+        os << (int) (V % 10);
+
         return os;
     }
 
