@@ -2,52 +2,51 @@
 //Luogu - P4591
 #include <bits/stdc++.h>
 
-#include <utility>
+typedef std::array<long long, 256> tableType;
+
+constexpr static const tableType table = {0,
+                                          0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                          0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                          0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                          0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                          0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                          0, 0, 0, 0, 1, 2, 3, 4, 5, 6,
+                                          7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+                                          17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
+                                          0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                          0, 0, 0, 0, 0, 0, 1, 2, 3, 4,
+                                          5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
+                                          15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+                                          25, 26, 0, 0, 0, 0, 0, 0, 0, 0,
+                                          0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                          0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                          0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                          0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                          0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                          0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                          0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                          0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                          0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                          0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                          0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                          0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                          0, 0, 0, 0, 0,};
+
+constexpr static const size_t HASH_CNT = 3;
+constexpr static const std::array<long long, HASH_CNT> HASH_MOD = {1000000007, 1000000009, 1000000021};
+constexpr static const std::array<long long, HASH_CNT> HASH_BASE = {31, 1331, 87481};
 
 class stringHash {
 public:
-    typedef stringHash self;
     typedef std::string dataType;
     typedef long long hashType;
     typedef size_t sizeType;
     typedef std::vector<hashType> hashListType;
-    typedef std::array<hashType, 256> tableType;
-
-    constexpr static const tableType table = {0,
-                                              0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                              0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                              0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                              0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                              0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                              0, 0, 0, 0, 1, 2, 3, 4, 5, 6,
-                                              7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-                                              17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
-                                              0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                              0, 0, 0, 0, 0, 0, 1, 2, 3, 4,
-                                              5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
-                                              15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
-                                              25, 26, 0, 0, 0, 0, 0, 0, 0, 0,
-                                              0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                              0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                              0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                              0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                              0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                              0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                              0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                              0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                              0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                              0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                              0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                              0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                              0, 0, 0, 0, 0,};
-
-    constexpr static const size_t HASH_CNT = 3;
-    constexpr static const std::array<hashType, HASH_CNT> HASH_MOD = {1000000007, 1000000009, 1000000021};
-    constexpr static const std::array<hashType, HASH_CNT> HASH_BASE = {31, 1331, 87481};
 
 protected:
     dataType data;
     std::array<hashListType, HASH_CNT> hash;
+    std::array<hashListType, HASH_CNT> pow;
 
 public:
     stringHash() = default;
@@ -56,21 +55,28 @@ public:
         sizeType const size = data.size();
 
         for (sizeType i = 0; i < HASH_CNT; ++i) {
+            pow[i].resize(size + 1);
+            pow[i][0] = 1;
+
+            for (sizeType j = 0; j < size; ++j)
+                pow[i][j + 1] = pow[i][j] * HASH_BASE[i] % HASH_MOD[i];
+        }
+
+        for (sizeType i = 0; i < HASH_CNT; ++i) {
             hash[i].resize(size + 1);
             hash[i][0] = 0;
             for (sizeType j = 0; j < size; ++j) {
-                hash[i][j + 1] = (hash[i][j] * self::HASH_BASE[i] + self::table[data[j]]) % self::HASH_MOD[i];
+                hash[i][j + 1] = (hash[i][j] * HASH_BASE[i] + table[data[j]]) % HASH_MOD[i];
             }
         }
     }
 
     hashType getSubHash(sizeType i) const {
-        return hash[i][this->size()];
+        return hash[i][this->size() - 1];
     }
 
     hashType getSubHash(sizeType l, sizeType r, sizeType i) const {
-        return (hash[i][r] - hash[i][l] * (hashType) pow((double) self::HASH_BASE[i], (double) (r - l)) % self::HASH_MOD[i] +
-                self::HASH_MOD[i]) % self::HASH_MOD[i];
+        return (hash[i][r] - hash[i][l] * pow[i][r - l] % HASH_MOD[i] + HASH_MOD[i]) % HASH_MOD[i];
     }
 
     sizeType size() const {
@@ -80,8 +86,11 @@ public:
     bool check(size_t pos, const stringHash &str) const {
         sizeType const size = str.size();
 
+        if (pos + size > this->size())
+            return false;
+
         for (sizeType i = 0; i < HASH_CNT; ++i) {
-            if (getSubHash(pos, pos + size, i) != str.getSubHash(i)) {
+            if (getSubHash(pos, pos + size - 1, i) != str.getSubHash(i)) {
                 return false;
             }
         }
@@ -90,7 +99,7 @@ public:
 };
 
 typedef long long valueType;
-constexpr valueType MOD = 1000000007, maxK = 12, maxS = 10005;
+constexpr valueType MOD = 1000000007, maxS = 10005;
 
 std::array<std::array<valueType, maxS>, 2> dp;
 
@@ -105,17 +114,15 @@ int main() {
     stringHash S(str);
     size_t const size = S.size();
 
-    std::array<std::queue<size_t>, 2> que;
-
-    for (int k = 0; k < K; ++k) {
-        size_t const now = k & 1, pre = now ^ 1;
+    {
+        int k = 1;
+        size_t const now = k & 1;
 
         std::fill(dp[now].begin(), dp[now].end(), 0);
 
         size_t A;
 
         std::cin >> A;
-
         std::vector<stringHash> subStr(A);
 
         for (size_t i = 0; i < A; ++i) {
@@ -125,14 +132,45 @@ int main() {
         }
 
         for (size_t pos = 0; pos < size; ++pos)
-            for (size_t i = 0; i < A; ++i)
+            for (size_t i = 0; i < A; ++i) {
                 if (S.check(pos, subStr[i]))
-                    dp[now][pos + subStr[i].size()] = (dp[now][pos + subStr[i].size()] + dp[pre][pos]) % MOD;
+                    ++dp[now][pos + subStr[i].size() - 1];
+            }
+    }
+
+    for (int k = 2; k <= K; ++k) {
+        size_t const now = k & 1, pre = now ^ 1;
+
+        std::fill(dp[now].begin(), dp[now].end(), 0);
+
+        size_t A;
+
+        std::cin >> A;
+        std::vector<stringHash> subStr(A);
+
+        for (size_t i = 0; i < A; ++i) {
+            std::string temp;
+            std::cin >> temp;
+            subStr[i] = stringHash(temp);
+        }
+
+        for (size_t pos = 0; pos < size; ++pos)
+            for (size_t i = 0; i < A; ++i) {
+                if (S.check(pos, subStr[i]))
+                    dp[now][pos + subStr[i].size() - 1] =
+                            (dp[now][pos + subStr[i].size() - 1] + dp[pre][pos]) % MOD;
+            }
 
 
     }
 
-    std::cout << dp[(K & 1) ^ 1][size];
+    valueType ans = 0;
+    size_t const now = K & 1;
+
+    for (size_t pos = 0; pos < size; ++pos)
+        ans = (ans + dp[now][pos]) % MOD;
+
+    std::cout << ans << std::endl;
 
     return 0;
 }
