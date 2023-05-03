@@ -9,5 +9,4 @@ include_directories(LocalInclude)
 add_compile_definitions(CLION)
 add_compile_definitions(LOCAL)
 
-add_executable(P2633 Luogu/P2633.cpp)
-add_executable(U286677 Luogu/U286677.cpp)
+add_executable(P4591 Luogu/P4591.cpp)
