@@ -1,6 +1,9 @@
-//HZ - 37.3
-//Luogu - P4591
-#include <bits/stdc++.h>
+#ifndef OI_CODES_STRINGHASH_H
+#define OI_CODES_STRINGHASH_H
+
+#include <array>
+#include <vector>
+#include <string>
 
 typedef std::array<long long, 256> tableType;
 
@@ -99,78 +102,4 @@ public:
     }
 };
 
-typedef long long valueType;
-constexpr valueType MOD = 1000000007, maxS = 10005;
-
-std::array<std::array<valueType, maxS>, 2> dp;
-
-valueType K_;
-valueType const &K = K_;
-
-int main() {
-    std::cin >> K_;
-
-    std::string str;
-    std::cin >> str;
-    stringHash S(str);
-    size_t const size = S.size();
-
-    {
-        int k = 1;
-        size_t const now = k & 1;
-
-        std::fill(dp[now].begin(), dp[now].end(), 0);
-
-        size_t A;
-
-        std::cin >> A;
-        std::vector<stringHash> subStr(A);
-
-        for (size_t i = 0; i < A; ++i) {
-            std::string temp;
-            std::cin >> temp;
-            subStr[i] = stringHash(temp);
-        }
-
-        for (size_t pos = 1; pos <= size; ++pos)
-            for (size_t i = 0; i < A; ++i)
-                if (S.check(pos, subStr[i]))
-                    ++dp[now][pos + subStr[i].size() - 1];
-
-
-    }
-
-    for (int k = 2; k <= K; ++k) {
-        size_t const now = k & 1, pre = now ^ 1;
-
-        std::fill(dp[now].begin(), dp[now].end(), 0);
-
-        size_t A;
-
-        std::cin >> A;
-        std::vector<stringHash> subStr(A);
-
-        for (size_t i = 0; i < A; ++i) {
-            std::string temp;
-            std::cin >> temp;
-            subStr[i] = stringHash(temp);
-        }
-
-        for (size_t pos = 1; pos <= size; ++pos)
-            for (size_t i = 0; i < A; ++i)
-                if (S.check(pos + 1, subStr[i]))
-                    dp[now][pos + subStr[i].size()] = (dp[now][pos + subStr[i].size()] + dp[pre][pos]) % MOD;
-
-
-    }
-
-    valueType ans = 0;
-    size_t const now = K & 1;
-
-    for (size_t pos = 1; pos <= size; ++pos)
-        ans = (ans + dp[now][pos]) % MOD;
-
-    std::cout << ans << std::endl;
-
-    return 0;
-}
+#endif //OI_CODES_STRINGHASH_H

@@ -84,7 +84,7 @@ public:
         return data.size();
     }
 
-    bool check(size_t pos, const stringHash &str) const {
+    bool check(sizeType pos, const stringHash &str) const {
         sizeType const size = str.size();
 
         if (pos + size - 1 > this->size())
