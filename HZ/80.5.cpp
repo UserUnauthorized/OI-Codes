@@ -2,14 +2,13 @@
 
 #include <bits/stdc++.h>
 
-typedef int valueType;
-
 class LCT {
 public:
     struct NODE {
         typedef NODE self;
         typedef std::shared_ptr<self> pointer;
         typedef unsigned int posType;
+        typedef int valueType;
 
         pointer father;
         pointer leftSon;
@@ -82,6 +81,8 @@ public:
     typedef NODE::pointer pointer;
 
     typedef NODE::posType posType;
+
+    typedef NODE::valueType valueType;
 
 protected:
     size_t _size_;
@@ -161,7 +162,7 @@ public:
     }
 
 protected:
-    void rotate(const pointer &current) {
+    static void rotate(const pointer &current) {
         pointer father = current->father;
         bool const isRightSon = current->isRightSon();
 
@@ -288,3 +289,121 @@ public:
             std::cerr << node[i];
     }
 };
+
+class PersistentSegmentTree {
+public:
+    typedef int valueType;
+    typedef size_t sizeType;
+    typedef PersistentSegmentTree self;
+
+private:
+    struct NODE {
+        typedef NODE self;
+        typedef std::shared_ptr<self> pointer;
+        typedef PersistentSegmentTree::valueType valueType;
+
+        pointer leftSon, rightSon;
+        self::valueType count;
+
+        NODE() : leftSon(nullptr), rightSon(nullptr), count(0) {};
+
+
+        void update() {
+            this->count = 0;
+
+            if (this->leftSon != nullptr)
+                this->count += this->leftSon->count;
+
+            if (this->rightSon != nullptr)
+                this->count += this->rightSon->count;
+        }
+    };
+
+    typedef NODE::pointer pointer;
+
+    static pointer allocateNode() {
+        return std::make_shared<NODE>();
+    }
+
+protected:
+    pointer root;
+
+    sizeType L, R;
+
+public:
+
+    PersistentSegmentTree() : root(nullptr), L(0), R(0) {};
+
+    PersistentSegmentTree(sizeType _l_, sizeType _r_) : root(nullptr), L(_l_), R(_r_) {};
+
+    PersistentSegmentTree(pointer _root_, sizeType _l_, sizeType _r_) : root(std::move(_root_)), L(_l_), R(_r_) {};
+
+    void build() {
+        build(this->root, L, R);
+    }
+
+    self insert(sizeType pos) {
+        return {insert(this->root, L, R, pos), L, R};
+    }
+
+    friend valueType query(sizeType l, sizeType r);
+
+    static valueType
+    query(const pointer &leftNode, const pointer &rightNode, sizeType nodeL, sizeType nodeR, sizeType l, sizeType r) {
+        if (leftNode->count == rightNode->count)
+            return 0;
+
+        if (l <= nodeL && nodeR <= r)
+            return rightNode->count - leftNode->count;
+
+        sizeType const mid = (nodeL + nodeR) >> 1;
+
+        if (r <= mid)
+            return query(leftNode->leftSon, rightNode->leftSon, nodeL, mid, l, r);
+        else if (l > mid)
+            return query(leftNode->rightSon, rightNode->rightSon, mid + 1, nodeR, l, r);
+        else
+            return query(leftNode->leftSon, rightNode->leftSon, nodeL, mid, l, r) +
+                   query(leftNode->rightSon, rightNode->rightSon, mid + 1, nodeR, l, r);
+    }
+
+protected:
+    static void build(pointer &current, sizeType l, sizeType r) {
+        current = allocateNode();
+
+        if (l == r)
+            return;
+
+        sizeType const mid = (l + r) >> 1;
+
+        build(current->leftSon, l, mid);
+        build(current->rightSon, mid + 1, r);
+    }
+
+    static pointer insert(const pointer &current, sizeType nodeL, sizeType nodeR, sizeType pos) {
+        pointer result = allocateNode();
+        *result = *current;
+
+        if (nodeL == nodeR) {
+            ++result->count;
+            return result;
+        }
+
+        sizeType const mid = (nodeL + nodeR) >> 1;
+
+        if (pos <= mid)
+            result->leftSon = insert(current->leftSon, nodeL, mid, pos);
+        else
+            result->rightSon = insert(current->rightSon, mid + 1, nodeR, pos);
+
+        result->update();
+
+        return result;
+    }
+};
+
+typedef PersistentSegmentTree TREE;
+
+typedef int valueType;
+
+valueType query(PersistentSegmentTree::sizeType l, PersistentSegmentTree::sizeType r);
