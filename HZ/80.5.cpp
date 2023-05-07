@@ -413,3 +413,14 @@ typedef std::array<valueType, maxN> ARRAY;
 typedef std::array<TREE, maxN> TreeArray;
 
 valueType query(PersistentSegmentTree::sizeType l, PersistentSegmentTree::sizeType r);
+
+valueType N_, M_, Q_, type_;
+valueType const &N = N_, &M = M_, &Q = Q_, &type = type_;
+
+int main() {
+    std::ios::sync_with_stdio(false);
+
+    std::cin >> N_ >> M_ >> Q_ >> type_;
+
+    return 0;
+}
