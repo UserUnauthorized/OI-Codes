@@ -9,7 +9,7 @@ class LCT {
 public:
     struct NODE {
         typedef NODE self;
-        typedef self *pointer;
+        typedef std::shared_ptr<self> pointer;
         typedef unsigned int posType;
 
         pointer father;
@@ -28,7 +28,7 @@ public:
         }
 
         bool isRightSon() const {
-            return this == (this->father)->rightSon;
+            return this == (this->father)->rightSon.get();
         }
 
         void update() {
@@ -38,30 +38,15 @@ public:
                         (this->rightSon != nullptr ? (this->rightSon)->sum : 0) ^ this->value;
         }
 
-        void init() {
-            this->leftSon = this->rightSon = this->father = nullptr;
-            this->value = 0;
-            this->size = 1;
-            this->tag = false;
-        }
+        NODE() : father(nullptr), leftSon(nullptr), rightSon(nullptr), tag(false), value(0), size(0), sum(0),
+                 nodeId(0) {};
 
-        void init(valueType key) {
-            this->leftSon = this->rightSon = this->father = nullptr;
-            this->value = key;
-            this->size = 1;
-            this->tag = false;
-        }
-
-        void init(valueType key, posType id) {
-            this->leftSon = this->rightSon = this->father = nullptr;
-            this->value = key;
-            this->size = 1;
-            this->nodeId = id;
-            this->tag = false;
-        }
+        NODE(valueType key, posType id) : father(nullptr), leftSon(nullptr), rightSon(nullptr), tag(false), value(key),
+                                          size(1), sum(key), nodeId(id) {};
 
         bool isRoot() {
-            return this->father == nullptr || (this->father->leftSon != this && this->father->rightSon != this);
+            return this->father == nullptr ||
+                   (this->father->leftSon.get() != this && this->father->rightSon.get() != this);
         }
 
         void push() {
@@ -80,7 +65,7 @@ public:
             }
         }
 
-        friend std::ostream &operator<<(std::ostream &output, pointer Object) {
+        friend std::ostream &operator<<(std::ostream &output, const pointer &Object) {
             if (Object == nullptr)
                 return output;
 
@@ -104,12 +89,20 @@ protected:
 
     std::vector<pointer> node;
 
+private:
+    static pointer allocateNode() {
+        return std::make_shared<NODE>();
+    }
+
+    static pointer allocateNode(valueType key, posType id) {
+        return std::make_shared<NODE>(key, id);
+    }
+
 public:
     LCT() : _size_(0) {};
 
-    LCT(size_t size) : _size_(size), node(_size_ + 1) {
-        node[0] = this->newNode();
-        node[0]->init();
+    explicit LCT(size_t size) : _size_(size), node(_size_ + 1) {
+        node[0] = allocateNode(0, 0);
     };
 
     class NoSuchEdgeException : protected std::exception {
@@ -132,16 +125,10 @@ public:
         const char *what() const noexcept override { return message; }
     };
 
-private:
-    pointer newNode() {
-        return (pointer) malloc(sizeof(NODE));
-    }
-
 public:
     void set(posType x, valueType key) {
         if (node[x] == nullptr) {
-            node[x] = this->newNode();
-            node[x]->init(key, x);
+            node[x] = allocateNode(key, x);
             node[x]->update();
         } else {
             this->splay(node[x]);
@@ -175,7 +162,7 @@ public:
     }
 
 protected:
-    void rotate(pointer current) {
+    void rotate(const pointer &current) {
         pointer father = current->father;
         bool const isRightSon = current->isRightSon();
 
@@ -194,7 +181,7 @@ protected:
         current->update();
     }
 
-    void splay(pointer current) {
+    void splay(const pointer &current) {
         update(current);
 
         for (pointer father = current->father; !current->isRoot(); rotate(current))
@@ -202,7 +189,7 @@ protected:
                 rotate(current->isRightSon() == father->isRightSon() ? father : current);
     }
 
-    void update(pointer current) {
+    void update(const pointer &current) {
         if (!current->isRoot())
             update(current->father);
 
@@ -237,7 +224,7 @@ protected:
         current->tag = !current->tag;
     }
 
-    void link(pointer x, pointer y) {
+    void link(const pointer &x, const pointer &y) {
         this->makeRoot(x);
 
         this->splay(x);
@@ -248,8 +235,8 @@ protected:
         x->father = y;
     }
 
-    pointer split(pointer x, pointer y) {
-        this->makeRoot(x);
+    pointer split(pointer x, const pointer &y) {
+        this->makeRoot(std::move(x));
 
         this->access(y);
 
@@ -258,7 +245,7 @@ protected:
         return y;
     }
 
-    void cut(pointer x, pointer y) {
+    void cut(const pointer &x, const pointer &y) {
         this->makeRoot(x);
 
         this->access(y);
