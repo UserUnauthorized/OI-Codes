@@ -10,6 +10,8 @@ public:
         typedef unsigned int posType;
         typedef int valueType;
 
+        constexpr static const valueType MAX = INT_MAX;
+
         pointer father;
         pointer leftSon;
         pointer rightSon;
@@ -17,7 +19,7 @@ public:
         bool tag;
         valueType value;
         valueType size;
-        valueType sum;
+        valueType min;
 
         posType nodeId;
 
@@ -32,15 +34,15 @@ public:
         void update() {
             this->size = (this->leftSon != nullptr ? (this->leftSon)->size : 0) +
                          (this->rightSon != nullptr ? (this->rightSon)->size : 0) + 1;
-            this->sum = (this->leftSon != nullptr ? (this->leftSon)->sum : 0) ^
-                        (this->rightSon != nullptr ? (this->rightSon)->sum : 0) ^ this->value;
+            this->min = std::min({(this->leftSon != nullptr ? (this->leftSon)->min : MAX),
+                        (this->rightSon != nullptr ? (this->rightSon)->min : MAX), this->value});
         }
 
-        NODE() : father(nullptr), leftSon(nullptr), rightSon(nullptr), tag(false), value(0), size(0), sum(0),
+        NODE() : father(nullptr), leftSon(nullptr), rightSon(nullptr), tag(false), value(0), size(0), min(0),
                  nodeId(0) {};
 
         NODE(valueType key, posType id) : father(nullptr), leftSon(nullptr), rightSon(nullptr), tag(false), value(key),
-                                          size(1), sum(key), nodeId(id) {};
+                                          size(1), min(key), nodeId(id) {};
 
         bool isRoot() {
             return this->father == nullptr ||
@@ -69,7 +71,7 @@ public:
 
             output << "nodeId:" << Object->nodeId;
             output << "\tisRoot:" << Object->isRoot() << std::endl;
-            output << Object->value << ' ' << Object->sum << ' ';
+            output << Object->value << ' ' << Object->min << ' ';
             output << "leftSon:" << (Object->leftSon != nullptr ? Object->leftSon->nodeId : 0) << "\trightSon:"
                    << (Object->rightSon != nullptr ? Object->rightSon->nodeId : 0) << "\tfather:"
                    << (Object->father != nullptr ? Object->father->nodeId : 0) << std::endl << std::endl << std::endl;
@@ -154,7 +156,7 @@ public:
     }
 
     valueType ans(posType x, posType y) {
-        return this->split(node[x], node[y])->sum;
+        return this->split(node[x], node[y])->min;
     }
 
     posType find(posType x) {
@@ -401,9 +403,13 @@ protected:
         return result;
     }
 };
-
 typedef PersistentSegmentTree TREE;
 
 typedef int valueType;
+
+constexpr valueType maxN = 2e5 + 5;
+
+typedef std::array<valueType, maxN> ARRAY;
+typedef std::array<TREE, maxN> TreeArray;
 
 valueType query(PersistentSegmentTree::sizeType l, PersistentSegmentTree::sizeType r);
