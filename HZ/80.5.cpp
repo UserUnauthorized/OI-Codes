@@ -423,6 +423,7 @@ valueType const &N = N_, &M = M_, &Q = Q_, &type = type_;
 
 ARRAY last;
 TreeArray tree;
+std::array<std::pair<int, int>, maxN> connection;
 
 int main() {
     std::ios::sync_with_stdio(false);
@@ -445,6 +446,8 @@ int main() {
 		int a, b;
 		std::cin >> a >> b;
 		
+		connection[i] = std::make_pair(a, b);
+		
 		if(a == b) {
 			tree[i] = tree[i - 1];
 		}else if(!lct.check(a, b)) {
@@ -454,6 +457,12 @@ int main() {
 			lct.link(b, N + i);
 		} else {
 			int const edge = lct.ans(a, b);
+			
+			lct.cut(connection[edge].first, N + edge);
+			lct.cut(connection[edge].second, N + edge);
+			
+			lct.link(a, N + i);
+			lct.link(b, N + i);
 			
 			tree[i] = tree[i - 1].insert(last[edge]);
 			last[edge] = i;
