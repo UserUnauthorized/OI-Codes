@@ -6,7 +6,8 @@ class LCT {
 public:
     struct NODE {
         typedef NODE self;
-        typedef std::shared_ptr<self> pointer;
+//        typedef std::shared_ptr<self> pointer;
+        typedef self *pointer;
         typedef unsigned int posType;
         typedef int valueType;
 
@@ -28,7 +29,7 @@ public:
         }
 
         bool isRightSon() const {
-            return this == (this->father)->rightSon.get();
+            return this == (this->father)->rightSon;
         }
 
         void update() {
@@ -46,7 +47,7 @@ public:
 
         bool isRoot() {
             return this->father == nullptr ||
-                   (this->father->leftSon.get() != this && this->father->rightSon.get() != this);
+                   (this->father->leftSon != this && this->father->rightSon != this);
         }
 
         void push() {
@@ -93,11 +94,13 @@ protected:
 
 private:
     static pointer allocateNode() {
-        return std::make_shared<NODE>();
+//        return std::make_shared<NODE>();
+        return new NODE();
     }
 
     static pointer allocateNode(valueType key, posType id) {
-        return std::make_shared<NODE>(key, id);
+//        return std::make_shared<NODE>(key, id);
+        return new NODE(key, id);
     }
 
 public:
@@ -305,7 +308,8 @@ public:
 private:
     struct NODE {
         typedef NODE self;
-        typedef std::shared_ptr<self> pointer;
+//        typedef std::shared_ptr<self> pointer;
+        typedef self *pointer;
         typedef PersistentSegmentTree::valueType valueType;
 
         pointer leftSon, rightSon;
@@ -328,8 +332,10 @@ private:
     typedef NODE::pointer pointer;
 
     static pointer allocateNode() {
-        return std::make_shared<NODE>();
+//        return std::make_shared<NODE>();
+        return new NODE();
     }
+
 
 protected:
     pointer root;
@@ -342,7 +348,7 @@ public:
 
     PersistentSegmentTree(sizeType _l_, sizeType _r_) : root(nullptr), L(_l_), R(_r_) {};
 
-    PersistentSegmentTree(pointer _root_, sizeType _l_, sizeType _r_) : root(std::move(_root_)), L(_l_), R(_r_) {};
+    PersistentSegmentTree(pointer _root_, sizeType _l_, sizeType _r_) : root(_root_), L(_l_), R(_r_) {};
 
     void build() {
         build(this->root, L, R);
@@ -499,7 +505,7 @@ valueType query(TREE::sizeType l, TREE::sizeType r) {
 //	if(l > r)
 //		std::swap(l, r);
 	
-	return TREE().query(tree[l - 1].root, tree[r].root, 0, M, 0, l - 1);
+	return TREE::query(tree[l - 1].root, tree[r].root, 0, M, 0, l - 1);
 }
 
 valueType read() {
