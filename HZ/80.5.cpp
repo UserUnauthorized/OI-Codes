@@ -421,6 +421,7 @@ valueType query(PersistentSegmentTree::sizeType l, PersistentSegmentTree::sizeTy
 valueType N_, M_, Q_, type_;
 valueType const &N = N_, &M = M_, &Q = Q_, &type = type_;
 
+ARRAY last;
 TreeArray tree;
 
 int main() {
@@ -437,19 +438,25 @@ int main() {
 		lct.set(N + i, i);
 
 	
-	tree[0] = TREE(1, M);
+	tree[0] = TREE(0, M);
 	tree[0].build();
 	
 	for(int i = 1; i <= M; ++i) {
 		int a, b;
 		std::cin >> a >> b;
 		
-		if(lct.check(a, b)) {
+		if(a == b) {
 			tree[i] = tree[i - 1];
+		}else if(!lct.check(a, b)) {
+			tree[i] = tree[i - 1];
+			
+			lct.link(a, N + i);
+			lct.link(b, N + i);
 		} else {
 			int const edge = lct.ans(a, b);
 			
-			tree[i] = tree[i - 1].insert(edge);
+			tree[i] = tree[i - 1].insert(last[edge]);
+			last[edge] = i;
 		}
 	}
 	
@@ -464,7 +471,7 @@ int main() {
 			r ^= lastAns;
 		}
 		
-		std::cout << (lastAns = query(l, r)) << '\n';
+		std::cout << (lastAns = N - query(l, r)) << '\n';
 	}
 	
 	std::cout << std::flush;
@@ -472,9 +479,9 @@ int main() {
     return 0;
 }
 
-valueType query(PersistentSegmentTree::sizeType l, PersistentSegmentTree::sizeType r) {
+valueType query(TREE::sizeType l, TREE::sizeType r) {
 	if(l > r)
 		std::swap(l, r);
 	
-	return TREE().query(tree[l - 1].root, tree[r].root, 1, M, 0, l - 1);
+	return TREE().query(tree[l - 1].root, tree[r].root, 0, M, 0, l - 1);
 }
