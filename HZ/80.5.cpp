@@ -162,6 +162,10 @@ public:
     posType find(posType x) {
         return this->find(node[x]);
     }
+    
+    bool check(posType x, posType y) {
+    	return find(x) == find(y);
+	}
 
 protected:
     static void rotate(const pointer &current) {
@@ -440,8 +444,37 @@ int main() {
 		int a, b;
 		std::cin >> a >> b;
 		
-		
+		if(lct.check(a, b)) {
+			tree[i] = tree[i - 1];
+		} else {
+			int const edge = lct.ans(a, b);
+			
+			tree[i] = tree[i - 1].insert(edge);
+		}
 	}
 	
+	valueType lastAns = 0;
+	
+	for(int i = 1; i <= Q; ++i) {
+		valueType l, r;
+		std::cin >> l >> r;
+		
+		if(type == 1) {
+			l ^= lastAns;
+			r ^= lastAns;
+		}
+		
+		std::cout << (lastAns = query(l, r)) << '\n';
+	}
+	
+	std::cout << std::flush;
+	
     return 0;
+}
+
+valueType query(PersistentSegmentTree::sizeType l, PersistentSegmentTree::sizeType r) {
+	if(l > r)
+		std::swap(l, r);
+	
+	return TREE().query(tree[l - 1].root, tree[r].root, 1, M, 0, l - 1);
 }
