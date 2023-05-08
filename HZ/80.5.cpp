@@ -238,8 +238,8 @@ protected:
 
         this->splay(x);
 
-//        if (this->find(y) == x->nodeId)
-//            throw AlreadyConnectedException("Already Connected");
+        if (this->find(y) == x->nodeId)
+            throw AlreadyConnectedException("Already Connected");
 
         x->father = y;
     }
@@ -261,13 +261,13 @@ protected:
 
         this->splay(y);
 
-//        if (this->find(y->nodeId) != x->nodeId)
-//            throw NoSuchEdgeException("Disconnected");
+        if (this->find(y->nodeId) != x->nodeId)
+            throw NoSuchEdgeException("Disconnected");
 
-//        this->splay(y);
+        this->splay(y);
 
-//        if (y->leftSon != x || x->rightSon != nullptr)
-//            throw NoSuchEdgeException("There are other edges between the nodes.");
+        if (y->leftSon != x || x->rightSon != nullptr)
+            throw NoSuchEdgeException("There are other edges between the nodes.");
 
         y->leftSon = x->father = nullptr;
 
@@ -430,16 +430,10 @@ valueType const &N = N_, &M = M_, &Q = Q_, &type = type_;
 TreeArray tree;
 std::array<std::pair<int, int>, maxN> connection;
 
-valueType read();
-
 int main() {
 //    std::ios::sync_with_stdio(false);
 
-//    std::cin >> N_ >> M_ >> Q_ >> type_;
-	N_ = read();
-	M_ = read();
-	Q_ = read();
-	type_ = read();
+    std::cin >> N_ >> M_ >> Q_ >> type_;
 	
 	LCT lct(N + M);
 	
@@ -454,9 +448,8 @@ int main() {
 	tree[0].build();
 	
 	for(int i = 1; i <= M; ++i) {
-//		int a, b;
-//		std::cin >> a >> b;
-		int a = read(), b = read();
+		int a, b;
+		std::cin >> a >> b;
 		
 		connection[i] = std::make_pair(a, b);
 		
@@ -477,16 +470,14 @@ int main() {
 			lct.link(b, N + i);
 			
 			tree[i] = tree[i - 1].insert(edge);
-//			last[edge] = i;
 		}
 	}
 	
 	valueType lastAns = 0;
 	
 	for(int i = 1; i <= Q; ++i) {
-//		valueType l, r;
-//		std::cin >> l >> r;
-		valueType l = read(), r = read();
+		valueType l, r;
+		std::cin >> l >> r;
 		
 		if(type == 1) {
 			l ^= lastAns;
@@ -496,29 +487,11 @@ int main() {
 		std::cout << (lastAns = N - query(l, r)) << '\n';
 	}
 	
-//	std::cout << std::flush;
+	std::cout << std::flush;
 	
     return 0;
 }
 
 valueType query(TREE::sizeType l, TREE::sizeType r) {
-//	if(l > r)
-//		std::swap(l, r);
-	
 	return TREE::query(tree[l - 1].root, tree[r].root, 0, M, 0, l - 1);
-}
-
-valueType read() {
-	valueType result = 0;
-	int input = getchar();
-	
-	while(input < '0' || input > '9')
-		input = getchar();
-		
-	while(input >= '0' && input <= '9') {
-		result = (result << 3) + (result << 1) + (input & 15);
-		input = getchar();
-	}
-	
-	return result;
 }
