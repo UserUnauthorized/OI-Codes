@@ -10,3 +10,5 @@ add_compile_definitions(CLION)
 add_compile_definitions(LOCAL)
 
 add_executable(80.5 HZ/80.5.cpp)
+add_executable(P9118 Luogu/P9118.cpp)
+add_executable(P3383 Luogu/P3383.cpp)
