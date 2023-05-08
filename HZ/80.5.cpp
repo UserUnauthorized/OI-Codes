@@ -406,7 +406,7 @@ protected:
 typedef PersistentSegmentTree TREE;
 
 typedef int valueType;
-
+constexpr valueType MAX = INT_MAX >> 1;
 constexpr valueType maxN = 2e5 + 5;
 
 typedef std::array<valueType, maxN> ARRAY;
@@ -417,10 +417,31 @@ valueType query(PersistentSegmentTree::sizeType l, PersistentSegmentTree::sizeTy
 valueType N_, M_, Q_, type_;
 valueType const &N = N_, &M = M_, &Q = Q_, &type = type_;
 
+TreeArray tree;
+
 int main() {
     std::ios::sync_with_stdio(false);
 
     std::cin >> N_ >> M_ >> Q_ >> type_;
+	
+	LCT lct(N + M);
+	
+	for(int i = 1; i <= N; ++i)
+		lct.set(i, MAX);
+		
+	for(int i = 1; i <= M; ++i)
+		lct.set(N + i, i);
 
+	
+	tree[0] = TREE(1, M);
+	tree[0].build();
+	
+	for(int i = 1; i <= M; ++i) {
+		int a, b;
+		std::cin >> a >> b;
+		
+		
+	}
+	
     return 0;
 }
