@@ -1,6 +1,4 @@
-#ifndef OI_CODES_LCT_H
-#define OI_CODES_LCT_H
-
+//Luogu - P4312
 #include<bits/stdc++.h>
 
 typedef int valueType;
@@ -297,4 +295,63 @@ public:
     }
 };
 
-#endif //OI_CODES_LCT_H
+int main() {
+	std::ios::sync_with_stdio(false);
+	
+	int n;
+	
+	std::cin >> n;
+	
+	LCT tree(n);
+	
+	for(int i = 1; i <= n; ++i) {
+		int t;
+		
+		std::cin >> t;
+		
+		tree.set(i, t);
+	}
+	
+	int q;
+	
+	std::cin >> q;
+	
+	for(int i = 0; i < q; ++i) {
+		std::string order;
+		std::cin >> order;
+		
+		if(order == "bridge") {
+			int u, v;
+			
+			std::cin >> u >> v;
+			
+			try {
+				tree.link(u, v);
+				
+				std::cout << "yes\n";
+			} catch (LCT::AlreadyConnectedException &e) {
+				std::cout << "no\n";
+			}
+		} else if(order == "penguins") {
+			int u, x;
+			
+			std::cin >> u >> x;
+			
+			tree.set(u, x);
+		} else if(order == "excursion") {
+			int u, v;
+			
+			std::cin >> u >> v;
+			
+			if(tree.check(u, v)) {
+				std::cout << tree.ans(u, v) << '\n';
+			} else {
+				std::cout << "impossible\n";
+			}
+		}
+	}
+	
+	std::cout << std::flush;
+	
+	return 0;
+}
