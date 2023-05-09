@@ -140,7 +140,10 @@ protected:
 			return strPos;
 			
 		++thisPos;
-		++strPos;
 		strType const nowType = data[thisPos].first;
+		
+		if(nowType == SIMPLE) {
+			return dfs(thisPos, strPos + 1);
+		} else if(nowType)
 	}
 };
