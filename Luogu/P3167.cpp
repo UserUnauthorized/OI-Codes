@@ -98,3 +98,23 @@ public:
         return true;
     }
 };
+
+class ModStr {
+public:
+	typedef ModStr self;
+	typedef stringHash hash;
+	
+	enum strType : int {PLAIN = 0, SIMPLE = 1, WILDCARD = 2};
+	
+	typedef std::pair<strType, hash> dataType;
+	typedef std::vector<dataType> container;
+	
+private:
+	container data;
+	
+public:
+	ModStr(std::string str) {
+		std::string::iterator now = str.begin(), last = str.begin();
+		
+	}
+};
