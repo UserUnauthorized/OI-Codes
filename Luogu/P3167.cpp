@@ -103,8 +103,9 @@ class ModStr {
 public:
 	typedef ModStr self;
 	typedef stringHash hash;
+	typedef size_t sizeType;
 	
-	enum strType : int {PLAIN = 0, SIMPLE = 1, WILDCARD = 2};
+	enum strType : int {RMPTY = -1, PLAIN = 0, SIMPLE = 1, WILDCARD = 2};
 	
 	typedef std::pair<strType, hash> dataType;
 	typedef std::vector<dataType> container;
@@ -114,7 +115,32 @@ private:
 	
 public:
 	ModStr(std::string str) {
+		data.emplace_back(EMPTY, hash());
+		
 		std::string::iterator now = str.begin(), last = str.begin();
 		
+		while(now != str.end()) {
+			++now;
+			
+			if(*now == '*' || *now == '?'){
+				data.emplace_back(PLAIN, hash(str.substr(std::distance(str.begin(), last), std::distance(last, now))));
+				data.emplace_back(*now == '*' ? WILDCARD : SIMPLE, hash());
+				last = ++now;
+			}
+		}
+	}
+	
+	bool check(hash str) {
+		
+	}
+	
+protected:
+	sizeType dfs(sizeType thisPos, sizeType strPos) {
+		if(thisPos == data.size())
+			return strPos;
+			
+		++thisPos;
+		++strPos;
+		strType const nowType = data[thisPos].first;
 	}
 };
