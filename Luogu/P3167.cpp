@@ -105,7 +105,7 @@ public:
 	typedef stringHash hash;
 	typedef size_t sizeType;
 	
-	enum strType : int {RMPTY = -1, PLAIN = 0, SIMPLE = 1, WILDCARD = 2};
+	enum strType : int {EMPTY = -1, PLAIN = 0, SIMPLE = 1, WILDCARD = 2};
 	
 	typedef std::pair<strType, hash> dataType;
 	typedef std::vector<dataType> container;
@@ -130,20 +130,58 @@ public:
 		}
 	}
 	
-	bool check(hash str) {
-		
+	bool check(const hash &str) const {
+		return dfs(0, 0, str);
 	}
 	
 protected:
-	sizeType dfs(sizeType thisPos, sizeType strPos) {
+	bool dfs(sizeType thisPos, sizeType strPos, const hash &str) const {
 		if(thisPos == data.size())
-			return strPos;
+			return strPos == str.size();
+		
+		if(strPos == str.size())
+			return false;
 			
 		++thisPos;
 		strType const nowType = data[thisPos].first;
 		
 		if(nowType == SIMPLE) {
-			return dfs(thisPos, strPos + 1);
-		} else if(nowType)
+			return dfs(thisPos, strPos + 1, str);
+		} else if(nowType == PLAIN) {
+			if(str.check(strPos + 1, data[thisPos].second))
+				return dfs(thisPos, strPos + data[thisPos].second.size(), str);
+			else 
+				return false;
+		} else {
+			for(sizeType i = str.size(); i >= strPos; --i)
+				if(dfs(thisPos, i, str))
+					return true;
+		}
+		
+		return false;
 	}
 };
+
+int main() {
+	std::string tempModStr;
+	
+	std::cin >> tempModStr;
+	
+	ModStr const mod(tempModStr);
+	
+	int n;
+	
+	std::cin >> n;
+	
+	for(int i = 0; i < n; ++i) {
+		std::string t;
+		
+		std::cin >> t;
+		
+		std::cout << (mod.check(stringHash(t)) ? "YES\n" : "NO\n") ;
+	}
+	
+	std::cout << std::flush;
+	
+	return 0;
+}
