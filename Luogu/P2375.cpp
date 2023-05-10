@@ -46,62 +46,64 @@ typedef long long valueType;
 
 constexpr valueType maxN = 1e6 + 5, MOD = 1e9 + 7;
 
-std::array<int, maxN> next;
+std::array<int, maxN> next, num;
 
 int main() {
-	valueType n;
-	
-	std::cin >> n;
-	
-	for(int i = 0; i < n; ++i) {
-		std::string data;
-		
-		std::cin >> data;
-		
-//		data.insert(data.begin(), ' ');
-		
-		valueType const length = data.length();
-		
-		next.fill(0);
-		
-//		int j = 0;
-		
-		for(int i = 1; i < length; ++i) {
-			int j = next[i - 1];
-			
-			while(j > 0 && data[i] != data[j])
-				j = next[j - 1];
+    valueType n;
 
-			if(data[i] == data[j])
-				++j;
-				
-			next[i] = j;
-		}
-		
-		valueType ans = 1;
-		
-		for(int i = 1; i < length; ++i) {
-			valueType t = 1;
-			
-			int j = next[i];
-			
-			valueType const pos = (i + 1) >> 1;
-			
-			while(j > pos)
-				j = next[j - 1];
-				
-			while(j > 0) {
-				++t;
-				j = next[j - 1];
-			}
-			
-			ans = (ans * t) % MOD;
-		}
-		
-		std::cout << ans << '\n';
-	}
-	
-	std::cout << std::flush;
-	
-	return 0;
+    std::cin >> n;
+
+    for (int i = 0; i < n; ++i) {
+        std::string data;
+
+        std::cin >> data;
+
+//		data.insert(data.begin(), ' ');
+
+        valueType const length = data.length();
+
+        next.fill(0);
+        num.fill(0);
+        num[1] = 1;
+//		int j = 0;
+
+        for (int i = 1; i < length; ++i) {
+            int j = next[i - 1];
+
+            while (j > 0 && data[i] != data[j])
+                j = next[j - 1];
+
+            if (data[i] == data[j])
+                ++j;
+
+            next[i] = j;
+            num[i] = num[j] + 1;
+        }
+
+        valueType ans = 1;
+
+        for (int i = 1; i < length; ++i) {
+//            valueType t = 1;
+
+            int j = next[i];
+
+            valueType const pos = (i + 1) >> 1;
+
+            while (j > pos)
+                j = next[j - 1];
+
+//            while (j > 0) {
+//                ++t;
+//                j = next[j - 1];
+//            }
+
+            ans = (ans * (num[j] + 1)) % MOD;
+        }
+
+        std::cout << ans << '\n';
+    }
+
+    std::cout << std::flush;
+
+    return 0;
 }
