@@ -86,7 +86,7 @@ public:
 
     bool check(sizeType pos, const stringHash &str) const {
         sizeType const size = str.size();
-//		debug(pos, size, this->size());
+        
         if (pos + size - 1 > this->size())
             return false;
 
@@ -123,7 +123,7 @@ public:
 
         while (now != str.end()) {
             sizeType pos = std::distance(str.begin(), now);
-//			debug(pos, *now);
+
             if (*now == '*' || *now == '?') {
                 if (now != last)
                     data.emplace_back(PLAIN,
@@ -138,10 +138,6 @@ public:
 
         if (last != str.end())
             data.emplace_back(PLAIN, hash(str.substr(std::distance(str.begin(), last), std::distance(last, now))));
-
-//		for(const auto &iter : data) {
-//			debug(iter.first, iter.second.size());
-//		}
     }
 
     bool check(const hash &str) const {
@@ -150,7 +146,6 @@ public:
 
 protected:
     bool dfs(sizeType thisPos, sizeType strPos, const hash &str) const {
-//		debug(thisPos, strPos, data.size(), str.size());
         if (thisPos == data.size() - 1)
             return strPos == str.size();
 
@@ -163,8 +158,6 @@ protected:
         if (nowType == SIMPLE) {
             return dfs(thisPos, strPos + 1, str);
         } else if (nowType == PLAIN) {
-//			bool const result = str.check(strPos + 1, data[thisPos].second);
-//			debug(result);
             if (str.check(strPos + 1, data[thisPos].second))
                 return dfs(thisPos, strPos + data[thisPos].second.size(), str);
             else
