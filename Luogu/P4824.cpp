@@ -1,41 +1,47 @@
+//wrongAnswer
 //HZ - 37.8
 //Luogu - P4824
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 
 namespace DEBUG {
-    template<typename T>
-    inline void _debug(const char *format, T t) {
-        std::cerr << format << '=' << t << std::endl;
+template<typename T>
+inline void _debug(const char *format, T t) {
+    std::cerr << format << '=' << t << std::endl;
+}
+
+template<class First, class... Rest>
+inline void _debug(const char *format, First first, Rest... rest) {
+    while (*format != ',')
+        std::cerr << *format++;
+
+    std::cerr << '=' << first << ",";
+    _debug(format + 1, rest...);
+}
+
+template<typename T>
+std::ostream &operator<<(std::ostream &os, const std::vector<T> &V) {
+    os << "[ ";
+
+    for (const auto &vv : V)
+        os << vv << ", ";
+
+    os << "]";
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, __int128 V) {
+    if (V < 0) {
+        os << '-';
+        V = -V;
     }
 
-    template<class First, class... Rest>
-    inline void _debug(const char *format, First first, Rest... rest) {
-        while (*format != ',') std::cerr << *format++;
-        std::cerr << '=' << first << ",";
-        _debug(format + 1, rest...);
-    }
+    if (V > 9)
+        os << V / 10;
 
-    template<typename T>
-    std::ostream &operator<<(std::ostream &os, const std::vector<T> &V) {
-        os << "[ ";
-        for (const auto &vv: V) os << vv << ", ";
-        os << "]";
-        return os;
-    }
+    os << (int)(V % 10);
 
-    std::ostream &operator<<(std::ostream &os, __int128 V) {
-        if (V < 0) {
-            os << '-';
-            V = -V;
-        }
-
-        if (V > 9)
-            os << V / 10;
-
-        os << (int) (V % 10);
-
-        return os;
-    }
+    return os;
+}
 
 #define debug(...) _debug(#__VA_ARGS__, __VA_ARGS__)
 }  // namespace DEBUG
@@ -51,8 +57,8 @@ int main() {
 
     std::cin >> text >> pattern;
 
-    int const patternLength = (int) pattern.length();
-    int const textLength = (int) text.length();
+    int const patternLength = (int)pattern.length();
+    int const textLength = (int)text.length();
 
     for (int i = 1; i <= textLength; ++i)
         next[i - 1] = i;
@@ -69,11 +75,15 @@ int main() {
         prefix[i] = j;
     }
 
-    int matchTimes = 0, j = 0;
+    int matchTimes = 0, j = 0, start = 0;
 
-    for (int i = 0; i < textLength; ++i) {
+    for (int i = 0; i < textLength; i = next[i]) {
+        //      if(j != 0 && text[i] != pattern[j])
+        //          matchTimes = 0;
+
         while (j > 0 && text[i] != pattern[j])
             j = prefix[j - 1];
+
 
         if (text[i] == pattern[j])
             ++j;
@@ -84,17 +94,24 @@ int main() {
 
         if (j == patternLength) {
             ++matchTimes;
-//			debug(i, j, matchTimes);
+
+            //            debug(i, j, matchTimes);
+            if (i - matchTimes * patternLength < start) {
+                //              debug(start);
+                start = i + 1;
+                continue;
+            }
+
             next[i - matchTimes * patternLength] = i + 1;
+            i = i - matchTimes * patternLength;
+            //          i = i - matchTimes * patternLength - 1;
+            j = match[i];
 
-//			i = i - matchTimes * patternLength - 1;
-            j = match[i - matchTimes * patternLength];
-
-//			if(j == 0)
-//				matchTimes = 0;
+            //          if(j == 0)
+            //              matchTimes = 0;
         }
     }
 
-    for (int i = 0; i < textLength; i = next[i])
+    for (int i = start; i < textLength; i = next[i])
         std::cout << text[i];
 }
