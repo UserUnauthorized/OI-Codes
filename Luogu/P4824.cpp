@@ -1,12 +1,12 @@
 //HZ - 37.8
 //Luogu - P4824
 #include <bits/stdc++.h>
-#include <ext/rope>
 
 constexpr int maxN = 1e6 + 5;
 
-std::array<int, maxN> next, prefix, match;
-using namespace __gnu_cxx;
+std::array<int, maxN> prefix, match;
+std::list<int> data;
+
 int main() {
     std::string text, pattern;
 
@@ -14,10 +14,6 @@ int main() {
 
     int const patternLength = (int)pattern.length();
     int const textLength = (int)text.length();
-	rope<int> data;
-	
-    for (int i = 1; i < textLength; ++i)
-    	next[i - 1] = i;
 	
 	for(int i = 0; i < textLength; ++i)
 		data.push_back(i);
@@ -33,10 +29,14 @@ int main() {
 
         prefix[i] = j;
     }
-
+    
+    auto iter = data.begin();
+    
+    ++iter;
+    
 	int j = 0;
 
-    for (int i = 0; i < textLength; ++i) {
+    for (int i = 0; i < textLength; ++i, ++iter) {
 
         while (j > 0 && text[i] != pattern[j])
             j = prefix[j - 1];
@@ -48,14 +48,14 @@ int main() {
         match[i] = j;
 
         if (j == patternLength) {
-            auto const nowPos = std::lower_bound(data.begin(), data.end(), i);
-            
-            if(std::distance(data.begin(), nowPos) <= patternLength)
-            	j = 0;
-            else
-            	j = match[*(nowPos - patternLength)];
-            
-            data.erase(std::distance(data.begin(), nowPos + 1 - patternLength), (size_t)patternLength);
+			for(int t = 0; t < patternLength; ++t)
+				data.erase(std::prev(iter));
+				
+			if(iter == data.begin()) {
+				j = 0;
+			} else {
+				j = match[*std::prev(iter)];
+			}
         }
     }
 
@@ -66,10 +66,3 @@ int main() {
 	
 	return 0;
 }
-
-/*
-Hack:
-
-abaabbaacc
-ab
-*/
