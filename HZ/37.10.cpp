@@ -372,7 +372,7 @@ int main() {
 	
 	int const textLength = N, patternLength = K;
 	
-	std::vector<int> /*sortedPattern, patternRank(patternLength, -1),*/ lastPos(S + 1, -1), text(textLength), pattern(patternLength);
+	std::vector<int> lastPos(S + 1, -1), text(textLength), pattern(patternLength);
 	std::vector<LimitSet> limit(patternLength);
 	
 	for(int i = 0; i < textLength; ++i)
@@ -380,16 +380,6 @@ int main() {
 		
 	for(int i = 0; i < patternLength; ++i)
 		std::cin >> pattern[i];
-	
-//	for(int i = 0; i < patternLength; ++i)
-//		debug(i, pattern[i]);
-	
-//	sortedPattern.assign(pattern.begin(), pattern.end());
-
-//	std::sort(sortedPattern.begin(), sortedPattern.end());
-//	
-//	for(int i = 0; i < patternLength; ++i)
-//		patternRank[i] = std::distance(sortedPattern.begin(), std::lower_bound(sortedPattern.begin(), sortedPattern.end(), pattern[i])) + 1;
 	
 	TREAP tree;
 	
@@ -403,13 +393,10 @@ int main() {
 		} else {
 			int tmp = 0;
 			if((tmp = tree.pre(pattern[i])) != TREAP::preNotFoundValue) {
-				debug(i, pattern[i], tree.pre(pattern[i]));
 				limit[i].emplace_back(UPPER, i - lastPos[tmp]);
 			}
 				
-				
 			if((tmp = tree.next(pattern[i])) != TREAP::nextNotFoundValue) {
-				debug(i, pattern[i], tree.next(pattern[i]));
 				limit[i].emplace_back(LOWER, i - lastPos[tmp]);
 			}
 				
@@ -419,15 +406,7 @@ int main() {
 		tree.insert(pattern[i]);
 	}
 	
-//	for(int i = 0; i < patternLength; ++i) {
-//		debug(i, limit[i].size());
-//		
-//		for(auto const &iter : limit[i]) {
-//			debug(iter.first, iter.second);
-//		}
-//	}
-
-	auto const check([&limit, &text](int i, int j) -> bool {
+	auto const checkText([&limit, &text](int i, int j) -> bool {
 		for(auto const &iter : limit[j]) {
 			if(iter.first == EQUAL && text[i] != text[i - iter.second]) return false;
 			if(iter.first == LOWER && text[i] >= text[i - iter.second]) return false;
@@ -437,5 +416,55 @@ int main() {
 		return true;
 	});
 	
+	auto const checkPattern([&limit, &pattern](int i, int j) -> bool {
+		for(auto const &iter : limit[j]) {
+			if(iter.first == EQUAL && pattern[i] != pattern[i - iter.second]) return false;
+			if(iter.first == LOWER && pattern[i] >= pattern[i - iter.second]) return false;
+			if(iter.first == UPPER && pattern[i] <= pattern[i - iter.second]) return false;
+		}
+		
+		return true;
+	});
 	
+	std::vector<int> prefix(patternLength);
+	
+	for(int i = 1; i < patternLength; ++i) {
+		int j = prefix[i - 1];
+		
+		while(j > 0 && !checkPattern(i, j))
+			j = prefix[j - 1];
+		
+		if(checkPattern(i, j))
+			++j;
+		
+		prefix[i] = j;
+	}
+	
+	std::queue<int> ans;
+	
+	int j = 0;
+	
+	for (int i = 0; i < textLength; ++i) {
+		while(j > 0 && !checkText(i, j))
+			j = prefix[j - 1];
+		
+		if(checkText(i, j))
+			++j;
+			
+		if(j == patternLength) {
+			ans.push(i - patternLength + 1 + 1);
+			j = prefix[j - 1];
+		}
+	}
+	
+	std::cout << ans.size() << '\n';
+	
+	while(!ans.empty()) {
+		std::cout << ans.front() << '\n';
+		ans.pop();
+	}
+	
+	std::cout << std::flush;
+	
+	return 0;
 }
