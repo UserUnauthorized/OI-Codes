@@ -167,6 +167,56 @@
 					<DistClean command="C:/Users/hzoi/AppData/Local/JETBRA~1/CLION2~1.2/bin/mingw/bin/mingw32-make.exe -f &quot;C:/OI-Codes/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
+			<Target title="19.3">
+				<Option output="C:/OI-Codes/cmake-build-debug/19.3.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="C:/OI-Codes/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DCLION"/>
+					<Add option="-DLOCAL"/>
+					<Add directory="C:/OI-Codes/LocalInclude"/>
+					<Add directory="C:/Users/hzoi/AppData/Local/JetBrains/CLion 2023.1.2/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++"/>
+					<Add directory="C:/Users/hzoi/AppData/Local/JetBrains/CLion 2023.1.2/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/x86_64-w64-mingw32"/>
+					<Add directory="C:/Users/hzoi/AppData/Local/JetBrains/CLion 2023.1.2/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/backward"/>
+					<Add directory="C:/Users/hzoi/AppData/Local/JetBrains/CLion 2023.1.2/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/include"/>
+					<Add directory="C:/Users/hzoi/AppData/Local/JetBrains/CLion 2023.1.2/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/../../../../include"/>
+					<Add directory="C:/Users/hzoi/AppData/Local/JetBrains/CLion 2023.1.2/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/include-fixed"/>
+					<Add directory="C:/Users/hzoi/AppData/Local/JetBrains/CLion 2023.1.2/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/../../../../x86_64-w64-mingw32/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="C:/Users/hzoi/AppData/Local/JETBRA~1/CLION2~1.2/bin/mingw/bin/mingw32-make.exe -f &quot;C:/OI-Codes/cmake-build-debug/Makefile&quot;  VERBOSE=1 19.3"/>
+					<CompileFile command="C:/Users/hzoi/AppData/Local/JETBRA~1/CLION2~1.2/bin/mingw/bin/mingw32-make.exe -f &quot;C:/OI-Codes/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/Users/hzoi/AppData/Local/JETBRA~1/CLION2~1.2/bin/mingw/bin/mingw32-make.exe -f &quot;C:/OI-Codes/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/Users/hzoi/AppData/Local/JETBRA~1/CLION2~1.2/bin/mingw/bin/mingw32-make.exe -f &quot;C:/OI-Codes/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="19.3/fast">
+				<Option output="C:/OI-Codes/cmake-build-debug/19.3.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="C:/OI-Codes/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DCLION"/>
+					<Add option="-DLOCAL"/>
+					<Add directory="C:/OI-Codes/LocalInclude"/>
+					<Add directory="C:/Users/hzoi/AppData/Local/JetBrains/CLion 2023.1.2/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++"/>
+					<Add directory="C:/Users/hzoi/AppData/Local/JetBrains/CLion 2023.1.2/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/x86_64-w64-mingw32"/>
+					<Add directory="C:/Users/hzoi/AppData/Local/JetBrains/CLion 2023.1.2/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/backward"/>
+					<Add directory="C:/Users/hzoi/AppData/Local/JetBrains/CLion 2023.1.2/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/include"/>
+					<Add directory="C:/Users/hzoi/AppData/Local/JetBrains/CLion 2023.1.2/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/../../../../include"/>
+					<Add directory="C:/Users/hzoi/AppData/Local/JetBrains/CLion 2023.1.2/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/include-fixed"/>
+					<Add directory="C:/Users/hzoi/AppData/Local/JetBrains/CLion 2023.1.2/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/../../../../x86_64-w64-mingw32/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="C:/Users/hzoi/AppData/Local/JETBRA~1/CLION2~1.2/bin/mingw/bin/mingw32-make.exe -f &quot;C:/OI-Codes/cmake-build-debug/Makefile&quot;  VERBOSE=1 19.3/fast"/>
+					<CompileFile command="C:/Users/hzoi/AppData/Local/JETBRA~1/CLION2~1.2/bin/mingw/bin/mingw32-make.exe -f &quot;C:/OI-Codes/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/Users/hzoi/AppData/Local/JETBRA~1/CLION2~1.2/bin/mingw/bin/mingw32-make.exe -f &quot;C:/OI-Codes/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/Users/hzoi/AppData/Local/JETBRA~1/CLION2~1.2/bin/mingw/bin/mingw32-make.exe -f &quot;C:/OI-Codes/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
 			<Target title="edit_cache">
 				<Option working_dir="C:/OI-Codes/cmake-build-debug"/>
 				<Option type="4"/>
@@ -188,6 +238,9 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="C:/OI-Codes/HZ/19.3.cpp">
+			<Option target="19.3"/>
+		</Unit>
 		<Unit filename="C:/OI-Codes/HZ/80.5.cpp">
 			<Option target="80.5"/>
 		</Unit>

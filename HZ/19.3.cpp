@@ -1,5 +1,6 @@
-//HZ - 19.2
-//LOJ - 10220
+//HZ - 19.3
+//Luogu - P4159
+//LOJ - 10225
 #include<bits/stdc++.h>
 
 namespace DEBUG {
@@ -42,8 +43,7 @@ namespace DEBUG {
 
 using namespace DEBUG;
 
-long long MOD_;
-long long const &MOD = MOD_;
+constexpr long long const MOD = 2009;
 
 class Matrix{
 public:
@@ -95,29 +95,53 @@ public:
 };
 
 int main() {
-	int N;
+	int N, T;
 	
-	std::cin >> N >> MOD_;
+	std::cin >> N >> T;
 	
-	Matrix ans(1, 4), base(4, 4);
+	int const M = N * 10;
 	
-	ans.data[1][1] = ans.data[1][2] = ans.data[1][3] = ans.data[1][4] = 1;
-	base.data[1][1] = base.data[1][2] = base.data[1][3] = base.data[1][4] = 
-	base.data[2][1] = base.data[3][3] = base.data[3][4] = base.data[4][4] = 1;
+	Matrix Graph(M, M);
 	
-	int M = N - 1;
+	std::function<void(int, int)> addSingleEdge = [&Graph] (int u, int v) mutable {
+		++Graph.data[u][v];
+	};
 	
-	while(M) {
-		if(M & 1) ans = ans * base;
+	std::function<void(int, int, int)> addEdge = [&addSingleEdge](int u, int v, int w) mutable {
+		int const from = (u - 1) * 9 + w;
+		int const to = (v - 1) * 9 + 1;
+
+		addSingleEdge(from, to);
+	};
+	
+	for(int i = 1; i <= N; ++i)
+		for(int j = (i - 1) * 9 + 2; j <= i * 9; ++j)
+			addSingleEdge(j - 1, j);
+			
+	for(int i = 1; i <= N; ++i) {
+		for(int j = 1; j <= N; ++j) {
+			int w;
+			scanf("%1d", &w);
+			if(w > 0)
+				addEdge(i, j, w);
+		}
+	}
+	
+	Matrix base = Graph, ans(M, M);
+	
+	for(int i = 1; i <= M; ++i)
+		ans.data[i][i] = 1;
+		
+	while(T) {
+		if(T & 1)
+			ans = ans * base;
 		
 		base = base * base;
 		
-		M = M >> 1;
+		T = T >> 1;
 	}
 	
-	long long result = (((N + 1) % MOD) * ans.data[1][3]) % MOD - ans.data[1][4];
-	
-	std::cout << (result % MOD + MOD) % MOD << std::flush;
+	std::cout << ans.data[1][(N - 1) * 9 + 1] << std::flush;
 	
 	return 0;
 }

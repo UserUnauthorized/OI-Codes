@@ -45,7 +45,7 @@ using namespace DEBUG;
 long long MOD_;
 long long const &MOD = MOD_;
 
-class Maritx{
+class Matrix{
 public:
 	typedef long long valueType;
 	typedef size_t sizeType;
@@ -57,13 +57,13 @@ public:
 	Container data;
 	
 public:
-	Maritx(sizeType _row_, sizeType _column_) : row(_row_), column(_column_), data(row + 1){
+	Matrix(sizeType _row_, sizeType _column_) : row(_row_), column(_column_), data(row + 1){
 		for(sizeType i = 1; i <= row; ++i)
 			data[i].resize(column + 1, 0);
 	};
 	
-	Maritx operator*(const Maritx &T) const {
-		Maritx result(this->row, T.column);
+	Matrix operator*(const Matrix &T) const {
+		Matrix result(this->row, T.column);
 		
 		for(sizeType i = 1; i <= this->row; ++i) {
 			for(sizeType k = 1; k <= this->column; ++k) {
@@ -77,7 +77,7 @@ public:
 		return result;
 	}
 	
-	friend std::ostream &operator<<(std::ostream &os, const Maritx &T) {
+	friend std::ostream &operator<<(std::ostream &os, const Matrix &T) {
 		for(sizeType i = 1; i <= T.row; ++i)
 			for(sizeType j = 1; j <= T.column; ++j)
 				os << T.data[i][j] << " \n"[j == T.column];
@@ -85,7 +85,7 @@ public:
 		return os;
 	}
 	
-	friend std::istream &operator>>(std::istream &os, Maritx &T) {
+	friend std::istream &operator>>(std::istream &os, Matrix &T) {
 		for(sizeType i = 1; i <= T.row; ++i)
 			for(sizeType j = 1; j <= T.column; ++j)
 				os >> T.data[i][j];
@@ -99,7 +99,7 @@ int main() {
 	
 	std::cin >> N >> MOD_;
 	
-	Maritx ans(1, 2), base(2, 2);
+	Matrix ans(1, 2), base(2, 2);
 	
 	base.data[1][1] = base.data[1][2] = base.data[2][1] = 1;
 	base.data[2][2] = 0;

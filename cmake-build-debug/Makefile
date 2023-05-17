@@ -154,6 +154,43 @@ P3383/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\P3383.dir\build.make CMakeFiles/P3383.dir/build
 .PHONY : P3383/fast
 
+#=============================================================================
+# Target rules for targets named 19.3
+
+# Build rule for target.
+19.3: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 19.3
+.PHONY : 19.3
+
+# fast build rule for target.
+19.3/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\19.3.dir\build.make CMakeFiles/19.3.dir/build
+.PHONY : 19.3/fast
+
+HZ/19.3.obj: HZ/19.3.cpp.obj
+.PHONY : HZ/19.3.obj
+
+# target to build an object file
+HZ/19.3.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\19.3.dir\build.make CMakeFiles/19.3.dir/HZ/19.3.cpp.obj
+.PHONY : HZ/19.3.cpp.obj
+
+HZ/19.3.i: HZ/19.3.cpp.i
+.PHONY : HZ/19.3.i
+
+# target to preprocess a source file
+HZ/19.3.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\19.3.dir\build.make CMakeFiles/19.3.dir/HZ/19.3.cpp.i
+.PHONY : HZ/19.3.cpp.i
+
+HZ/19.3.s: HZ/19.3.cpp.s
+.PHONY : HZ/19.3.s
+
+# target to generate assembly for a file
+HZ/19.3.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\19.3.dir\build.make CMakeFiles/19.3.dir/HZ/19.3.cpp.s
+.PHONY : HZ/19.3.cpp.s
+
 HZ/80.5.obj: HZ/80.5.cpp.obj
 .PHONY : HZ/80.5.obj
 
@@ -234,9 +271,13 @@ help:
 	@echo ... depend
 	@echo ... edit_cache
 	@echo ... rebuild_cache
+	@echo ... 19.3
 	@echo ... 80.5
 	@echo ... P3383
 	@echo ... P9118
+	@echo ... HZ/19.3.obj
+	@echo ... HZ/19.3.i
+	@echo ... HZ/19.3.s
 	@echo ... HZ/80.5.obj
 	@echo ... HZ/80.5.i
 	@echo ... HZ/80.5.s
