@@ -1,5 +1,4 @@
-//HZ - 19.2
-//LOJ - 10220
+//HZ - 19.6
 #include<bits/stdc++.h>
 
 namespace DEBUG {
