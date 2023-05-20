@@ -128,6 +128,8 @@ public:
 class SegmentTree {
 public:
     typedef long long valueType;
+    typedef size_t sizeType;
+    typedef std::vector<valueType> container;
     constexpr static valueType const MOD = ::MOD;
 
 private:
@@ -145,12 +147,27 @@ private:
             matrix(1, 4) = 1;
         };
 
+        Data(valueType a, valueType b, valueType c) : matrix(1, 4) {
+            matrix(1, 1) = a;
+            matrix(1, 2) = b;
+            matrix(1, 3) = c;
+            matrix(1, 4) = 1;
+        };
+
         valueType ans() {
             return (matrix(1, 1) + matrix(1, 2) + matrix(1, 3)) % MOD;
         }
 
         void effect(const Lazy &T) {
             matrix = matrix * T.matrix;
+        }
+
+        static Data merge(const Data &left, const Data &right) {
+            Data result;
+
+            result.matrix = left.matrix + right.matrix;
+
+            return result;
         }
     };
 
@@ -159,7 +176,9 @@ private:
         Matrix matrix;
 
     public:
-        Lazy() : matrix(4, 4) {};
+        Lazy() : matrix(4, 4) {
+            matrix.set(Matrix::UNIT);
+        };
 
         explicit Lazy(int type, valueType value = 0) : matrix(4, 4) {
             if (type == 1) {
@@ -198,6 +217,52 @@ private:
             this->matrix = this->matrix * T.matrix;
         }
 
+        void clear() {
+            matrix.set(Matrix::UNIT);
+        }
+
         friend void Data::effect(const SegmentTree::Lazy &T);
+    };
+
+    class Node {
+    private:
+        sizeType _l_, _r_, _mid_;
+        Data data;
+        Lazy lazy;
+
+    public:
+        Node() : _l_(0), _r_(0), _mid_(0), data(), lazy() {};
+
+        Node(sizeType l, sizeType r) : _l_(l), _r_(r), _mid_((l + r) >> 1), data(), lazy() {};
+
+        Node(sizeType pos, valueType a, valueType b, valueType c) : _l_(pos), _r_(pos), _mid_(pos), data(a, b, c),
+                                                                    lazy() {};
+
+        sizeType l() const { return _l_; }
+
+        sizeType r() const { return _r_; }
+
+        sizeType mid() const { return _mid_; }
+
+        void merge(const Node &left, const Node &right) {
+            this->data = Data::merge(left.data, right.data);
+        }
+
+        void push(Node &left, Node &right) {
+            left.lazy.merge(this->lazy);
+            right.lazy.merge(this->lazy);
+            lazy.clear();
+        }
+    };
+
+    sizeType size;
+
+    std::vector<Node> node;
+
+public:
+    SegmentTree() = default;
+
+    SegmentTree(sizeType N, const container &A, const container &B, const container &C) : size(N), node(N << 2) {
+
     };
 };
