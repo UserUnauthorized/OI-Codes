@@ -132,7 +132,7 @@ public:
     typedef std::vector<valueType> container;
     constexpr static valueType const MOD = ::MOD;
 
-private:
+public:
     class Data;
 
     class Lazy;
@@ -154,8 +154,8 @@ private:
             matrix(1, 4) = 1;
         };
 
-        valueType ans() {
-            return (matrix(1, 1) + matrix(1, 2) + matrix(1, 3)) % MOD;
+        valueType ans(sizeType i) {
+            return matrix(1, i) % MOD;
         }
 
         void effect(const Lazy &T) {
@@ -169,6 +169,10 @@ private:
 
             return result;
         }
+        
+        friend Data operator+(const Data &left, const Data &right) {
+        	return merge(left, right);
+		}
     };
 
     class Lazy {
@@ -206,12 +210,10 @@ private:
 
                 matrix(3, 3) = 0;
                 matrix(3, 4) = value;
-            }
+            } else {
+            	throw std::range_error("Illegal type.");
+			}
         };
-
-        valueType ans() {
-            return (matrix(1, 1) + matrix(1, 2) + matrix(1, 3)) % MOD;
-        }
 
         void merge(const Lazy &T) {
             this->matrix = this->matrix * T.matrix;
@@ -223,7 +225,8 @@ private:
 
         friend void Data::effect(const SegmentTree::Lazy &T);
     };
-
+    
+private:
     class Node {
     private:
         sizeType _l_, _r_, _mid_;
@@ -253,6 +256,15 @@ private:
             right.lazy.merge(this->lazy);
             lazy.clear();
         }
+        
+        void effect(const Lazy &T) {
+            data.effect(T);
+            lazy.merge(T);
+        }
+        
+        Data ans() const {
+        	return data;
+		}
     };
 
     sizeType size;
@@ -263,6 +275,114 @@ public:
     SegmentTree() = default;
 
     SegmentTree(sizeType N, const container &A, const container &B, const container &C) : size(N), node(N << 2) {
-
+		build(1, 1, N, A, B, C);
     };
+    
+    void operate(int type, sizeType l, sizeType r, valueType value = 0) {
+    	if(type == 1) {
+    		update(1, l, r, Lazy(1));
+		} else if (type == 2) {
+			update(1, l, r, Lazy(2));
+        } else if (type == 3) {
+            update(1, l, r, Lazy(3));
+        } else if (type == 4) {
+            update(1, l, r, Lazy(4, value));
+        } else if (type == 5) {
+            update(1, l, r, Lazy(5, value));
+        } else if (type == 6) {
+            update(1, l, r, Lazy(6, value));
+        }
+	}
+	
+	Data query(sizeType l, sizeType r) {
+		return query(1, l, r);
+	}
+    
+private:
+	void build(sizeType id, sizeType l, sizeType r, const container &A, const container &B, const container &C) {
+		if(l == r) {
+			node[id] = Node(l, A[l], B[l], C[l]);
+			return;
+		}
+		
+		node[id] = Node(l, r);
+		
+		build(id << 1, l, node[id].mid(), A, B, C);
+		build(id << 1|1, node[id].mid() + 1, r, A, B, C);
+		
+		node[id].merge(node[id << 1], node[id << 1|1]);
+	}
+	
+	void update(sizeType id, sizeType queryL, sizeType queryR, const Lazy &tag) {
+		if(queryL <= node[id].l() && node[id].r() <= queryR) {
+			node[id].effect(tag);
+			
+			return;
+		}
+		
+		node[id].push(node[id << 1], node[id << 1|1]);
+		
+		if(queryL <= node[id].mid())
+			update(id << 1, queryL, queryR, tag);
+		
+		if(queryR > node[id].mid())
+			update(id << 1|1, queryL, queryR, tag);
+			
+		node[id].merge(node[id << 1], node[id << 1|1]);
+	}
+	
+	Data query(sizeType id, sizeType queryL, sizeType queryR) {
+		if(queryL <= node[id].l() && node[id].r() <= queryR)
+			return node[id].ans();
+		
+		node[id].push(node[id << 1], node[id << 1|1]);
+		
+		if(queryR <= node[id].mid())
+			return query(id << 1, queryL, queryR);
+		
+		if(queryL > node[id].mid())
+			return query(id << 1|1, queryL, queryR);
+		
+		return query(id << 1, queryL, queryR) + query(id << 1|1, queryL, queryR);
+	}
 };
+
+typedef SegmentTree::valueType valueType;
+typedef SegmentTree::sizeType sizeType;
+typedef SegmentTree::Data Data;
+
+int main() {
+	sizeType N, M;
+	
+	std::cin >> N;
+	
+	std::vector<valueType> A(N + 1, 0), B(N + 1, 0), C(N + 1, 0);
+	
+	for(sizeType i = 1; i <= N; ++i)
+		std::cin >> A[i] >> B[i] >> C[i];
+		
+	SegmentTree tree(N, A, B, C);
+	
+	std::cin >> M;
+	
+	for(sizeType i = 0; i < M; ++i) {
+		valueType opt, l, r, value;
+		
+		std::cin >> opt >> l >> r;
+		
+		if(opt >= 4 && opt <= 6) {
+			std::cin >> value;
+			tree.operate(opt, l, r, value);
+		} else if(opt >= 1 && opt <= 3) {
+			tree.operate(opt, l, r);
+		} else if(opt == 7) {
+			Data ans = tree.query(l, r);
+			
+			std::cout << ans.ans(1) << ' ' << ans.ans(2) << ' ' << ans.ans(3) << '\n';
+		}
+	}
+	
+	std::cout << std::flush;
+	
+	return 0;
+}
