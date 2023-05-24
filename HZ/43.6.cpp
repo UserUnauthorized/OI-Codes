@@ -1,220 +1,274 @@
 //HZ - 43.6
 #include<bits/stdc++.h>
 
-using namespace std;
-typedef int valueType;
-constexpr valueType maxN = 2e5 + 5;
-valueType L(INT_MAX), R(INT_MIN);
-
-struct SEGNODE {
-    typedef SEGNODE self;
-    typedef self *pointer;
-    typedef ::valueType valueType;
-
-    int leftBound, rightBound, mid;
-    pointer leftSon, rightSon;
-    self::valueType data;
-
-    SEGNODE() : leftBound(-1), rightBound(-1), mid(-1), leftSon(NULL), rightSon(NULL), data(0) {};
-
-    void init(self::valueType l, self::valueType r) {
-        this->leftBound = l;
-        this->rightBound = r;
-        this->mid = (this->leftBound + this->rightBound) >> 1;
-        this->leftSon = this->rightSon = NULL;
-        this->data = 0;
+namespace DEBUG {
+    template<typename T>
+    inline void _debug(const char *format, T t) {
+        std::cerr << format << '=' << t << std::endl;
     }
 
-    void update() {
-        this->data = 0;
-
-        if (this->leftSon != NULL)
-            this->data = std::max(this->data, this->leftSon->data);
-
-        if (this->rightSon != NULL)
-            this->data = std::max(this->data, this->rightSon->data);
-    }
-};
-
-SEGNODE *newNode();
-
-class TREE {
-public:
-    typedef TREE self;
-    typedef SEGNODE node;
-    typedef node *pointer;
-    typedef node::valueType valueType;
-
-protected:
-    pointer root;
-
-public:
-    TREE() : root(NULL) {};
-
-public:
-    void insert(self::valueType pos, self::valueType key) {
-        this->root = this->insert(this->root, pos, key, L, R);
+    template<class First, class... Rest>
+    inline void _debug(const char *format, First first, Rest... rest) {
+        while (*format != ',') std::cerr << *format++;
+        std::cerr << '=' << first << ",";
+        _debug(format + 1, rest...);
     }
 
-private:
-    pointer insert(pointer current, self::valueType pos, self::valueType key, self::valueType l, self::valueType r) {
-        if (current == NULL) {
-            current = newNode();
-            current->init(l, r);
+    template<typename T>
+    std::ostream &operator<<(std::ostream &os, const std::vector<T> &V) {
+        os << "[ ";
+        for (const auto &vv: V) os << vv << ", ";
+        os << "]";
+        return os;
+    }
+
+    std::ostream &operator<<(std::ostream &os, __int128 V) {
+        if (V < 0) {
+            os << '-';
+            V = -V;
         }
 
-        if (current->leftBound == current->rightBound) {
-            current->data = std::max(current->data, key);
-            return current;
-        }
+        if (V > 9)
+            os << V / 10;
 
-        if (pos <= current->mid)
-            current->leftSon = this->insert(current->leftSon, pos, key, l, current->mid);
-        else
-            current->rightSon = this->insert(current->rightSon, pos, key, current->mid + 1, r);
+        os << (int) (V % 10);
 
-        current->update();
-
-        return current;
+        return os;
     }
 
-public:
-    self::valueType query(self::valueType l, self::valueType r) {
-        if (r < l)
-            return 0;
+#define debug(...) _debug(#__VA_ARGS__, __VA_ARGS__)
+}  // namespace DEBUG
 
-        return this->query(this->root, l, r);
-    }
+using namespace DEBUG;
 
-    self::valueType ans() {
-        if (this->root == NULL)
-            return 0;
+typedef long long valueType;
+typedef size_t sizeType;
 
-        return this->root->data;
-    }
+constexpr valueType maxN = 2e5 + 5, MIN = 0;
 
-private:
-    self::valueType query(pointer current, self::valueType l, self::valueType r) {
-        if (current == NULL)
-            return 0;
-
-        if (l <= current->leftBound && current->rightBound <= r)
-            return current->data;
-
-        if (r <= current->mid)
-            return this->query(current->leftSon, l, r);
-
-        if (l > current->mid)
-            return this->query(current->rightSon, l, r);
-
-        return std::max(this->query(current->leftSon, l, r), this->query(current->rightSon, l, r));
-    }
-
-public:
-    void merge(const self &Object) {
-        this->root = this->merge(this->root, Object.root);
-    }
-
-private:
-    pointer merge(pointer a, pointer b) {
-        if (a == NULL)
-            return b;
-
-        if (b == NULL)
-            return a;
-
-        if (a->leftBound == a->rightBound) {
-            a->data += b->data;
-            return a;
-        }
-
-        a->leftSon = this->merge(a->leftSon, b->leftSon);
-        a->rightSon = this->merge(a->rightSon, b->rightSon);
-
-        a->update();
-
-        return a;
-    }
+struct NODE{
+	typedef NODE self;
+	typedef self* pointer;
+	typedef ::valueType valueType;
+	typedef ::sizeType sizeType;
+	
+	sizeType left, right, mid;
+	pointer leftSon, rightSon;
+	valueType data, lazy;
+	
+	NODE() : left(0), right(0), mid(0), leftSon(nullptr), rightSon(nullptr), data(MIN), lazy(0) {};
+	
+	NODE(sizeType l, sizeType r) : left(l), right(r), mid((l + r) >> 1),  leftSon(nullptr), rightSon(nullptr), data(MIN), lazy(0) {};
+	
+	NODE(sizeType l, sizeType r, valueType data) : left(l), right(r), mid((l + r) >> 1),  leftSon(nullptr), rightSon(nullptr), data(data), lazy(0) {};
+	
+	bool isLeaf() const {
+		return left == right;
+	}
+	
+	void push() {
+		if(this->lazy != 0) {
+			if(this->leftSon != nullptr) {
+				leftSon->data = leftSon->data + this->lazy;
+				leftSon->lazy = leftSon->lazy + this->lazy;
+			}
+			
+			if(this->rightSon != nullptr) {
+				rightSon->data = rightSon->data + this->lazy;
+				rightSon->lazy = rightSon->lazy + this->lazy;
+			}
+			
+			this->lazy = 0;
+		}
+	}
+	
+	void update() {
+		if(isLeaf())
+			return;
+		
+		this->data = std::max((leftSon != nullptr ? leftSon->data : MIN), (rightSon != nullptr ? rightSon->data : MIN));
+	}
 };
 
-struct EDGE {
-    int next;
-    int to;
+typedef NODE::pointer pointer;
 
-    EDGE() : next(-1), to(-1) {};
+pointer allocate() {
+	return new NODE();
+}
 
-    EDGE(int _next, int _to) : next(_next), to(_to) {};
-};
+pointer allocate(sizeType l, sizeType r) {
+	return new NODE(l, r);
+}
 
-valueType N;
+pointer allocate(sizeType l, sizeType r, valueType data) {
+	return new NODE(l, r, data);
+}
 
-array<valueType, maxN> head, ans, source_;
-vector<valueType> point_;
-const vector<valueType> &point = point_;
-const array<valueType, maxN> &source = source_;
-array<TREE, maxN> tree;
-array<EDGE, maxN> edge;
+void insert(pointer &current, sizeType pos, valueType data, sizeType l, sizeType r) {
+	if(l > r)
+		return;
+	
+	if(current == nullptr)
+		current = allocate(l, r);
+	
+	if(l == r) {
+		current->data = std::max(current->data, data);
+		return;
+	}
+	
+	current->push();
+	
+	if(pos <= current->mid)
+		insert(current->leftSon, pos, data, l, current->mid);
+	else
+		insert(current->rightSon, pos, data, current->mid + 1, r);
+		
+	current->update();
+}
 
-void init();
+valueType query(const pointer &current, sizeType l, sizeType r) {
+	if(l > r)
+		return 0;
+		
+	if(current == nullptr)
+		return 0;
+	
+	if(l <= current->left && current->right <= r)
+		return current->data;
+	
+	current->push();
+	
+	if(r <= current->mid)
+		return query(current->leftSon, l, r);
+	
+	if(l > current->mid)
+		return query(current->rightSon, l, r);
+	
+	return std::max(query(current->leftSon, l, r), query(current->rightSon, l, r));
+}
 
-void calc(valueType x, valueType dep);
+pointer merge(const pointer &left, const pointer &right, valueType &leftMax, valueType &rightMax) {
+	if(left == nullptr && right == nullptr)
+		return nullptr;
+	
+	if(left == nullptr && right != nullptr) {
+		rightMax = std::max(rightMax, right->data);
+		
+		right->data = right->data + leftMax;
+		right->lazy = right->lazy + leftMax;
+		
+		return right;
+	}
+	
+	if(right == nullptr && left != nullptr) {
+		leftMax = std::max(leftMax, left->data);
+		
+		left->data = left->data + rightMax;
+		left->lazy = left->lazy + rightMax;
+		
+		return left;
+	}
+	
+	if(left->isLeaf() || right->isLeaf()) {
+		leftMax = std::max(leftMax, left->data);
+		rightMax = std::max(rightMax, right->data);
+		
+		left->data = leftMax + rightMax;
+		
+		return left;
+	}
+	
+	left->push();
+	right->push();
+	
+	left->leftSon = merge(left->leftSon, right->leftSon, leftMax, rightMax);
+	left->rightSon = merge(left->rightSon, right->rightSon, leftMax, rightMax);
+	
+	left->update();
+	
+	return left;
+}
+
+pointer merge(const pointer &left, const pointer &right) {
+	valueType leftMax = MIN, rightMax = 0;
+	
+	return merge(left, right, leftMax, rightMax);
+}
+
+sizeType L_, R_;
+sizeType const &L = L_, &R = R_;
+
+std::array<pointer, maxN> tree;
+std::array<std::list<int>, maxN> son;
+std::bitset<maxN> isLeaf;
+
+std::array<valueType, maxN> source;
+std::vector<valueType> point;
+
+void dfs(int x);
+
+void calc(const pointer &current, valueType &count, valueType &ans);
 
 int main() {
-    init();
-    calc(1, 1);
+	valueType N;
+	
+	std::cin >> N;
+	
+	isLeaf.set();
+	
+	point.reserve(N + 1);
 
-    int result(0);
-    for (int i = 1; i <= N; ++i)
-        result = std::max(result, ans[i]);
+	for(int i = 1; i <= N; ++i) {
+		int fa;
+		
+		std::cin >> source[i] >> fa;
+		
+		point.emplace_back(source[i]);
+		
+		isLeaf[fa] = false;
+		
+		son[fa].emplace_back(i);
+	}
 
-    cout << result;
-//	cout << tree[1].ans();
+	point.emplace_back(INT_MIN);
+	std::sort(point.begin(), point.end());
+	point.erase(std::unique(point.begin(), point.end()), point.end());
+	point.shrink_to_fit();
 
-    return 0;
+	L_ = 1;
+	R_ = point.size() - 1;
+	
+	for(int i = 1; i <= N; ++i)
+		source[i] = std::distance(point.begin(), std::lower_bound(point.begin(), point.end(), source[i]));
+
+	dfs(1);
+	
+	valueType const ans = tree[1]->data;
+	
+	std::cout << ans << std::flush;
+	
+	return 0;
 }
 
-void init() {
-    cin >> N;
+void dfs(int x) {
+	if(isLeaf[x]) {
+		insert(tree[x], source[x], 1, L, R);
+		
+		return;
+	}
+	
+	for(auto const &iter : son[x])
+		dfs(iter);
+		
+	for(auto const &iter : son[x]) {
+		if(tree[x] == nullptr) {
+			tree[x] = tree[iter];
+		} else {
+			tree[x] = merge(tree[x], tree[iter]);
+		}
+	}
+	
+	valueType const result = query(tree[x], L, source[x] - 1) + 1;
 
-    for (int i = 1; i <= N; ++i) {
-        int x;
-        cin >> source_[i] >> x;
-        edge[i] = EDGE(head[x], i);
-        head[x] = i;
-    }
-
-
-    point_.assign(source.begin() + 1, source.begin() + N + 1);
-    sort(point_.begin(), point_.end());
-    point_.erase(unique(point_.begin(), point_.end()), point_.end());
-
-    for (int i = 1; i <= N; ++i)
-        source_[i] = distance(point.begin(), lower_bound(point.begin(), point.end(), source[i])) + 1;
-
-    L = 1;
-    R = point.size();
-}
-
-void calc(valueType x, valueType dep) {
-    for (int i = head[x]; i != 0; i = edge[i].next) {
-        const EDGE &e = edge[i];
-
-        calc(e.to, dep + 1);
-
-        tree[x].merge(tree[e.to]);
-    }
-
-    int tmp(tree[x].query(1, source[x] - 1));
-
-    tree[x].insert(source[x], tmp + 1);
-
-    ans[dep] += tree[x].ans();
-}
-
-SEGNODE pool[maxN * 20];
-
-SEGNODE *newNode() {
-    static SEGNODE *allocp = pool - 1;
-
-    return ++allocp;
+	insert(tree[x], source[x], result, L, R);
 }
