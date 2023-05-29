@@ -28,8 +28,9 @@ public:
 			dis[i].resize(N + 1);
 	};
 	
-	void addEdge(int u, int v) {
-		edge[u].emplace_back(v);
+	void addEdge(int a, int b) {
+		edge[a].emplace_back(b);
+		edge[b].emplace_back(a);
 	}
 	
 	void shuffle() {
@@ -37,9 +38,18 @@ public:
 			shuffle(edge[i]);
 	}
 	
-	void calcDistance();
+	void calcDistance() {
+		for(sizeType i = 1; i <= N; ++i)
+			calcDistance(i, dis[i]);
+	}
 	
-	valueType distance(int a, int b) const;
+	valueType distance(int a, int b) const {
+		return dis[a][b];
+	}
+	
+	const EdgeSet &data() const {
+		return edge;
+	}
 	
 private:
 	static void shuffle(OutEdgeList &list) {
@@ -52,12 +62,15 @@ private:
 		list.assign(bak.begin(), bak.end());
 	}
 	
-	static void calcDistance(sizeType u, distanceArray &dist) {
+	void calcDistance(sizeType u, distanceArray &dist) {
 		typedef std::pair<valueType, int> Status;
+		
+		std::vector<bool> visited(N + 1, false);
 		
 		std::fill(dist.begin(), dist.end(), MAX);
 		
 		dist[u] = 0;
+		visited[u] = true;
 		
 		std::priority_queue<Status, std::vector<Status>, std::greater<Status>> que;
 		
@@ -69,6 +82,86 @@ private:
 			
 			int const x = top.second;
 			
+			if(visited[x])
+				continue;
+			
+			visited[x] = true;
+			
+			for(auto &iter : edge[x]) {
+				if(dist[iter] > dist[x] + 1) {
+					dist[iter] = dist[x] + 1;
+					
+					if(!visited[iter])
+						que.emplace(dist[iter], iter);
+				}
+			}
 		}
 	}
 };
+
+typedef std::function<valueType(int, int)> DistanceFunction;
+typedef Graph::EdgeSet EdgeSet; 
+
+std::vector<std::vector<int>> path;
+
+std::vector<std::vector<realType>> memory;
+
+realType dfs(sizeType c, sizeType m, const DistanceFunction &distance);
+
+void calcPath(int c, int m, const DistanceFunction &distance, const EdgeSet &edge);
+
+int main() {
+	int N, E, C, M;
+	
+	std::cin >> N >> E >> C >> M;
+	
+	memory.resize(N + 1);
+	
+	for(int i = 1; i <= N; ++i)
+		memory[i].resize(N + 1, INF);
+	
+	Graph G(N);
+	
+	for(int i = 0; i < E; ++i) {
+		int a, b;
+		
+		std::cin >> a >> b;
+		
+		G.addEdge(a, b);
+	}
+	
+	G.shuffle();
+	
+	G.calcDistance();
+	
+	DistanceFunction distance = [&G] (int a, int b) -> valueType {
+		return G.distance(a, b);
+	};
+	
+	realType const ans = dfs(C, M, distance);
+}
+
+realType dfs(sizeType c, sizeType m, const DistanceFunction &distance) {
+	if(memory[c][m] != INF)
+		return memory[c][m];
+		
+	if(c == m)
+		return memory[c][m] = 0;
+		
+	if(distance(c, m) <= 2)
+		return memory[c][m] = 1;
+		
+	
+}
+
+void calcPath(int c, int m, const DistanceFunction &distance, const EdgeSet &edge) {
+	if(c == m)
+		return;
+		
+	if(distance(c, m) <= 2)
+		return;
+		
+	int to1 = 0;
+	
+	
+}
