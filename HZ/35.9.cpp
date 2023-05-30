@@ -2,7 +2,7 @@
 #include<bits/stdc++.h>
 
 typedef long double realType;
-typedef int valueType;
+typedef long long valueType;
 
 int main() {
 	valueType K, W, H;
@@ -14,15 +14,13 @@ int main() {
 		
 		valueType const base = W * H * W * H;
 		
-		result += 4 * (i - 1) * (j - 1) * (W - i) * (H - j);
+		result += 4 * i * (W - i + 1) * j * (H - j + 1);
 	
-		result += 4 * W * H;
+		result -= 2 * i * (W - i + 1);
 		
-		result += 2 * (i - 1) * (W - i);
+		result -= 2 * j * (H - j + 1);
 		
-		result += 2 * (j - 1) * (H - j);
-		
-		result -= 3;
+		result += 1;
 		
 		return (realType)result / base;
 	};
