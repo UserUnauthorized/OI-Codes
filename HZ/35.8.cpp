@@ -48,63 +48,64 @@ typedef std::vector<realType> realVector;
 typedef std::vector<valueType> valueVector;
 
 int main() {
-	int N;
-	
-	std::cin >> N;
-	
-	valueVector source(N);
-	
-	for(auto &iter : source)
-		std::cin >> iter;
-		
-	valueVector point(source);
-	
-	point.push_back(INT_MIN);
-	std::sort(point.begin(), point.end());
-	point.erase(std::unique(point.begin(), point.end()), point.end());
-	
-	sizeType const S = point.size();
-	
-	for(auto &iter : source)
-		iter = std::distance(point.begin(), std::lower_bound(point.begin(), point.end(), iter));
-		
-	valueVector count(S, 0), sum(S);
-	
-	for(auto const &iter : source)
-		++count[iter];
-		
-	std::partial_sum(count.begin(), count.end(), sum.begin());
-	debug(N, S, point, source, count, sum);
-	realVector factorial(S, 1);
-	
-	for(sizeType i = 1; i < S; ++i)
-		factorial[i] = i * factorial[i - 1];
-	debug(S, factorial);
-	typedef std::function<realType(valueType, valueType)> NumberFunction;
-	
-	NumberFunction A = [&factorial] (valueType n, valueType m) -> realType {
-		return factorial[n] / factorial[n - m];
-	};
-	
-	NumberFunction C = [&factorial] (valueType n, valueType m) -> realType {
-		if(m == 0)
-			return 1;
-		
-		return factorial[n] / factorial[n - m] / factorial[m];
-	};
-	
-	realType ans = 0;
-	
-	for(sizeType i = 1; i < S; ++i)
-		for(valueType j = 0; j <= sum[i - 1]; ++j) {
-			ans += (realType) count[i] * (N - j) * C(sum[i - 1], j) * A(j, j) * A(sum[i - 1] - j, sum[i - 1] - j) * A(N - sum[i - 1], N - sum[i - 1]);
-			debug(i, j, ans);
-		}
-			
-			
-	ans /= A(N, N);
-	
-	std::cout << std::setprecision(2) << std::fixed << ans << std::flush;
-	
-	return 0;
+    int N;
+
+    std::cin >> N;
+
+    valueVector source(N);
+
+    for (auto &iter: source)
+        std::cin >> iter;
+
+    valueVector point(source);
+
+    point.push_back(INT_MIN);
+    std::sort(point.begin(), point.end());
+    point.erase(std::unique(point.begin(), point.end()), point.end());
+
+    sizeType const S = point.size();
+
+    for (auto &iter: source)
+        iter = std::distance(point.begin(), std::lower_bound(point.begin(), point.end(), iter));
+
+    valueVector count(S, 0), sum(S);
+
+    for (auto const &iter: source)
+        ++count[iter];
+
+    std::partial_sum(count.begin(), count.end(), sum.begin());
+
+    realVector factorial(N + 1, 1);
+
+    factorial[0] = 1;
+    for (sizeType i = 1; i <= N; ++i)
+        factorial[i] = i * factorial[i - 1];
+
+    typedef std::function<realType(valueType, valueType)> NumberFunction;
+
+    NumberFunction A = [&factorial](valueType n, valueType m) -> realType {
+        return factorial[n] / factorial[n - m];
+//        return factorial.at(n) / factorial.at(n - m);
+    };
+
+    NumberFunction C = [&factorial](valueType n, valueType m) -> realType {
+        if (m == 0)
+            return 1;
+
+        return factorial[n] / factorial[n - m] / factorial[m];
+//        return factorial.at(n) / factorial.at(n - m) / factorial.at(m);
+    };
+
+    realType ans = 0;
+
+    for (sizeType i = 1; i < S; ++i)
+        for (valueType j = 0; j <= sum[i - 1]; ++j)
+            ans += (realType) count[i] * (N - j) * C(sum[i - 1], j) * A(j, j) * A(N - j - 1, N - j - 1);
+
+
+    ans /= A(N, N);
+
+    std::cout << std::setprecision(2) << std::fixed << ans << std::flush;
+
+    return 0;
 }
