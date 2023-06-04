@@ -30,7 +30,7 @@ constexpr static const tableType HASH_TABLE = {0,
                                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                               0, 0, 0, 0, 0, };
+                                               0, 0, 0, 0, 0,};
 
 constexpr static const size_t HASH_CNT = 3;
 constexpr static const std::array<long long, HASH_CNT> HASH_MOD = {1000000007, 1000000009, 1000000021};

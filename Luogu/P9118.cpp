@@ -71,7 +71,7 @@ typedef long long valueType;
 constexpr valueType maxS = 80;
 constexpr long double eps = 1e-9;
 
-valueType log(valueType x, valueType y); 
+valueType log(valueType x, valueType y);
 
 int main() {
     int n, k;
@@ -89,11 +89,11 @@ int main() {
 
     valueType ans = 1;
 
-    for(int i = std::max(k, 2); i <= s; ++i) {
+    for (int i = std::max(k, 2); i <= s; ++i) {
         if (!euler.isPrime(i) && euler.maxFactor(i) >= k)
             continue;
 //        std::cerr << i << '\t' << log(i, n) - 1 << std::endl;
-        ans += std::floor(std::pow<long double>((long double)n, (long double)1 / (long double)i + eps)) - 1;
+        ans += std::floor(std::pow<long double>((long double) n, (long double) 1 / (long double) i + eps)) - 1;
     }
 
     std::cout << ans << std::flush;
@@ -102,12 +102,12 @@ int main() {
 }
 
 valueType log(valueType x, valueType y) {
-	valueType result = 0, base = x;
-	
-	while(base <= y) {
-		++result;
-		base *= x;
-	}
-	
-	return result;
+    valueType result = 0, base = x;
+
+    while (base <= y) {
+        ++result;
+        base *= x;
+    }
+
+    return result;
 }

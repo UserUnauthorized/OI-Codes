@@ -36,7 +36,7 @@ public:
             this->size = (this->leftSon != nullptr ? (this->leftSon)->size : 0) +
                          (this->rightSon != nullptr ? (this->rightSon)->size : 0) + 1;
             this->min = std::min({(this->leftSon != nullptr ? (this->leftSon)->min : MAX),
-                        (this->rightSon != nullptr ? (this->rightSon)->min : MAX), this->value});
+                                  (this->rightSon != nullptr ? (this->rightSon)->min : MAX), this->value});
         }
 
         NODE() : father(nullptr), leftSon(nullptr), rightSon(nullptr), tag(false), value(0), size(0), min(0),
@@ -165,10 +165,10 @@ public:
     posType find(posType x) {
         return this->find(node[x]);
     }
-    
+
     bool check(posType x, posType y) {
-    	return find(x) == find(y);
-	}
+        return find(x) == find(y);
+    }
 
 protected:
     static void rotate(const pointer &current) {
@@ -413,6 +413,7 @@ protected:
         return result;
     }
 };
+
 typedef PersistentSegmentTree TREE;
 
 typedef int valueType;
@@ -434,64 +435,64 @@ int main() {
 //    std::ios::sync_with_stdio(false);
 
     std::cin >> N_ >> M_ >> Q_ >> type_;
-	
-	LCT lct(N + M);
-	
-	for(int i = 1; i <= N; ++i)
-		lct.set(i, MAX);
-		
-	for(int i = 1; i <= M; ++i)
-		lct.set(N + i, i);
 
-	
-	tree[0] = TREE(0, M);
-	tree[0].build();
-	
-	for(int i = 1; i <= M; ++i) {
-		int a, b;
-		std::cin >> a >> b;
-		
-		connection[i] = std::make_pair(a, b);
-		
-		if(a == b) {
-			tree[i] = tree[i - 1];
-		}else if(!lct.check(a, b)) {
-			tree[i] = tree[i - 1].insert(0);
-			
-			lct.link(a, N + i);
-			lct.link(b, N + i);
-		} else {
-			int const edge = lct.ans(a, b);
-			
-			lct.cut(connection[edge].first, N + edge);
-			lct.cut(connection[edge].second, N + edge);
-			
-			lct.link(a, N + i);
-			lct.link(b, N + i);
-			
-			tree[i] = tree[i - 1].insert(edge);
-		}
-	}
-	
-	valueType lastAns = 0;
-	
-	for(int i = 1; i <= Q; ++i) {
-		valueType l, r;
-		std::cin >> l >> r;
-		
-		if(type == 1) {
-			l ^= lastAns;
-			r ^= lastAns;
-		}
-		
-		std::cout << (lastAns = N - query(l, r)) << '\n';
-	}
-	
-	std::cout << std::flush;
-	
+    LCT lct(N + M);
+
+    for (int i = 1; i <= N; ++i)
+        lct.set(i, MAX);
+
+    for (int i = 1; i <= M; ++i)
+        lct.set(N + i, i);
+
+
+    tree[0] = TREE(0, M);
+    tree[0].build();
+
+    for (int i = 1; i <= M; ++i) {
+        int a, b;
+        std::cin >> a >> b;
+
+        connection[i] = std::make_pair(a, b);
+
+        if (a == b) {
+            tree[i] = tree[i - 1];
+        } else if (!lct.check(a, b)) {
+            tree[i] = tree[i - 1].insert(0);
+
+            lct.link(a, N + i);
+            lct.link(b, N + i);
+        } else {
+            int const edge = lct.ans(a, b);
+
+            lct.cut(connection[edge].first, N + edge);
+            lct.cut(connection[edge].second, N + edge);
+
+            lct.link(a, N + i);
+            lct.link(b, N + i);
+
+            tree[i] = tree[i - 1].insert(edge);
+        }
+    }
+
+    valueType lastAns = 0;
+
+    for (int i = 1; i <= Q; ++i) {
+        valueType l, r;
+        std::cin >> l >> r;
+
+        if (type == 1) {
+            l ^= lastAns;
+            r ^= lastAns;
+        }
+
+        std::cout << (lastAns = N - query(l, r)) << '\n';
+    }
+
+    std::cout << std::flush;
+
     return 0;
 }
 
 valueType query(TREE::sizeType l, TREE::sizeType r) {
-	return TREE::query(tree[l - 1].root, tree[r].root, 0, M, 0, l - 1);
+    return TREE::query(tree[l - 1].root, tree[r].root, 0, M, 0, l - 1);
 }

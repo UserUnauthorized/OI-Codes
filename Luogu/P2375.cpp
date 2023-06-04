@@ -34,16 +34,16 @@ int main() {
 
             next[i] = j;
 
-			if(j > 0)
-				num[j] = num[next[j - 1]] + 1;
+            if (j > 0)
+                num[j] = num[next[j - 1]] + 1;
         }
 
         valueType ans = 1;
 
-		valueType j = 0;
+        valueType j = 0;
 
         for (valueType i = 1; i < length; ++i) {
-			while (j > 0 && data[i] != data[j])
+            while (j > 0 && data[i] != data[j])
                 j = next[j - 1];
 
             if (data[i] == data[j])
@@ -53,7 +53,7 @@ int main() {
 
             while (j > pos)
                 j = next[j - 1];
-			
+
             ans = (ans * (num[j] + 1)) % MOD;
         }
 

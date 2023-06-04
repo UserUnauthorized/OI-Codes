@@ -42,71 +42,71 @@ namespace DEBUG {
 
 using namespace DEBUG;
 
-class Maritx{
+class Maritx {
 public:
-	typedef int valueType;
-	typedef size_t sizeType;
-	typedef std::vector<valueType> Row;
-	typedef std::vector<Row> Container;
-	
+    typedef int valueType;
+    typedef size_t sizeType;
+    typedef std::vector<valueType> Row;
+    typedef std::vector<Row> Container;
+
 public:
-	sizeType row, column;
-	Container data;
-	
+    sizeType row, column;
+    Container data;
+
 public:
-	Maritx(sizeType _row_, sizeType _column_) : row(_row_), column(_column_), data(row + 1){
-		for(sizeType i = 1; i <= row; ++i)
-			data[i].resize(column + 1, 0);
-	};
-	
-	Maritx operator*(const Maritx &T) const {
-		Maritx result(this->row, T.column);
-		
-		for(sizeType i = 1; i <= this->row; ++i) {
-			for(sizeType k = 1; k <= this->column; ++k) {
-				valueType r = this->data[i][k];
-				
-				for(sizeType j = 1; j <= T.column; ++j)
-					result.data[i][j] = result.data[i][j] + T.data[k][j] * r;
-			}
-		}
-		
-		return result;
-	}
-	
-	friend std::ostream &operator<<(std::ostream &os, const Maritx &T) {
-		for(sizeType i = 1; i <= T.row; ++i)
-			for(sizeType j = 1; j <= T.column; ++j)
-				os << T.data[i][j] << " \n"[j == T.column];
-				
-		return os;
-	}
-	
-	friend std::istream &operator>>(std::istream &os, Maritx &T) {
-		for(sizeType i = 1; i <= T.row; ++i)
-			for(sizeType j = 1; j <= T.column; ++j)
-				os >> T.data[i][j];
-				
-		return os;
-	}
+    Maritx(sizeType _row_, sizeType _column_) : row(_row_), column(_column_), data(row + 1) {
+        for (sizeType i = 1; i <= row; ++i)
+            data[i].resize(column + 1, 0);
+    };
+
+    Maritx operator*(const Maritx &T) const {
+        Maritx result(this->row, T.column);
+
+        for (sizeType i = 1; i <= this->row; ++i) {
+            for (sizeType k = 1; k <= this->column; ++k) {
+                valueType r = this->data[i][k];
+
+                for (sizeType j = 1; j <= T.column; ++j)
+                    result.data[i][j] = result.data[i][j] + T.data[k][j] * r;
+            }
+        }
+
+        return result;
+    }
+
+    friend std::ostream &operator<<(std::ostream &os, const Maritx &T) {
+        for (sizeType i = 1; i <= T.row; ++i)
+            for (sizeType j = 1; j <= T.column; ++j)
+                os << T.data[i][j] << " \n"[j == T.column];
+
+        return os;
+    }
+
+    friend std::istream &operator>>(std::istream &os, Maritx &T) {
+        for (sizeType i = 1; i <= T.row; ++i)
+            for (sizeType j = 1; j <= T.column; ++j)
+                os >> T.data[i][j];
+
+        return os;
+    }
 };
 
 int main() {
-	size_t n, m, p;
-	
-	std::cin >> n >> m;
-	
-	Maritx A(n, m);
-	
-	std::cin >> A;
-	
-	std::cin >> p;
-	
-	Maritx B(m, p);
-	
-	std::cin >> B;
-	
-	std::cout << (A * B) << std::flush;
-	
-	return 0;
+    size_t n, m, p;
+
+    std::cin >> n >> m;
+
+    Maritx A(n, m);
+
+    std::cin >> A;
+
+    std::cin >> p;
+
+    Maritx B(m, p);
+
+    std::cin >> B;
+
+    std::cout << (A * B) << std::flush;
+
+    return 0;
 }

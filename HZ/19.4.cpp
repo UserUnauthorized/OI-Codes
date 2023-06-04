@@ -44,79 +44,79 @@ using namespace DEBUG;
 long long MOD_;
 long long const &MOD = MOD_;
 
-class Matrix{
+class Matrix {
 public:
-	typedef long long valueType;
-	typedef size_t sizeType;
-	typedef std::vector<valueType> Row;
-	typedef std::vector<Row> Container;
-	
+    typedef long long valueType;
+    typedef size_t sizeType;
+    typedef std::vector<valueType> Row;
+    typedef std::vector<Row> Container;
+
 public:
-	sizeType row, column;
-	Container data;
-	
+    sizeType row, column;
+    Container data;
+
 public:
-	Matrix(sizeType _row_, sizeType _column_) : row(_row_), column(_column_), data(row + 1){
-		for(sizeType i = 1; i <= row; ++i)
-			data[i].resize(column + 1, 0);
-	};
-	
-	Matrix operator*(const Matrix &T) const {
-		Matrix result(this->row, T.column);
-		
-		for(sizeType i = 1; i <= this->row; ++i) {
-			for(sizeType k = 1; k <= this->column; ++k) {
-				valueType r = this->data[i][k];
-				
-				for(sizeType j = 1; j <= T.column; ++j)
-					result.data[i][j] = (result.data[i][j] + T.data[k][j] * r) % MOD;
-			}
-		}
-		
-		return result;
-	}
-	
-	friend std::ostream &operator<<(std::ostream &os, const Matrix &T) {
-		for(sizeType i = 1; i <= T.row; ++i)
-			for(sizeType j = 1; j <= T.column; ++j)
-				os << T.data[i][j] << " \n"[j == T.column];
-				
-		return os;
-	}
-	
-	friend std::istream &operator>>(std::istream &os, Matrix &T) {
-		for(sizeType i = 1; i <= T.row; ++i)
-			for(sizeType j = 1; j <= T.column; ++j)
-				os >> T.data[i][j];
-				
-		return os;
-	}
+    Matrix(sizeType _row_, sizeType _column_) : row(_row_), column(_column_), data(row + 1) {
+        for (sizeType i = 1; i <= row; ++i)
+            data[i].resize(column + 1, 0);
+    };
+
+    Matrix operator*(const Matrix &T) const {
+        Matrix result(this->row, T.column);
+
+        for (sizeType i = 1; i <= this->row; ++i) {
+            for (sizeType k = 1; k <= this->column; ++k) {
+                valueType r = this->data[i][k];
+
+                for (sizeType j = 1; j <= T.column; ++j)
+                    result.data[i][j] = (result.data[i][j] + T.data[k][j] * r) % MOD;
+            }
+        }
+
+        return result;
+    }
+
+    friend std::ostream &operator<<(std::ostream &os, const Matrix &T) {
+        for (sizeType i = 1; i <= T.row; ++i)
+            for (sizeType j = 1; j <= T.column; ++j)
+                os << T.data[i][j] << " \n"[j == T.column];
+
+        return os;
+    }
+
+    friend std::istream &operator>>(std::istream &os, Matrix &T) {
+        for (sizeType i = 1; i <= T.row; ++i)
+            for (sizeType j = 1; j <= T.column; ++j)
+                os >> T.data[i][j];
+
+        return os;
+    }
 };
 
 int main() {
-	int N;
-	
-	std::cin >> N >> MOD_;
-	
-	Matrix ans(1, 4), base(4, 4);
-	
-	ans.data[1][1] = ans.data[1][2] = ans.data[1][3] = ans.data[1][4] = 1;
-	base.data[1][1] = base.data[1][2] = base.data[1][3] = base.data[1][4] = 
-	base.data[2][1] = base.data[3][3] = base.data[3][4] = base.data[4][4] = 1;
-	
-	int M = N - 1;
-	
-	while(M) {
-		if(M & 1) ans = ans * base;
-		
-		base = base * base;
-		
-		M = M >> 1;
-	}
-	
-	long long result = (((N + 1) % MOD) * ans.data[1][3]) % MOD - ans.data[1][4];
-	
-	std::cout << (result % MOD + MOD) % MOD << std::flush;
-	
-	return 0;
+    int N;
+
+    std::cin >> N >> MOD_;
+
+    Matrix ans(1, 4), base(4, 4);
+
+    ans.data[1][1] = ans.data[1][2] = ans.data[1][3] = ans.data[1][4] = 1;
+    base.data[1][1] = base.data[1][2] = base.data[1][3] = base.data[1][4] =
+    base.data[2][1] = base.data[3][3] = base.data[3][4] = base.data[4][4] = 1;
+
+    int M = N - 1;
+
+    while (M) {
+        if (M & 1) ans = ans * base;
+
+        base = base * base;
+
+        M = M >> 1;
+    }
+
+    long long result = (((N + 1) % MOD) * ans.data[1][3]) % MOD - ans.data[1][4];
+
+    std::cout << (result % MOD + MOD) % MOD << std::flush;
+
+    return 0;
 }

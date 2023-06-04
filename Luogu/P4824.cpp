@@ -12,12 +12,12 @@ int main() {
 
     std::cin >> text >> pattern;
 
-    int const patternLength = (int)pattern.length();
-    int const textLength = (int)text.length();
-	
-	for(int i = 0; i < textLength; ++i)
-		data.push_back(i);
-    
+    int const patternLength = (int) pattern.length();
+    int const textLength = (int) text.length();
+
+    for (int i = 0; i < textLength; ++i)
+        data.push_back(i);
+
     for (int i = 1; i < patternLength; ++i) {
         int j = prefix[i - 1];
 
@@ -29,12 +29,12 @@ int main() {
 
         prefix[i] = j;
     }
-    
+
     auto iter = data.begin();
-    
+
     ++iter;
-    
-	int j = 0;
+
+    int j = 0;
 
     for (int i = 0; i < textLength; ++i, ++iter) {
 
@@ -48,21 +48,21 @@ int main() {
         match[i] = j;
 
         if (j == patternLength) {
-			for(int t = 0; t < patternLength; ++t)
-				data.erase(std::prev(iter));
-				
-			if(iter == data.begin()) {
-				j = 0;
-			} else {
-				j = match[*std::prev(iter)];
-			}
+            for (int t = 0; t < patternLength; ++t)
+                data.erase(std::prev(iter));
+
+            if (iter == data.begin()) {
+                j = 0;
+            } else {
+                j = match[*std::prev(iter)];
+            }
         }
     }
 
-	for(auto const &iter : data)
-		std::cout << text[iter];
-		
-	std::cout << std::flush;
-	
-	return 0;
+    for (auto const &iter: data)
+        std::cout << text[iter];
+
+    std::cout << std::flush;
+
+    return 0;
 }

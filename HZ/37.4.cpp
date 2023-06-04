@@ -86,7 +86,7 @@ public:
 
     bool check(sizeType pos, const stringHash &str) const {
         sizeType const size = str.size();
-        
+
         if (pos + size - 1 > this->size())
             return false;
 
