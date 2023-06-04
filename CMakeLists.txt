@@ -9,8 +9,6 @@ include_directories(LocalInclude)
 add_compile_definitions(CLION)
 add_compile_definitions(LOCAL)
 
-add_executable(80.5 HZ/80.5.cpp)
-add_executable(P9118 Luogu/P9118.cpp)
-add_executable(P3383 Luogu/P3383.cpp)
-add_executable(test ../Users/hzoi/Documents/test.cpp)
-add_executable(P7453 Luogu/P7453.cpp)
+
+add_executable(P2155 Luogu/P2155.cpp)
+add_executable(35.8 HZ/35.8.cpp)

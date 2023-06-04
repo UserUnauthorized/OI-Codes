@@ -61,8 +61,8 @@ private:
 public:
     explicit LineSieve(valueType _size_) : size(_size_), isPrime(_size_ + 1, true) {
         container primeList;
-        
-		for (valueType i = 2; i <= size; ++i) {
+
+        for (valueType i = 2; i <= size; ++i) {
             if (isPrime[i])
                 primeList.push_back(i);
 
@@ -85,74 +85,69 @@ public:
     }
 };
 
-class Inverse{
+class Inverse {
 public:
     typedef Inverse self;
     typedef std::vector<valueType> container;
-    
+
 private:
-	valueType size;
-	valueType mod;
-	container data;
-	
+    valueType size;
+    valueType mod;
+    container data;
+
 public:
-	Inverse(valueType _size_, valueType _mod_) : size(_size_), mod(_mod_), data(_size_ + 1) {
-		data[0] = 1;
-		data[1] = 1;
-		
-		for(int i = 2; i <= size; ++i)
-			data[i] = (long long)(mod - mod / i) * data[mod % i] % mod;
-	}
-	
-	valueType operator[](valueType i) const {
-		return data.at(i % mod);
-	}
+    Inverse(valueType _size_, valueType _mod_) : size(_size_), mod(_mod_), data(_size_ + 1) {
+        data[0] = 1;
+        data[1] = 1;
+
+        for (int i = 2; i <= size; ++i)
+            data[i] = (long long) (mod - mod / i) * data[mod % i] % mod;
+    }
+
+    valueType operator[](valueType i) const {
+        return data.at(i % mod);
+    }
 };
 
 int main() {
-	int T;
-	
-	std::cin >> T >> MOD_;
-	
-	Inverse inv(std::min(MOD, maxN + 3), MOD);
-	LineSieve Euler(maxN + 3);
-	
-	typedef std::vector<valueType> Vector;
-	
-	Vector factorial(maxN, 1), prime(maxN, 1);
-	
-	for(int i = 2; i < maxN; ++i) {
-		if(i == MOD) {
-			factorial[i] = factorial[i - 1];
-			prime[i] = prime[i - 1];
-			continue;
-		}
-		
-		factorial[i] = (long long)i * factorial[i - 1] % MOD;
-		
-		if(Euler.check(i))
-			prime[i] = (__int128)prime[i - 1] * inv[i] * (i - 1) % MOD;
-		else
-			prime[i] = prime[i - 1];
-	}
-	
-	for(int i = 1; i <= T; ++i) {
-		valueType n, m;
-		
-		std::cin >> n >> m;
-		
-		if(T == 1 && MOD == 3 && n == 4 && m == 3) {
-			std::cout << 2 << std::endl;
-			return 0;
-		}
-		
-		valueType const result = (long long)factorial[n] * prime[m] % MOD;
-		
-		if(n >= MOD && m < MOD)
-			std::cout << 0 << std::endl;
-		else
-			std::cout << result << std::endl;
-	}
-	
-	return 0;
+    int T;
+
+    std::cin >> T >> MOD_;
+
+    Inverse inv(std::min(MOD, maxN + 3), MOD);
+    LineSieve Euler(maxN + 3);
+
+    typedef std::vector<valueType> Vector;
+
+    Vector factorial(maxN, 1), prime(maxN, 1);
+
+    for (int i = 2; i < maxN; ++i) {
+        if (i == MOD) {
+            factorial[i] = factorial[i - 1];
+            prime[i] = (long long) prime[i - 1] * (MOD - 1) % MOD;
+            continue;
+        }
+
+        factorial[i] = (long long) i * factorial[i - 1] % MOD;
+
+        if (Euler.check(i))
+            prime[i] = (__int128) prime[i - 1] * inv[i] * (i - 1) % MOD;
+        else
+            prime[i] = prime[i - 1];
+    }
+
+    for (int i = 1; i <= T; ++i) {
+        valueType n, m;
+
+        std::cin >> n >> m;
+
+        valueType const result = (long long) factorial[n] * prime[m] % MOD;
+
+        if (n >= MOD && m < MOD)
+            std::cout << 0 << std::endl;
+        else
+            std::cout << result << std::endl;
+    }
+
+    return 0;
 }
