@@ -42,7 +42,6 @@ namespace DEBUG {
 
 using namespace DEBUG;
 
-typedef int valueType;
 typedef long double realType;
 typedef std::vector<realType> RealVector;
 typedef std::vector<realType> ROW;
@@ -98,14 +97,14 @@ int main() {
 			matrix[i - 1][iter - 1] = (realType) 1 / edge[iter].size();
 		}
 	}
-	
+
 	ROW result = solve(matrix, N - 1);
-	
+
 	RealVector count(N + 1, 0);
 	
 	for(int i = 1; i < N; ++i)
-		count[i] = result[i - 1];
-		
+		count[i] = result[i];
+
 	RealVector value(M, 0);
 	
 	for(int i = 0; i < M; ++i) {
@@ -113,7 +112,7 @@ int main() {
 		
 		value[i] = count[x] / edge[x].size() + count[y] / edge[y].size();
 	}
-	
+
 	std::sort(value.begin(), value.end(), std::greater<realType>());
 	
 	realType ans = 0;
@@ -127,12 +126,12 @@ int main() {
 }
 
 ROW solve(MATRIX A, const int &size) {
-    ROW result(size);
+    ROW result(size + 2);
     int validLines(0);
     for (int i = 0; i < size; ++i) {
         int maxRow = validLines;
         for (int j = validLines + 1; j < size; ++j)
-            if (fabs(A[j][i]) > fabs(A[maxRow][i]))
+            if (std::fabs(A[j][i]) > std::fabs(A[maxRow][i]))
                 maxRow = j;
 
         if (maxRow != validLines)
