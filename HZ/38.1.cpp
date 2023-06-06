@@ -1,4 +1,4 @@
-//Luogu - P3808
+//HZ - 38.1
 #include<bits/stdc++.h>
 
 namespace DEBUG {
@@ -49,6 +49,9 @@ public:
 	
 private:
 	static sizeType converter(char c) {
+		if(c < 'a' || c > 'z')
+			throw std::range_error("");
+		
 		return c - 'a';
 	}
 	
@@ -76,10 +79,6 @@ private:
 	pointer allocate(valueType v = 0) {
 		return new NODE(v);
 	}
-	
-	static void freeNode(pointer &p) {
-        delete p;
-    }
 	
 	pointer root;
 	
@@ -152,29 +151,35 @@ public:
 };
 
 int main() {
-	int N;
+	int T;
 	
-	std::cin >> N;
+	std::cin >> T;
 	
-	AC ac;
+	for(int t = 1; t <= T; ++t) {
+		int N;
 	
-	for(int i = 1; i <= N; ++i) {
-		std::string str;
+		std::cin >> N;
+	
+		AC ac;
+	
+		for(int i = 1; i <= N; ++i) {
+			std::string str;
 		
-		std::cin >> str;
+			std::cin >> str;
 		
-		ac.insert(str);
+			ac.insert(str);
+		}
+	
+		ac.build();
+	
+		std::string text;
+	
+		std::cin >> text;
+	
+		int const result = ac.query(text);
+	
+		std::cout << result << std::endl;
 	}
-	
-	ac.build();
-	
-	std::string text;
-	
-	std::cin >> text;
-	
-	int const result = ac.query(text);
-	
-	std::cout << result << std::flush;
 	
 	return 0;
 }
