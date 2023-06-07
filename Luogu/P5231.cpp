@@ -1,5 +1,5 @@
 //HZ - 38.2
-//Luogu - P5231
+//Luogu - 5231
 #include<bits/stdc++.h>
 
 namespace DEBUG {
@@ -46,14 +46,25 @@ class AC {
 public:
 	typedef int valueType;
 	typedef size_t sizeType;
-	static sizeType const charSetSize = 30;
+	static sizeType const charSetSize = 4;
+	typedef std::vector<valueType> Vector;
 	
 private:
 	static sizeType converter(char c) {
-		if(c < 'a' || c > 'z')
-			throw std::range_error("");
-		
-		return c - 'a';
+		if(c == 'E')
+			return 0;
+			
+		if(c == 'S')
+			return 1;
+			
+		if(c == 'W')
+			return 2;
+			
+		if(c =='N')
+			return 3;
+			
+			
+		throw std::range_error("");
 	}
 	
 	struct NODE{
@@ -62,11 +73,13 @@ private:
 		
 		std::array<pointer, charSetSize> trans;
 		
-		std::list<std::pair<int, int>> value;
+		std::list<pointer> son;
+		
+		bool visited;
 		
 		pointer fail;
 		
-		NODE() : trans(), fail(nullptr) {
+		NODE(valueType id = -1) : trans(), son(), visited(false), fail(nullptr) {
 			trans.fill(nullptr);
 		}
 		
@@ -77,19 +90,21 @@ private:
 	
 	typedef NODE::pointer pointer;
 	
-	pointer allocate() {
-		return new NODE();
+	pointer allocate(valueType v = -1) {
+		return new NODE(v);
 	}
 	
 	pointer root;
 	
+	sizeType size;
+	
 public:
-	AC() : root(allocate()) {};
+	AC() : root(allocate()), size(0) {};
 	
 	void insert(const std::string &data) {
+		++size;
+
 		pointer current = this->root;
-		
-		int depth = 0;
 		
 		for(auto const &iter : data) {
 			if(current->transfer(iter) == nullptr) {
@@ -99,8 +114,6 @@ public:
 			} else {
 				current = current->transfer(iter);
 			}
-			
-			
 		}
 	}
 	
@@ -123,6 +136,8 @@ public:
 			pointer current = que.front();
 			que.pop();
 			
+			current->fail->son.push_back(current);
+			
 			for(sizeType i = 0; i < charSetSize; ++i) {
 				if(current->trans[i] != nullptr) {
 					current->trans[i]->fail = current->fail->trans[i];
@@ -135,17 +150,30 @@ public:
 		}
 	}
 	
-	int query(const std::string &data) {
-		int result = 0;
+	void query(const std::string &data) {
 		pointer current = root;
 		
 		for(auto const &iter : data) {
 			current = current->transfer(iter);
 			
-			for(pointer i = current; i != nullptr && i->value != -1; i = i->fail) {
-				result += i->value;
-				i->value = -1;
-			}
+			current->visited = true;;
+		}
+	}
+	
+	valueType calc(const std::string &data) {
+		valueType result = 0, depth = 0;
+		
+		pointer current = root;
+		
+		for(auto const &iter : data) {
+			current = current->transfer(iter);
+			
+			++depth;
+			
+			if(current->visited)
+				result = depth;
+			
+			current->visited = true;
 		}
 		
 		return result;
@@ -153,35 +181,30 @@ public:
 };
 
 int main() {
-	int T;
+	int N, t;
 	
-	std::cin >> T;
+	std::cin >> t >> N;
 	
-	for(int t = 1; t <= T; ++t) {
-		int N;
+	std::string text;
 	
-		std::cin >> N;
+	std::cin >> text;
 	
-		AC ac;
+	AC ac;
 	
-		for(int i = 1; i <= N; ++i) {
-			std::string str;
+	std::vector<std::string> source(N + 1);		
+	
+	for(int i = 1; i <= N; ++i) {
+		std::cin >> source[i];
 		
-			std::cin >> str;
-		
-			ac.insert(str);
-		}
-	
-		ac.build();
-	
-		std::string text;
-	
-		std::cin >> text;
-	
-		int const result = ac.query(text);
-	
-		std::cout << result << std::endl;
+		ac.insert(source[i]);
 	}
+	
+	ac.build();
+	
+	ac.query(text);
+	
+	for(int i = 1; i <= N; ++i)
+		std::cout << ac.calc(source[i]) << std::endl;
 	
 	return 0;
 }

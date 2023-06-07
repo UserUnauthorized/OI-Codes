@@ -1,4 +1,4 @@
-//Luogu - P5357
+//Luogu - P3796
 #include<bits/stdc++.h>
 
 namespace DEBUG {
@@ -175,30 +175,48 @@ public:
 };
 
 int main() {
-	int N;
+	for(int t = 1; t <= 50; ++t) {
+		int N;
 	
-	std::cin >> N;
-	
-	AC ac;
-	
-	std::vector<std::string> source(N + 1);		
-	
-	std::string text;
-	
-	for(int i = 1; i <= N; ++i) {
-		std::cin >> source[i];
+		std::cin >> N;
 		
-		text = text + source[i];
+		if(N == 0)
+			return 0;
+	
+		AC ac;
+	
+		std::vector<std::string> source(N + 1);		
+	
+		for(int i = 1; i <= N; ++i) {
+			std::cin >> source[i];
 		
-		ac.insert(source[i], i);
+			ac.insert(source[i], i);
+		}
+	
+		ac.build();
+	
+		std::string text;
+	
+		std::cin >> text;
+	
+		AC::Vector result = ac.query(text);
+	
+		std::list<int> ans;
+	
+		for(int i = 1; i <= N; ++i) {
+			if(ans.empty() || result[ans.back()] < result[i]) {
+				ans.clear();
+				ans.push_back(i);
+			} else if(result[ans.back()] == result[i]) {
+				ans.push_back(i);
+			}
+		}
+		
+		std::cout << result[ans.back()] << std::endl;
+		
+		for(auto const &iter : ans)
+			std::cout << source[iter] << std::endl;
 	}
-	
-	ac.build();
-	
-	AC::Vector result = ac.query(text);
-	
-	for(int i = 1; i <= N; ++i)
-		std::cout << result[i] << std::endl;
 	
 	return 0;
 }
