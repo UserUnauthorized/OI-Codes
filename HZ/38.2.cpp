@@ -1,5 +1,5 @@
 //HZ - 38.2
-//Luogu - 5231
+//Luogu - P5231
 #include<bits/stdc++.h>
 
 namespace DEBUG {
