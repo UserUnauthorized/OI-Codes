@@ -1,6 +1,46 @@
 //Luogu - P3806
 #include<bits/stdc++.h>
 
+namespace DEBUG {
+    template<typename T>
+    inline void _debug(const char *format, T t) {
+        std::cerr << format << '=' << t << std::endl;
+    }
+
+    template<class First, class... Rest>
+    inline void _debug(const char *format, First first, Rest... rest) {
+        while (*format != ',') std::cerr << *format++;
+        std::cerr << '=' << first << ",";
+        _debug(format + 1, rest...);
+    }
+
+    template<typename T>
+    std::ostream &operator<<(std::ostream &os, const std::vector<T> &V) {
+        os << "[ ";
+        for (const auto &vv: V) os << vv << ", ";
+        os << "]";
+        return os;
+    }
+
+    std::ostream &operator<<(std::ostream &os, __int128 V) {
+        if (V < 0) {
+            os << '-';
+            V = -V;
+        }
+
+        if (V > 9)
+            os << V / 10;
+
+        os << (int) (V % 10);
+
+        return os;
+    }
+
+#define debug(...) _debug(#__VA_ARGS__, __VA_ARGS__)
+}  // namespace DEBUG
+
+using namespace DEBUG;
+
 typedef int valueType;
 
 constexpr valueType MAX = INT_MAX >> 1;
@@ -39,8 +79,10 @@ int main() {
 	
 	for(int i = 1; i <= M; ++i)
 		std::cin >> query[i];
-		
+	
 	int root = 0;
+	
+	weight[root] = MAX;
 	
 	calcSize(1, -1, root, N);
 	calcSize(root, -1, root, N);
@@ -103,7 +145,7 @@ void calcDist(int x, int from, int &count) {
 void dfs(int x, int from) {
 	std::queue<int> tag;
 	
-	static std::function<void(valueType)> sure = [&tag] (valueType i) mutable {
+	std::function<void(valueType)> sure = [&tag] (valueType i) mutable {
 		if(i >= maxK)
 			return;
 			
@@ -111,7 +153,7 @@ void dfs(int x, int from) {
 		tag.push(i);
 	};
 	
-	sure(x);
+	sure(0);
 	
 	visited[x] = true;
 	
@@ -137,7 +179,7 @@ void dfs(int x, int from) {
 		for(int i = 1; i <= count; ++i)
 			sure(buffer[i]);
 	}
-	
+
 	while(!tag.empty()) {
 		exist[tag.front()] = false;
 		tag.pop();
