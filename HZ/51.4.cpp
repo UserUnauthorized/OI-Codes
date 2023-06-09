@@ -53,7 +53,6 @@ typedef std::pair<int, valueType> Edge;
 typedef std::list<Edge> OutEdgeList;
 typedef std::array<OutEdgeList, maxN> EdgeSet;
 
-//std::bitset<maxK> exist;
 std::array<valueType, maxK> exist;
 std::array<std::array<valueType, maxK>, 2> F, G;
 std::array<valueType, maxN> buffer, dist, size, weight;
@@ -68,8 +67,6 @@ void dfs(int x, int from);
 void addEdge(int a, int b, int w);
 
 int main() {
-	freopen("51.4.err", "w", stderr);
-	
 	std::cin >> N_;
 	
 	for(int i = 1; i < N; ++i) {
@@ -131,14 +128,14 @@ void calcDist(int x, int from, valueType &bufferSize, valueType &maxDepth) {
 	maxDepth = std::max(maxDepth, std::abs(dist[x]));
 	
 	buffer[++bufferSize] = x;
-	debug(x, bufferSize, dist[x], maxDepth, exist[dist[x] + shifting]);
+
 	if(exist[dist[x] + shifting] > 0)
 		++G[1][dist[x] + shifting];
 	else
 		++G[0][dist[x] + shifting];
 		
 	++exist[dist[x] + shifting];
-	
+
 	for(auto const &iter : edge[x]) {
 		int const to = iter.first;
 		
@@ -146,7 +143,7 @@ void calcDist(int x, int from, valueType &bufferSize, valueType &maxDepth) {
 		
 		if(to == from || visited[to])
 			continue;
-			
+
 		dist[to] = dist[x] + w;
 		
 		calcDist(to, x, bufferSize, maxDepth);
@@ -164,7 +161,7 @@ void dfs(int x, int from) {
 		int const to = iter.first;
 		
 		int const w = iter.second;
-		debug(x, from, to, w);
+
 		if(to == from || visited[to])
 			continue;
 
@@ -189,31 +186,27 @@ void dfs(int x, int from) {
 			ans += F[0][shifting + i] * G[1][shifting - i];
 			ans += F[1][shifting + i] * G[0][shifting - i];
 			ans += F[1][shifting + i] * G[1][shifting - i];
-			
-			debug(x, to, i, ans);
 		}
 		
 		ans += F[0][shifting + 0] * G[0][shifting + 0];
 		
-		ans += G[1][shifting];
-		
-		debug(x, from, to, ans);
+		ans += G[1][shifting + 0];
 		
 		for(int i = 0; i <= thisDepth; ++i) {
-			F[0][shifting - i] += G[1][shifting + i];
-			F[1][shifting - i] += G[0][shifting + i];
+			F[0][shifting - i] += G[0][shifting - i];
+			F[1][shifting - i] += G[1][shifting - i];
 			
-			G[1][shifting + i] = 0;
-			G[0][shifting + i] = 0;
+			G[1][shifting - i] = 0;
+			G[0][shifting - i] = 0;
 			
 			if(i == 0)
 				continue;
 			
-			F[0][shifting + i] += G[1][shifting - i];
-			F[1][shifting + i] += G[0][shifting - i];
+			F[0][shifting + i] += G[0][shifting + i];
+			F[1][shifting + i] += G[1][shifting + i];
 			
-			G[1][shifting - i] = 0;
-			G[0][shifting - i] = 0;
+			G[1][shifting + i] = 0;
+			G[0][shifting + i] = 0;
 		}
 	}
 	
