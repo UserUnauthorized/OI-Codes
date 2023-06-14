@@ -64,6 +64,36 @@ struct Query{
 
 typedef std::vector<Query> QueryVector;
 
+class Recorder {
+private:
+	std::queue<int> tag;
+	
+public:
+	Recorder() : tag(){};
+	
+	void prepare() {
+		while(!tag.empty()) {
+			tag.pop();
+		}
+	}
+	
+	void push(valueType x) {
+		tag.push(x);
+	}
+	
+	bool empty() const {
+		return tag.empty();
+	}
+	
+	valueType pop() {
+		valueType const result = tag.front();
+		
+		tag.pop();
+		
+		return result;
+	}
+};
+
 class ModifyRecorder{
 private:
 	valueType size;
@@ -74,13 +104,28 @@ public:
 	ModifyRecorder(valueType N) : size(N), data(N, 0){};
 	
 	valueType add(valueType pos, valueType value) {
-		++data[pos];
+		data[pos] = std::max(data[pos], value);
 		
-		return data[pos] * value;
+		return data[pos];
 	}
 	
-	void del(valueType pos) {
-		--data[pos];
+	valueType add(valueType pos, valueType value, Recorder &rec) {
+		if(data[pos] < value) {
+			data[pos] = value;
+			
+			rec.push(pos);
+		}
+		
+		return data[pos];
+	}
+	
+	valueType query(valueType pos) const {
+		return data[pos];
+	}
+	
+	void restore(Recorder &rec) {
+		while(!rec.empty())
+			data[rec.pop()] = 0;
 	}
 };
 
@@ -133,14 +178,16 @@ int main() {
 	
 	int nowL = 1, nowR = 0, nowBlock = -1;
 	valueType result = 0;
+	Recorder record;
 	
 	for(auto const &iter : query) {
 		if(belong[iter.l] == belong[iter.r]) {
-			for(int i = iter.l; i <= iter.r; ++i)
-				ans[iter.id] = std::max(ans[iter.id], temp.add(source[i], point[source[i]]));
+			Recorder tempRec;
+			
+			for(int i = iter.r; i >= iter.l; --i)
+				ans[iter.id] = std::max(ans[iter.id], temp.add(source[i], i, tempRec) - i);
 				
-			for(int i = iter.l; i <= iter.r; ++i)
-				temp.del(source[i]);
+			temp.restore(tempRec);
 				
 			continue;
 		}
@@ -149,11 +196,9 @@ int main() {
 			nowBlock = belong[iter.l];
 			result = 0;
 			
-			while(nowR > rightBound[nowBlock])
-				modify.del(source[nowR--]);
+			modify.restore(record);
 			
-			while(nowL <= rightBound[nowBlock])
-				modify.del(source[nowL++]);
+			nowL = rightBound[nowBlock]
 		}
 		
 		while(nowR < iter.r) {

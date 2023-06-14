@@ -1,4 +1,4 @@
-//LOJ - 2874
+//HZ - 36.11
 #include<bits/stdc++.h>
 
 namespace DEBUG {
@@ -76,7 +76,7 @@ public:
 	valueType add(valueType pos, valueType value) {
 		++data[pos];
 		
-		return data[pos] * value;
+		return ;
 	}
 	
 	void del(valueType pos) {
