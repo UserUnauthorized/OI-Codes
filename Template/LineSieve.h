@@ -19,8 +19,10 @@ private:
 public:
     explicit LineSieve(valueType _size_) : size(_size_), minFactorList(_size_ + 1) {
         for (valueType i = 2; i <= size; ++i) {
-            if (minFactorList[i] == 0)
-                primeList.push_back(i);
+            if (minFactorList[i] == 0) {
+            	primeList.push_back(i);
+            	minFactorList[i] = i;
+			}
 
             for (auto const &iter: primeList) {
                 valueType const t = i * iter;
@@ -53,7 +55,7 @@ public:
         if (x < 1)
             throw std::range_error("Too small.");
 
-        return minFactorList[x] == 0;
+        return minFactorList[x] == x;
     }
 
     valueType maxFactor(valueType x) const {
