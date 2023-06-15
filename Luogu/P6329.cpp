@@ -127,7 +127,7 @@ private:
     ValueVector source;
 
     bool compare(sizeType a, sizeType b) const {
-        return source[a] < source[b];
+        return source[a] > source[b];
     }
 
     sizeType max(sizeType a, sizeType b) const {
@@ -165,23 +165,24 @@ valueType const &N = N_, &M = M_;
 typedef std::list<int> EdgeList;
 typedef std::vector<EdgeList> EdgeSet;
 
-EdgeSet edge;
-
-std::vector<bool> visited;
-ValueVector value, depth, dfn, father, size, node, weight;
-
-std::vector<TreeArrayPair> tree;
-
 int main() {
+    EdgeSet edge;
+
+    std::vector<bool> visited;
+    ValueVector value, depth, leftBound, rightBound, father, size, node, weight;
+
+    std::vector<TreeArrayPair> tree;
+
     std::cin >> N_ >> M_;
 
     visited.resize(N + 1);
     value.resize(N + 1);
     depth.resize(N + 1);
-    dfn.resize(N + 1);
+    leftBound.resize(N + 1);
+    rightBound.resize(N + 1);
     father.resize(N + 1);
     size.resize(N + 1);
-    node.resize(N + 1);
+    node.resize(2 * N + 1);
     weight.resize(N + 1);
     edge.resize(N + 1);
     tree.resize(N + 1);
@@ -205,7 +206,8 @@ int main() {
     std::function<void(int, int)> dfs = [&](int x, int from) {
         static int dfsCount = 0;
 
-        dfn[x] = ++dfsCount;
+        leftBound[x] = ++dfsCount;
+//        debug(x, leftBound[x]);
         node[dfsCount] = x;
         size[x] = 1;
         depth[x] = depth[from] + 1;
@@ -218,28 +220,37 @@ int main() {
 
             size[x] += size[v];
         }
+
+        rightBound[x] = ++dfsCount;
+        node[dfsCount] = x;
     };
 
     dfs(1, 0);
 
-    ValueVector stSource(N + 1, 0);
+    ValueVector stSource(2 * N + 1, 0);
 
-    for (int i = 1; i <= N; ++i)
-        stSource[dfn[i]] = depth[i];
+    for (int i = 1; i <= (N * 2); ++i)
+        stSource[i] = depth[node[i]];
 
-    ST st(N, stSource);
-    debug(dfn, depth, stSource);
+    ST st(N * 2 + 1, stSource);
+//    debug(node);
+//    debug(leftBound);
+//    debug(rightBound);
+//    debug(depth);
+//    debug(stSource);
+//    debug(leftBound, depth, stSource);
     std::function<int(int, int)> LCA = [&](int a, int b) {
-        if (dfn[a] > dfn[b])
+        if (leftBound[a] > leftBound[b])
             std::swap(a, b);
-
-        return node[st.query(dfn[a], dfn[b])];
+        int const result = st.query(leftBound[a], leftBound[b]);
+//        debug(a, b, result);
+        return node[st.query(leftBound[a], leftBound[b])];
     };
 
     std::function<valueType(int, int)> distance = [&](int a, int b) {
         int const lca = LCA(a, b);
 
-        debug(a, b, lca, depth);
+//        debug(a, b, lca, depth);
         return depth[a] + depth[b] - 2 * depth[LCA(a, b)];
     };
 
@@ -304,8 +315,8 @@ int main() {
 
         for (int i = x; father[i] != 0; i = father[i]) {
             valueType const dis = distance(x, father[i]);
-            debug(i, father[i], x, dis);
-            if(key >= dis)
+//            debug(i, father[i], x, dis);
+            if (key >= dis)
                 result += tree[father[i]][0].sum(key - dis) - tree[i][1].sum(key - dis);
         }
 
@@ -331,7 +342,7 @@ int main() {
             lastAns = query(x, y);
 //            debug(lastAns);
             std::cout << lastAns << '\n';
-        } else if(opt == 1) {
+        } else if (opt == 1) {
             modify(x, y - value[i]);
 
             value[i] = y;
