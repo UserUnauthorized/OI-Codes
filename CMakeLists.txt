@@ -12,3 +12,4 @@ add_compile_definitions(LOCAL)
 
 add_executable(P2155 Luogu/P2155.cpp)
 add_executable(35.8 HZ/35.8.cpp)
+add_executable(P6329 Luogu/P6329.cpp)

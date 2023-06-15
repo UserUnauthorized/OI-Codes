@@ -47,10 +47,10 @@ cmake_force:
 SHELL = cmd.exe
 
 # The CMake executable.
-CMAKE_COMMAND = "C:\Users\hzoi\AppData\Local\JetBrains\CLion 2023.1.2\bin\cmake\win\x64\bin\cmake.exe"
+CMAKE_COMMAND = "C:\Users\hzoi\AppData\Local\JetBrains\CLion 2023.1.3\bin\cmake\win\x64\bin\cmake.exe"
 
 # The command to remove a file.
-RM = "C:\Users\hzoi\AppData\Local\JetBrains\CLion 2023.1.2\bin\cmake\win\x64\bin\cmake.exe" -E rm -f
+RM = "C:\Users\hzoi\AppData\Local\JetBrains\CLion 2023.1.3\bin\cmake\win\x64\bin\cmake.exe" -E rm -f
 
 # Escaping for special characters.
 EQUALS = =
@@ -67,7 +67,7 @@ CMAKE_BINARY_DIR = C:\OI-Codes\cmake-build-debug
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
-	"C:\Users\hzoi\AppData\Local\JetBrains\CLion 2023.1.2\bin\cmake\win\x64\bin\cmake.exe" -E echo "No interactive CMake dialog available."
+	"C:\Users\hzoi\AppData\Local\JetBrains\CLion 2023.1.3\bin\cmake\win\x64\bin\cmake.exe" -E echo "No interactive CMake dialog available."
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -77,7 +77,7 @@ edit_cache/fast: edit_cache
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	"C:\Users\hzoi\AppData\Local\JetBrains\CLion 2023.1.2\bin\cmake\win\x64\bin\cmake.exe" --regenerate-during-build -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	"C:\Users\hzoi\AppData\Local\JetBrains\CLion 2023.1.3\bin\cmake\win\x64\bin\cmake.exe" --regenerate-during-build -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : rebuild_cache
 
 # Special rule for the target rebuild_cache
@@ -116,189 +116,115 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named 80.5
+# Target rules for targets named P2155
 
 # Build rule for target.
-80.5: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 80.5
-.PHONY : 80.5
+P2155: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 P2155
+.PHONY : P2155
 
 # fast build rule for target.
-80.5/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\80.5.dir\build.make CMakeFiles/80.5.dir/build
-.PHONY : 80.5/fast
+P2155/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\P2155.dir\build.make CMakeFiles/P2155.dir/build
+.PHONY : P2155/fast
 
 #=============================================================================
-# Target rules for targets named P9118
+# Target rules for targets named 35.8
 
 # Build rule for target.
-P9118: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 P9118
-.PHONY : P9118
+35.8: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 35.8
+.PHONY : 35.8
 
 # fast build rule for target.
-P9118/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\P9118.dir\build.make CMakeFiles/P9118.dir/build
-.PHONY : P9118/fast
+35.8/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\35.8.dir\build.make CMakeFiles/35.8.dir/build
+.PHONY : 35.8/fast
 
 #=============================================================================
-# Target rules for targets named P3383
+# Target rules for targets named P6329
 
 # Build rule for target.
-P3383: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 P3383
-.PHONY : P3383
+P6329: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 P6329
+.PHONY : P6329
 
 # fast build rule for target.
-P3383/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\P3383.dir\build.make CMakeFiles/P3383.dir/build
-.PHONY : P3383/fast
+P6329/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\P6329.dir\build.make CMakeFiles/P6329.dir/build
+.PHONY : P6329/fast
 
-#=============================================================================
-# Target rules for targets named test
-
-# Build rule for target.
-test: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 test
-.PHONY : test
-
-# fast build rule for target.
-test/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\test.dir\build.make CMakeFiles/test.dir/build
-.PHONY : test/fast
-
-#=============================================================================
-# Target rules for targets named P7453
-
-# Build rule for target.
-P7453: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 P7453
-.PHONY : P7453
-
-# fast build rule for target.
-P7453/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\P7453.dir\build.make CMakeFiles/P7453.dir/build
-.PHONY : P7453/fast
-
-C_/Users/hzoi/Documents/test.obj: C_/Users/hzoi/Documents/test.cpp.obj
-.PHONY : C_/Users/hzoi/Documents/test.obj
+HZ/35.8.obj: HZ/35.8.cpp.obj
+.PHONY : HZ/35.8.obj
 
 # target to build an object file
-C_/Users/hzoi/Documents/test.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\test.dir\build.make CMakeFiles/test.dir/C_/Users/hzoi/Documents/test.cpp.obj
-.PHONY : C_/Users/hzoi/Documents/test.cpp.obj
+HZ/35.8.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\35.8.dir\build.make CMakeFiles/35.8.dir/HZ/35.8.cpp.obj
+.PHONY : HZ/35.8.cpp.obj
 
-C_/Users/hzoi/Documents/test.i: C_/Users/hzoi/Documents/test.cpp.i
-.PHONY : C_/Users/hzoi/Documents/test.i
+HZ/35.8.i: HZ/35.8.cpp.i
+.PHONY : HZ/35.8.i
 
 # target to preprocess a source file
-C_/Users/hzoi/Documents/test.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\test.dir\build.make CMakeFiles/test.dir/C_/Users/hzoi/Documents/test.cpp.i
-.PHONY : C_/Users/hzoi/Documents/test.cpp.i
+HZ/35.8.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\35.8.dir\build.make CMakeFiles/35.8.dir/HZ/35.8.cpp.i
+.PHONY : HZ/35.8.cpp.i
 
-C_/Users/hzoi/Documents/test.s: C_/Users/hzoi/Documents/test.cpp.s
-.PHONY : C_/Users/hzoi/Documents/test.s
+HZ/35.8.s: HZ/35.8.cpp.s
+.PHONY : HZ/35.8.s
 
 # target to generate assembly for a file
-C_/Users/hzoi/Documents/test.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\test.dir\build.make CMakeFiles/test.dir/C_/Users/hzoi/Documents/test.cpp.s
-.PHONY : C_/Users/hzoi/Documents/test.cpp.s
+HZ/35.8.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\35.8.dir\build.make CMakeFiles/35.8.dir/HZ/35.8.cpp.s
+.PHONY : HZ/35.8.cpp.s
 
-HZ/80.5.obj: HZ/80.5.cpp.obj
-.PHONY : HZ/80.5.obj
+Luogu/P2155.obj: Luogu/P2155.cpp.obj
+.PHONY : Luogu/P2155.obj
 
 # target to build an object file
-HZ/80.5.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\80.5.dir\build.make CMakeFiles/80.5.dir/HZ/80.5.cpp.obj
-.PHONY : HZ/80.5.cpp.obj
+Luogu/P2155.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\P2155.dir\build.make CMakeFiles/P2155.dir/Luogu/P2155.cpp.obj
+.PHONY : Luogu/P2155.cpp.obj
 
-HZ/80.5.i: HZ/80.5.cpp.i
-.PHONY : HZ/80.5.i
+Luogu/P2155.i: Luogu/P2155.cpp.i
+.PHONY : Luogu/P2155.i
 
 # target to preprocess a source file
-HZ/80.5.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\80.5.dir\build.make CMakeFiles/80.5.dir/HZ/80.5.cpp.i
-.PHONY : HZ/80.5.cpp.i
+Luogu/P2155.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\P2155.dir\build.make CMakeFiles/P2155.dir/Luogu/P2155.cpp.i
+.PHONY : Luogu/P2155.cpp.i
 
-HZ/80.5.s: HZ/80.5.cpp.s
-.PHONY : HZ/80.5.s
+Luogu/P2155.s: Luogu/P2155.cpp.s
+.PHONY : Luogu/P2155.s
 
 # target to generate assembly for a file
-HZ/80.5.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\80.5.dir\build.make CMakeFiles/80.5.dir/HZ/80.5.cpp.s
-.PHONY : HZ/80.5.cpp.s
+Luogu/P2155.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\P2155.dir\build.make CMakeFiles/P2155.dir/Luogu/P2155.cpp.s
+.PHONY : Luogu/P2155.cpp.s
 
-Luogu/P3383.obj: Luogu/P3383.cpp.obj
-.PHONY : Luogu/P3383.obj
+Luogu/P6329.obj: Luogu/P6329.cpp.obj
+.PHONY : Luogu/P6329.obj
 
 # target to build an object file
-Luogu/P3383.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\P3383.dir\build.make CMakeFiles/P3383.dir/Luogu/P3383.cpp.obj
-.PHONY : Luogu/P3383.cpp.obj
+Luogu/P6329.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\P6329.dir\build.make CMakeFiles/P6329.dir/Luogu/P6329.cpp.obj
+.PHONY : Luogu/P6329.cpp.obj
 
-Luogu/P3383.i: Luogu/P3383.cpp.i
-.PHONY : Luogu/P3383.i
-
-# target to preprocess a source file
-Luogu/P3383.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\P3383.dir\build.make CMakeFiles/P3383.dir/Luogu/P3383.cpp.i
-.PHONY : Luogu/P3383.cpp.i
-
-Luogu/P3383.s: Luogu/P3383.cpp.s
-.PHONY : Luogu/P3383.s
-
-# target to generate assembly for a file
-Luogu/P3383.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\P3383.dir\build.make CMakeFiles/P3383.dir/Luogu/P3383.cpp.s
-.PHONY : Luogu/P3383.cpp.s
-
-Luogu/P7453.obj: Luogu/P7453.cpp.obj
-.PHONY : Luogu/P7453.obj
-
-# target to build an object file
-Luogu/P7453.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\P7453.dir\build.make CMakeFiles/P7453.dir/Luogu/P7453.cpp.obj
-.PHONY : Luogu/P7453.cpp.obj
-
-Luogu/P7453.i: Luogu/P7453.cpp.i
-.PHONY : Luogu/P7453.i
+Luogu/P6329.i: Luogu/P6329.cpp.i
+.PHONY : Luogu/P6329.i
 
 # target to preprocess a source file
-Luogu/P7453.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\P7453.dir\build.make CMakeFiles/P7453.dir/Luogu/P7453.cpp.i
-.PHONY : Luogu/P7453.cpp.i
+Luogu/P6329.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\P6329.dir\build.make CMakeFiles/P6329.dir/Luogu/P6329.cpp.i
+.PHONY : Luogu/P6329.cpp.i
 
-Luogu/P7453.s: Luogu/P7453.cpp.s
-.PHONY : Luogu/P7453.s
-
-# target to generate assembly for a file
-Luogu/P7453.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\P7453.dir\build.make CMakeFiles/P7453.dir/Luogu/P7453.cpp.s
-.PHONY : Luogu/P7453.cpp.s
-
-Luogu/P9118.obj: Luogu/P9118.cpp.obj
-.PHONY : Luogu/P9118.obj
-
-# target to build an object file
-Luogu/P9118.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\P9118.dir\build.make CMakeFiles/P9118.dir/Luogu/P9118.cpp.obj
-.PHONY : Luogu/P9118.cpp.obj
-
-Luogu/P9118.i: Luogu/P9118.cpp.i
-.PHONY : Luogu/P9118.i
-
-# target to preprocess a source file
-Luogu/P9118.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\P9118.dir\build.make CMakeFiles/P9118.dir/Luogu/P9118.cpp.i
-.PHONY : Luogu/P9118.cpp.i
-
-Luogu/P9118.s: Luogu/P9118.cpp.s
-.PHONY : Luogu/P9118.s
+Luogu/P6329.s: Luogu/P6329.cpp.s
+.PHONY : Luogu/P6329.s
 
 # target to generate assembly for a file
-Luogu/P9118.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\P9118.dir\build.make CMakeFiles/P9118.dir/Luogu/P9118.cpp.s
-.PHONY : Luogu/P9118.cpp.s
+Luogu/P6329.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\P6329.dir\build.make CMakeFiles/P6329.dir/Luogu/P6329.cpp.s
+.PHONY : Luogu/P6329.cpp.s
 
 # Help Target
 help:
@@ -308,26 +234,18 @@ help:
 	@echo ... depend
 	@echo ... edit_cache
 	@echo ... rebuild_cache
-	@echo ... 80.5
-	@echo ... P3383
-	@echo ... P7453
-	@echo ... P9118
-	@echo ... test
-	@echo ... C_/Users/hzoi/Documents/test.obj
-	@echo ... C_/Users/hzoi/Documents/test.i
-	@echo ... C_/Users/hzoi/Documents/test.s
-	@echo ... HZ/80.5.obj
-	@echo ... HZ/80.5.i
-	@echo ... HZ/80.5.s
-	@echo ... Luogu/P3383.obj
-	@echo ... Luogu/P3383.i
-	@echo ... Luogu/P3383.s
-	@echo ... Luogu/P7453.obj
-	@echo ... Luogu/P7453.i
-	@echo ... Luogu/P7453.s
-	@echo ... Luogu/P9118.obj
-	@echo ... Luogu/P9118.i
-	@echo ... Luogu/P9118.s
+	@echo ... 35.8
+	@echo ... P2155
+	@echo ... P6329
+	@echo ... HZ/35.8.obj
+	@echo ... HZ/35.8.i
+	@echo ... HZ/35.8.s
+	@echo ... Luogu/P2155.obj
+	@echo ... Luogu/P2155.i
+	@echo ... Luogu/P2155.s
+	@echo ... Luogu/P6329.obj
+	@echo ... Luogu/P6329.i
+	@echo ... Luogu/P6329.s
 .PHONY : help
 
 
