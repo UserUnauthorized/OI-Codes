@@ -154,6 +154,19 @@ P6329/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\P6329.dir\build.make CMakeFiles/P6329.dir/build
 .PHONY : P6329/fast
 
+#=============================================================================
+# Target rules for targets named P8965
+
+# Build rule for target.
+P8965: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 P8965
+.PHONY : P8965
+
+# fast build rule for target.
+P8965/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\P8965.dir\build.make CMakeFiles/P8965.dir/build
+.PHONY : P8965/fast
+
 HZ/35.8.obj: HZ/35.8.cpp.obj
 .PHONY : HZ/35.8.obj
 
@@ -226,6 +239,30 @@ Luogu/P6329.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\P6329.dir\build.make CMakeFiles/P6329.dir/Luogu/P6329.cpp.s
 .PHONY : Luogu/P6329.cpp.s
 
+Luogu/P8965.obj: Luogu/P8965.cpp.obj
+.PHONY : Luogu/P8965.obj
+
+# target to build an object file
+Luogu/P8965.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\P8965.dir\build.make CMakeFiles/P8965.dir/Luogu/P8965.cpp.obj
+.PHONY : Luogu/P8965.cpp.obj
+
+Luogu/P8965.i: Luogu/P8965.cpp.i
+.PHONY : Luogu/P8965.i
+
+# target to preprocess a source file
+Luogu/P8965.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\P8965.dir\build.make CMakeFiles/P8965.dir/Luogu/P8965.cpp.i
+.PHONY : Luogu/P8965.cpp.i
+
+Luogu/P8965.s: Luogu/P8965.cpp.s
+.PHONY : Luogu/P8965.s
+
+# target to generate assembly for a file
+Luogu/P8965.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\P8965.dir\build.make CMakeFiles/P8965.dir/Luogu/P8965.cpp.s
+.PHONY : Luogu/P8965.cpp.s
+
 # Help Target
 help:
 	@echo The following are some of the valid targets for this Makefile:
@@ -237,6 +274,7 @@ help:
 	@echo ... 35.8
 	@echo ... P2155
 	@echo ... P6329
+	@echo ... P8965
 	@echo ... HZ/35.8.obj
 	@echo ... HZ/35.8.i
 	@echo ... HZ/35.8.s
@@ -246,6 +284,9 @@ help:
 	@echo ... Luogu/P6329.obj
 	@echo ... Luogu/P6329.i
 	@echo ... Luogu/P6329.s
+	@echo ... Luogu/P8965.obj
+	@echo ... Luogu/P8965.i
+	@echo ... Luogu/P8965.s
 .PHONY : help
 
 
