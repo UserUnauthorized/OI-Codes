@@ -72,45 +72,45 @@ public:
 const Inverse Inv(MOD);
 
 int main() {
-	typedef std::function<valueType(valueType, valueType)> Function;
-	
-	std::vector<valueType> factorial(MOD + 1, 0);
-	
-	factorial[0] = 1;
-	
-	for(int i = 1; i <= MOD; ++i)
-		factorial[i] = factorial[i - 1] * i % MOD;
-	
-	Function C = [&factorial] (valueType n, valueType m) ->valueType {
-		if(m == 0)
-			return 1;
-		
-		return factorial[n] * Inv[factorial[m] * factorial[n - m] % MOD] % MOD;
-	};
-	
-	Function Lucas = [&C, &Lucas] (valueType n, valueType m) ->valueType {
-		debug(n, m);
-		
-		if(m == 0)
-			return 1;
-			
-		if(n >= MOD && m < MOD)
-			return 0;
-			
-		return C(n % MOD, m % MOD) * Lucas(n / MOD, m / MOD) % MOD;
-	};
-	
-	int T;
-	
-	std::cin >> T;
-	
-	for(int i = 1; i <= T; ++i) {
-		int N, M;
-		
-		std::cin >> N >> M;
-		
-		std::cout << Lucas(N, M) << std::endl;
-	}
-	
-	return 0;
+    typedef std::function<valueType(valueType, valueType)> Function;
+
+    std::vector<valueType> factorial(MOD + 1, 0);
+
+    factorial[0] = 1;
+
+    for (int i = 1; i <= MOD; ++i)
+        factorial[i] = factorial[i - 1] * i % MOD;
+
+    Function C = [&factorial](valueType n, valueType m) -> valueType {
+        if (m == 0)
+            return 1;
+
+        return factorial[n] * Inv[factorial[m] * factorial[n - m] % MOD] % MOD;
+    };
+
+    Function Lucas = [&C, &Lucas](valueType n, valueType m) -> valueType {
+        debug(n, m);
+
+        if (m == 0)
+            return 1;
+
+        if (n >= MOD && m < MOD)
+            return 0;
+
+        return C(n % MOD, m % MOD) * Lucas(n / MOD, m / MOD) % MOD;
+    };
+
+    int T;
+
+    std::cin >> T;
+
+    for (int i = 1; i <= T; ++i) {
+        int N, M;
+
+        std::cin >> N >> M;
+
+        std::cout << Lucas(N, M) << std::endl;
+    }
+
+    return 0;
 }

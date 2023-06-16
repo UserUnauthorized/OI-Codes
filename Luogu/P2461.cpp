@@ -173,66 +173,66 @@ public:
 };
 
 int main() {
-	valueType K, M, N;
-	
-	std::cin >> K;
-	
-	ValueVector B(K + 30, 0), C(K + 30, 0);
-	
-	for(int i = 1; i <= K; ++i)
-		std::cin >> B[i];
+    valueType K, M, N;
 
-	for(int i = 1; i <= K; ++i)
-		std::cin >> C[i];
+    std::cin >> K;
 
-	std::cin >> M >> N >> MOD_;
-	
-	for(int i = 1; i <= K; ++i) {
-		B[i] %= MOD;
-		C[i] %= MOD;
-	}
-	
-	Matrix ans(1, K + 1), base(K + 1, K + 1);
-	
-	ans.set(Matrix::EMPTY);
-	base.set(Matrix::EMPTY);
-	
-	for(int i = 1; i <= K; ++i)
-		base(i, 1) = C[i];
-		
-	for(int i = 2; i <= K; ++i)
-		base(i - 1, i) = 1;
-		
-	base(1, K + 1) = base(K + 1, K + 1) = 1;
-	
-	for(int i = 1; i <= K; ++i)
-		ans(1, K + 1 - i) = B[i];
-		
-	ans(1, K + 1) = std::accumulate(B.begin() + 1, B.begin() + K, 0) % MOD;
-	valueType resultN = 0, resultM = 0;
-	
-	++N;
-	if(N > K) {
-		Matrix MatrixN = ans * (base ^ (N - K));
-		
-		resultN = MatrixN(1, K + 1);
-	} else {
-		resultN = std::accumulate(B.begin() + 1, B.begin() + N, 0);
-	}
+    ValueVector B(K + 30, 0), C(K + 30, 0);
 
-	if(M > K) {
-		Matrix MatrixM = ans * (base ^ (M - K));
-		
-		resultM = MatrixM(1, K + 1);
-	} else {
-		resultM = std::accumulate(B.begin() + 1, B.begin() + M, 0);
-	}
-	
-	valueType result = resultN - resultM;
-	
-	result = (result % MOD + MOD) % MOD;
-	
-	std::cout << result << std::flush;
-	
-	return 0;
+    for (int i = 1; i <= K; ++i)
+        std::cin >> B[i];
+
+    for (int i = 1; i <= K; ++i)
+        std::cin >> C[i];
+
+    std::cin >> M >> N >> MOD_;
+
+    for (int i = 1; i <= K; ++i) {
+        B[i] %= MOD;
+        C[i] %= MOD;
+    }
+
+    Matrix ans(1, K + 1), base(K + 1, K + 1);
+
+    ans.set(Matrix::EMPTY);
+    base.set(Matrix::EMPTY);
+
+    for (int i = 1; i <= K; ++i)
+        base(i, 1) = C[i];
+
+    for (int i = 2; i <= K; ++i)
+        base(i - 1, i) = 1;
+
+    base(1, K + 1) = base(K + 1, K + 1) = 1;
+
+    for (int i = 1; i <= K; ++i)
+        ans(1, K + 1 - i) = B[i];
+
+    ans(1, K + 1) = std::accumulate(B.begin() + 1, B.begin() + K, 0) % MOD;
+    valueType resultN = 0, resultM = 0;
+
+    ++N;
+    if (N > K) {
+        Matrix MatrixN = ans * (base ^ (N - K));
+
+        resultN = MatrixN(1, K + 1);
+    } else {
+        resultN = std::accumulate(B.begin() + 1, B.begin() + N, 0);
+    }
+
+    if (M > K) {
+        Matrix MatrixM = ans * (base ^ (M - K));
+
+        resultM = MatrixM(1, K + 1);
+    } else {
+        resultM = std::accumulate(B.begin() + 1, B.begin() + M, 0);
+    }
+
+    valueType result = resultN - resultM;
+
+    result = (result % MOD + MOD) % MOD;
+
+    std::cout << result << std::flush;
+
+    return 0;
 }

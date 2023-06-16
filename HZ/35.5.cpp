@@ -51,66 +51,66 @@ typedef std::vector<RealMatrix> DPMatrix;
 
 
 int main() {
-	int N, L, K;
-	
-	std::cin >> N >> L >> K;
-	
-	int const M = N << 1|1, shifting = N;
-	
-	ValueVector A(N + 1, 0);
-	RealVector P(N + 1, 0);
-	
-	for(int i = 1; i <= N; ++i)
-		std::cin >> P[i];
-		
-	for(int i = 1; i <= N; ++i)
-		std::cin >> A[i];
-		
-	for(int i = 1; i <= N; ++i)
-		P[i] = (realType)P[i] / 100;
-	
+    int N, L, K;
+
+    std::cin >> N >> L >> K;
+
+    int const M = N << 1 | 1, shifting = N;
+
+    ValueVector A(N + 1, 0);
+    RealVector P(N + 1, 0);
+
+    for (int i = 1; i <= N; ++i)
+        std::cin >> P[i];
+
+    for (int i = 1; i <= N; ++i)
+        std::cin >> A[i];
+
+    for (int i = 1; i <= N; ++i)
+        P[i] = (realType) P[i] / 100;
+
 //	debug(P);
-	
-	std::array<RealMatrix, 2> dp;
-	
-	dp[0].resize(N + 1);
-	dp[1].resize(N + 1);
-	
-	for(int i = 0; i <= N; ++i) {
-		dp[0][i].resize(M + 1, 0);
-		dp[1][i].resize(M + 1, 0);
-	}
-	
-	K = std::min(K + shifting, M);
 
-	dp[0][0][K] = 1;
+    std::array<RealMatrix, 2> dp;
 
-	for(int i = 0; i < N; ++i) {
-		int const now = i & 1, next = now ^ 1;
-		
-		for(int j = 0; j <= N; ++j)
-			std::fill(dp[next][j].begin(), dp[next][j].end(), 0);
-		
-		for(int j = 0; j <= i; ++j) {
-			for(int k = 0; k <= M; ++k) {
-				if(dp[now][j][k] == 0)
-					continue;
-				
-				dp[next][j + 1][std::min(k + A[i + 1], M)] += dp[now][j][k] * P[i + 1];
-				dp[next][j][k] += dp[now][j][k] * (1 - P[i + 1]);
-			}
-		}
-	}
-	
-	int const final = N & 1;
-	
-	realType result = 0;
-	
-	for(int i = L; i <= N; ++i)
-		for(int j = shifting; j <= M; ++j)
-			result += dp[final][i][j];
-			
-	std::cout << std::setprecision(6) << std::fixed << result << std::flush;
-	
-	return 0;
+    dp[0].resize(N + 1);
+    dp[1].resize(N + 1);
+
+    for (int i = 0; i <= N; ++i) {
+        dp[0][i].resize(M + 1, 0);
+        dp[1][i].resize(M + 1, 0);
+    }
+
+    K = std::min(K + shifting, M);
+
+    dp[0][0][K] = 1;
+
+    for (int i = 0; i < N; ++i) {
+        int const now = i & 1, next = now ^ 1;
+
+        for (int j = 0; j <= N; ++j)
+            std::fill(dp[next][j].begin(), dp[next][j].end(), 0);
+
+        for (int j = 0; j <= i; ++j) {
+            for (int k = 0; k <= M; ++k) {
+                if (dp[now][j][k] == 0)
+                    continue;
+
+                dp[next][j + 1][std::min(k + A[i + 1], M)] += dp[now][j][k] * P[i + 1];
+                dp[next][j][k] += dp[now][j][k] * (1 - P[i + 1]);
+            }
+        }
+    }
+
+    int const final = N & 1;
+
+    realType result = 0;
+
+    for (int i = L; i <= N; ++i)
+        for (int j = shifting; j <= M; ++j)
+            result += dp[final][i][j];
+
+    std::cout << std::setprecision(6) << std::fixed << result << std::flush;
+
+    return 0;
 }

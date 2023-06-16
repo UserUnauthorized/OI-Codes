@@ -314,7 +314,6 @@ int main() {
         }
 
 
-
         for (int i = x; father[i] != 0; i = father[i]) {
             int const dis = distance(x, father[i]);
             debug(x, i, father[i], dis);

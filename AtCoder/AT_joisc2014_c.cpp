@@ -46,141 +46,142 @@ typedef std::vector<valueType> ValueVector;
 
 ValueVector belong;
 
-struct Query{
-	int l;
-	int r;
-	int id;
+struct Query {
+    int l;
+    int r;
+    int id;
 
-	Query():l(-1), r(-1), id(-1){};
-	Query(int _l_, int _r_, int i):l(_l_), r(_r_), id(i){};
-	
-	bool operator<(Query const &Object) const{
-		if(belong[this->l] != belong[Object.l])
-			return this->l < Object.l;
-			
-		return this->r < Object.r;
-	}
+    Query() : l(-1), r(-1), id(-1) {};
+
+    Query(int _l_, int _r_, int i) : l(_l_), r(_r_), id(i) {};
+
+    bool operator<(Query const &Object) const {
+        if (belong[this->l] != belong[Object.l])
+            return this->l < Object.l;
+
+        return this->r < Object.r;
+    }
 };
 
 typedef std::vector<Query> QueryVector;
 
-class ModifyRecorder{
+class ModifyRecorder {
 private:
-	valueType size;
-	
-	ValueVector data;
-	
+    valueType size;
+
+    ValueVector data;
+
 public:
-	ModifyRecorder(valueType N) : size(N), data(N, 0){};
-	
-	valueType add(valueType pos, valueType value) {
-		++data[pos];
-		
-		return data[pos] * value;
-	}
-	
-	void del(valueType pos) {
-		--data[pos];
-	}
+    ModifyRecorder(valueType N) : size(N), data(N, 0) {};
+
+    valueType add(valueType pos, valueType value) {
+        ++data[pos];
+
+        return data[pos] * value;
+    }
+
+    void del(valueType pos) {
+        --data[pos];
+    }
 };
 
 int main() {
-	valueType N, Q;
-	
-	std::cin >> N >> Q;
-	
-	valueType const block = std::ceil(std::sqrt(N)), K = std::ceil((long double) N / block);
-	
-	ValueVector source(N + 1), leftBound(block + 10, 0), rightBound(block + 10, 0);
-	belong.resize(N + 1);
-	
-	for(int i = 0; i < K; ++i)
-		rightBound[i] = (leftBound[i] = i * block + 1) + block - 1;
-	
-	leftBound[K - 1] = K * block - block + 1;
-	rightBound[K - 1] = N;
-	
-	source[0] = INT_MIN;
-	for(int i = 1; i <= N; ++i) {
-		std::cin >> source[i];
-		belong[i] = (i - 1) / block;
-	}
-	
-	ValueVector point(source);
-	
-	std::sort(point.begin(), point.end());
-	point.erase(std::unique(point.begin(), point.end()), point.end());
-	point.shrink_to_fit();
-	
-	valueType const S = point.size();
-	
-	for(int i = 1; i <= N; ++i)
-		source[i] = std::distance(point.begin(), std::lower_bound(point.begin(), point.end(), source[i]));
-	
-	QueryVector query(Q);
-	
-	for(int i = 0; i < Q; ++i) {
-		std::cin >> query[i].l >> query[i].r;
-		
-		query[i].id = i;
-	}
-	
-	ValueVector ans(Q, 0);
-	
-	std::sort(query.begin(), query.end());
-	
-	ModifyRecorder temp(S + 10), modify(S + 10);
-	
-	int nowL = 1, nowR = 0, nowBlock = -1;
-	valueType result = 0;
-	
-	for(auto const &iter : query) {
-		if(belong[iter.l] == belong[iter.r]) {
-			for(int i = iter.l; i <= iter.r; ++i)
-				ans[iter.id] = std::max(ans[iter.id], temp.add(source[i], point[source[i]]));
-				
-			for(int i = iter.l; i <= iter.r; ++i)
-				temp.del(source[i]);
-				
-			continue;
-		}
-		
-		if(belong[iter.l] != nowBlock) {
-			nowBlock = belong[iter.l];
-			result = 0;
-			
-			while(nowR > rightBound[nowBlock])
-				modify.del(source[nowR--]);
-			
-			while(nowL <= rightBound[nowBlock])
-				modify.del(source[nowL++]);
-		}
-		
-		while(nowR < iter.r) {
-			++nowR;
-			
-			result = std::max(result, modify.add(source[nowR], point[source[nowR]]));
-		}
-		
-		int tempL = nowL;
-		valueType nowResult = result;
-		
-		while(tempL > iter.l) {
-			--tempL;
-			
-			nowResult = std::max(nowResult, modify.add(source[tempL], point[source[tempL]]));
-		}
-		
-		ans[iter.id] = nowResult;
-		
-		while(tempL < nowL)
-			modify.del(source[tempL++]);
-	}
-	
-	for(int i = 0; i < Q; ++i)
-		std::cout << ans[i] << '\n';
-		
-	std::cout << std::flush;
-	
-	return 0;
+    valueType N, Q;
+
+    std::cin >> N >> Q;
+
+    valueType const block = std::ceil(std::sqrt(N)), K = std::ceil((long double) N / block);
+
+    ValueVector source(N + 1), leftBound(block + 10, 0), rightBound(block + 10, 0);
+    belong.resize(N + 1);
+
+    for (int i = 0; i < K; ++i)
+        rightBound[i] = (leftBound[i] = i * block + 1) + block - 1;
+
+    leftBound[K - 1] = K * block - block + 1;
+    rightBound[K - 1] = N;
+
+    source[0] = INT_MIN;
+    for (int i = 1; i <= N; ++i) {
+        std::cin >> source[i];
+        belong[i] = (i - 1) / block;
+    }
+
+    ValueVector point(source);
+
+    std::sort(point.begin(), point.end());
+    point.erase(std::unique(point.begin(), point.end()), point.end());
+    point.shrink_to_fit();
+
+    valueType const S = point.size();
+
+    for (int i = 1; i <= N; ++i)
+        source[i] = std::distance(point.begin(), std::lower_bound(point.begin(), point.end(), source[i]));
+
+    QueryVector query(Q);
+
+    for (int i = 0; i < Q; ++i) {
+        std::cin >> query[i].l >> query[i].r;
+
+        query[i].id = i;
+    }
+
+    ValueVector ans(Q, 0);
+
+    std::sort(query.begin(), query.end());
+
+    ModifyRecorder temp(S + 10), modify(S + 10);
+
+    int nowL = 1, nowR = 0, nowBlock = -1;
+    valueType result = 0;
+
+    for (auto const &iter: query) {
+        if (belong[iter.l] == belong[iter.r]) {
+            for (int i = iter.l; i <= iter.r; ++i)
+                ans[iter.id] = std::max(ans[iter.id], temp.add(source[i], point[source[i]]));
+
+            for (int i = iter.l; i <= iter.r; ++i)
+                temp.del(source[i]);
+
+            continue;
+        }
+
+        if (belong[iter.l] != nowBlock) {
+            nowBlock = belong[iter.l];
+            result = 0;
+
+            while (nowR > rightBound[nowBlock])
+                modify.del(source[nowR--]);
+
+            while (nowL <= rightBound[nowBlock])
+                modify.del(source[nowL++]);
+        }
+
+        while (nowR < iter.r) {
+            ++nowR;
+
+            result = std::max(result, modify.add(source[nowR], point[source[nowR]]));
+        }
+
+        int tempL = nowL;
+        valueType nowResult = result;
+
+        while (tempL > iter.l) {
+            --tempL;
+
+            nowResult = std::max(nowResult, modify.add(source[tempL], point[source[tempL]]));
+        }
+
+        ans[iter.id] = nowResult;
+
+        while (tempL < nowL)
+            modify.del(source[tempL++]);
+    }
+
+    for (int i = 0; i < Q; ++i)
+        std::cout << ans[i] << '\n';
+
+    std::cout << std::flush;
+
+    return 0;
 }

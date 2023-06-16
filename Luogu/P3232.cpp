@@ -54,75 +54,75 @@ typedef std::vector<OutEdgeList> EdgeSet;
 ROW solve(MATRIX A, const int &size);
 
 int main() {
-	int N, M;
-	
-	std::cin >> N >> M;
-	
-	EdgeSet edge(N + 1);
-	
-	EdgeVector source;
-	
-	MATRIX matrix(N - 1);
-	
-	for(auto &iter : matrix)
-		iter.resize(N, 0);
-	
-	source.reserve(M);
-	
-	std::function<void(int, int)> addEdge = [&source, &edge] (int a, int b) mutable {
-		source.emplace_back(a, b);
-		
-		edge[a].emplace_back(b);
-		
-		edge[b].emplace_back(a);
-	};
-	
-	for(int i = 1; i <= M; ++i) {
-		int a, b;
-		
-		std::cin >> a >> b;
-		
-		addEdge(a, b);
-	}
-	
-	
-	matrix[0][N - 1] = -1;
-	for(int i = 1; i < N; ++i) {
-		matrix[i - 1][i - 1] = -1;
-		
-		for(auto const &iter : edge[i]) {
-			if(iter == N)
-				continue;
-				
-			matrix[i - 1][iter - 1] = (realType) 1 / edge[iter].size();
-		}
-	}
+    int N, M;
 
-	ROW result = solve(matrix, N - 1);
+    std::cin >> N >> M;
 
-	RealVector count(N + 1, 0);
-	
-	for(int i = 1; i < N; ++i)
-		count[i] = result[i];
+    EdgeSet edge(N + 1);
 
-	RealVector value(M, 0);
-	
-	for(int i = 0; i < M; ++i) {
-		int const x = source[i].first, y = source[i].second;
-		
-		value[i] = count[x] / edge[x].size() + count[y] / edge[y].size();
-	}
+    EdgeVector source;
 
-	std::sort(value.begin(), value.end(), std::greater<realType>());
-	
-	realType ans = 0;
-	
-	for(int i = 0; i < M; ++i)
-		ans += value[i] * (i + 1);
-		
-	std::cout << std::setprecision(3) << std::fixed << ans << std::flush;
-	
-	return 0;
+    MATRIX matrix(N - 1);
+
+    for (auto &iter: matrix)
+        iter.resize(N, 0);
+
+    source.reserve(M);
+
+    std::function<void(int, int)> addEdge = [&source, &edge](int a, int b) mutable {
+        source.emplace_back(a, b);
+
+        edge[a].emplace_back(b);
+
+        edge[b].emplace_back(a);
+    };
+
+    for (int i = 1; i <= M; ++i) {
+        int a, b;
+
+        std::cin >> a >> b;
+
+        addEdge(a, b);
+    }
+
+
+    matrix[0][N - 1] = -1;
+    for (int i = 1; i < N; ++i) {
+        matrix[i - 1][i - 1] = -1;
+
+        for (auto const &iter: edge[i]) {
+            if (iter == N)
+                continue;
+
+            matrix[i - 1][iter - 1] = (realType) 1 / edge[iter].size();
+        }
+    }
+
+    ROW result = solve(matrix, N - 1);
+
+    RealVector count(N + 1, 0);
+
+    for (int i = 1; i < N; ++i)
+        count[i] = result[i];
+
+    RealVector value(M, 0);
+
+    for (int i = 0; i < M; ++i) {
+        int const x = source[i].first, y = source[i].second;
+
+        value[i] = count[x] / edge[x].size() + count[y] / edge[y].size();
+    }
+
+    std::sort(value.begin(), value.end(), std::greater<realType>());
+
+    realType ans = 0;
+
+    for (int i = 0; i < M; ++i)
+        ans += value[i] * (i + 1);
+
+    std::cout << std::setprecision(3) << std::fixed << ans << std::flush;
+
+    return 0;
 }
 
 ROW solve(MATRIX A, const int &size) {

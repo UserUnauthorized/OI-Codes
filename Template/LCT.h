@@ -10,7 +10,7 @@ public:
     struct NODE {
         typedef NODE self;
 //        typedef std::shared_ptr<self> pointer;
-		typedef self *pointer;
+        typedef self *pointer;
         typedef unsigned int posType;
 
         pointer father;
@@ -93,7 +93,7 @@ protected:
 private:
     static pointer allocateNode() {
 //        return std::make_shared<NODE>();
-		return new NODE();
+        return new NODE();
     }
 
     static pointer allocateNode(valueType key, posType id) {
@@ -163,10 +163,10 @@ public:
     posType find(posType x) {
         return this->find(node[x]);
     }
-    
+
     bool check(posType x, posType y) {
-    	return this->find(x) == this->find(y);
-	}
+        return this->find(x) == this->find(y);
+    }
 
 protected:
     void rotate(const pointer &current) {

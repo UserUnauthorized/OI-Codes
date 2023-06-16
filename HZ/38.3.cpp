@@ -44,167 +44,167 @@ using namespace DEBUG;
 
 class AC {
 public:
-	typedef int valueType;
-	typedef size_t sizeType;
-	static sizeType const charSetSize = 26;
-	typedef std::vector<valueType> Vector;
-	
-private:
-	static sizeType converter(char c) {
-		if(c < 'a' || c > 'z')
-			throw std::range_error("");
-		
-		return c - 'a';
-	}
-	
-	struct NODE{
-		typedef NODE self;
-		typedef self* pointer;
-		
-		std::array<pointer, charSetSize> trans;
-		
-		std::list<pointer> son;
-		
-		valueType visitedTime;
-		
-		std::list<int> endId;
-		
-		pointer fail;
-		
-		NODE(valueType id = -1) : trans(), son(), visitedTime(0), endId(), fail(nullptr) {
-			trans.fill(nullptr);
-		}
-		
-		pointer& transfer(char c) {
-			return trans[converter(c)];
-		}
-	};
-	
-	typedef NODE::pointer pointer;
-	
-	pointer allocate(valueType v = -1) {
-		return new NODE(v);
-	}
-	
-	pointer root;
-	
-	sizeType size;
-	
-public:
-	AC() : root(allocate()), size(0) {};
-	
-	void insert(const std::string &data, valueType id) {
-		++size;
+    typedef int valueType;
+    typedef size_t sizeType;
+    static sizeType const charSetSize = 26;
+    typedef std::vector<valueType> Vector;
 
-		pointer current = this->root;
-		
-		for(auto const &iter : data) {
-			if(current->transfer(iter) == nullptr) {
-				current->transfer(iter) = allocate();
-				
-				current = current->transfer(iter);
-			} else {
-				current = current->transfer(iter);
-			}
-		}
-		
-		current->endId.push_back(id);
-	}
-	
-	void build() {
-		root->fail = root;
-		
-		std::queue<pointer> que;
-		
-		for(sizeType i = 0; i < charSetSize; ++i) {
-			if(root->trans[i] != nullptr) {
-				root->trans[i]->fail = root;
-				que.push(root->trans[i]);
-			} else {
-				root->trans[i] = root;
-			}
-		}
-		
-				
-		while(!que.empty()) {
-			pointer current = que.front();
-			que.pop();
-			
-			current->fail->son.push_back(current);
-			
-			for(sizeType i = 0; i < charSetSize; ++i) {
-				if(current->trans[i] != nullptr) {
-					current->trans[i]->fail = current->fail->trans[i];
-					
-					que.push(current->trans[i]);
-				} else {
-					current->trans[i] = current->fail->trans[i];
-				}
-			}
-		}
-	}
-	
-	void query(const std::string &data) {
-		pointer current = root;
-		
-		++root->visitedTime;
-		
-		for(auto const &iter : data) {
-			current = current->transfer(iter);
-			
-			++current->visitedTime;
-		}
-	}
-	
-	Vector calc() {
-		Vector result(size + 1, 0);
-		
-		calc(root, result);
-		
-		return result;
-	}
-	
-	valueType calc(const pointer &current, Vector &V) {
-		int result = current->visitedTime;
-		
-		for(auto const &iter : current->son)
-			result += calc(iter, V);
-			
-		for(auto const &iter : current->endId)
-			V[iter] = result;
-		
-		return result;
-	}
+private:
+    static sizeType converter(char c) {
+        if (c < 'a' || c > 'z')
+            throw std::range_error("");
+
+        return c - 'a';
+    }
+
+    struct NODE {
+        typedef NODE self;
+        typedef self *pointer;
+
+        std::array<pointer, charSetSize> trans;
+
+        std::list<pointer> son;
+
+        valueType visitedTime;
+
+        std::list<int> endId;
+
+        pointer fail;
+
+        NODE(valueType id = -1) : trans(), son(), visitedTime(0), endId(), fail(nullptr) {
+            trans.fill(nullptr);
+        }
+
+        pointer &transfer(char c) {
+            return trans[converter(c)];
+        }
+    };
+
+    typedef NODE::pointer pointer;
+
+    pointer allocate(valueType v = -1) {
+        return new NODE(v);
+    }
+
+    pointer root;
+
+    sizeType size;
+
+public:
+    AC() : root(allocate()), size(0) {};
+
+    void insert(const std::string &data, valueType id) {
+        ++size;
+
+        pointer current = this->root;
+
+        for (auto const &iter: data) {
+            if (current->transfer(iter) == nullptr) {
+                current->transfer(iter) = allocate();
+
+                current = current->transfer(iter);
+            } else {
+                current = current->transfer(iter);
+            }
+        }
+
+        current->endId.push_back(id);
+    }
+
+    void build() {
+        root->fail = root;
+
+        std::queue<pointer> que;
+
+        for (sizeType i = 0; i < charSetSize; ++i) {
+            if (root->trans[i] != nullptr) {
+                root->trans[i]->fail = root;
+                que.push(root->trans[i]);
+            } else {
+                root->trans[i] = root;
+            }
+        }
+
+
+        while (!que.empty()) {
+            pointer current = que.front();
+            que.pop();
+
+            current->fail->son.push_back(current);
+
+            for (sizeType i = 0; i < charSetSize; ++i) {
+                if (current->trans[i] != nullptr) {
+                    current->trans[i]->fail = current->fail->trans[i];
+
+                    que.push(current->trans[i]);
+                } else {
+                    current->trans[i] = current->fail->trans[i];
+                }
+            }
+        }
+    }
+
+    void query(const std::string &data) {
+        pointer current = root;
+
+        ++root->visitedTime;
+
+        for (auto const &iter: data) {
+            current = current->transfer(iter);
+
+            ++current->visitedTime;
+        }
+    }
+
+    Vector calc() {
+        Vector result(size + 1, 0);
+
+        calc(root, result);
+
+        return result;
+    }
+
+    valueType calc(const pointer &current, Vector &V) {
+        int result = current->visitedTime;
+
+        for (auto const &iter: current->son)
+            result += calc(iter, V);
+
+        for (auto const &iter: current->endId)
+            V[iter] = result;
+
+        return result;
+    }
 };
 
 int main() {
-	int N;
-	
-	std::cin >> N;
-	
-	AC ac;
-	
-	std::vector<std::string> source(N + 1);		
-	
-	std::string text;
-	
-	for(int i = 1; i <= N; ++i) {
-		std::cin >> source[i];
-		
-		text = text + source[i];
-		
-		ac.insert(source[i], i);
-	}
-	
-	ac.build();
-	
-	for(int i = 1; i <= N; ++i)
-		ac.query(source[i]);
-	
-	AC::Vector const result = ac.calc();
-	
-	for(int i = 1; i <= N; ++i)
-		std::cout << result[i] << std::endl;
-	
-	return 0;
+    int N;
+
+    std::cin >> N;
+
+    AC ac;
+
+    std::vector<std::string> source(N + 1);
+
+    std::string text;
+
+    for (int i = 1; i <= N; ++i) {
+        std::cin >> source[i];
+
+        text = text + source[i];
+
+        ac.insert(source[i], i);
+    }
+
+    ac.build();
+
+    for (int i = 1; i <= N; ++i)
+        ac.query(source[i]);
+
+    AC::Vector const result = ac.calc();
+
+    for (int i = 1; i <= N; ++i)
+        std::cout << result[i] << std::endl;
+
+    return 0;
 }
