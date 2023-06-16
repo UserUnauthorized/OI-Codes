@@ -101,10 +101,13 @@ public:
     valueType sum(sizeType pos) {
         pos = pos + shifting;
 
+        pos = std::min(pos, size - 1);
+
         valueType result = 0;
 
         while (pos > 0) {
             result += tree[pos];
+//            result += tree.at(pos);
             pos -= lowBit(pos);
         }
 
@@ -242,15 +245,15 @@ int main() {
     std::function<int(int, int)> LCA = [&](int a, int b) {
         if (leftBound[a] > leftBound[b])
             std::swap(a, b);
-        int const result = st.query(leftBound[a], leftBound[b]);
+//        int const result = st.query(leftBound[a], leftBound[b]);
 //        debug(a, b, result);
         return node[st.query(leftBound[a], leftBound[b])];
     };
 
     std::function<valueType(int, int)> distance = [&](int a, int b) {
-        int const lca = LCA(a, b);
+//        int const lca = LCA(a, b);
 
-//        debug(a, b, lca, depth);
+//        debug(a, b, lca);
         return depth[a] + depth[b] - 2 * depth[LCA(a, b)];
     };
 
@@ -277,6 +280,8 @@ int main() {
     };
 
     std::function<void(int, valueType)> build = [&](int x, valueType sum) {
+//        debug(x);
+
         visited[x] = true;
 
         size[x] = sum;
@@ -292,30 +297,40 @@ int main() {
             weight[0] = MAX;
 
             calcSize(iter, x, root, size[iter]);
-
-            build(iter, size[iter]);
+//            debug(x, iter, root);
+            build(root, size[iter]);
 
             father[root] = x;
+//            debug(iter);
         }
     };
 
     std::function<void(int, valueType)> modify = [&](int x, valueType key) {
-        for (int i = x; i != 0; i = father[i])
+        debug(x, key);
+        for (int i = x; i != 0; i = father[i]) {
+            int const dis = distance(x, i);
+            debug(x, i, dis);
             tree[i][0].insert(distance(x, i), key);
+        }
 
 
-        for (int i = x; father[i] != 0; i = father[i])
+
+        for (int i = x; father[i] != 0; i = father[i]) {
+            int const dis = distance(x, father[i]);
+            debug(x, i, father[i], dis);
             tree[i][1].insert(distance(x, father[i]), key);
+        }
+
     };
 
     std::function<valueType(int, valueType)> query = [&](int x, valueType key) -> valueType {
         valueType result = 0;
 
         result += tree[x][0].sum(key);
-
+//        debug(x, result);
         for (int i = x; father[i] != 0; i = father[i]) {
             valueType const dis = distance(x, father[i]);
-//            debug(i, father[i], x, dis);
+//            debug(i, father[i], dis);
             if (key >= dis)
                 result += tree[father[i]][0].sum(key - dis) - tree[i][1].sum(key - dis);
         }
@@ -327,15 +342,15 @@ int main() {
 
     for (int i = 1; i <= N; ++i)
         modify(i, value[i]);
-
+    debug(father);
     valueType lastAns = 0;
     for (int i = 1; i <= M; ++i) {
         int opt, x, y;
 
         std::cin >> opt >> x >> y;
 
-        x ^= lastAns;
-        y ^= lastAns;
+//        x ^= lastAns;
+//        y ^= lastAns;
 
         if (opt == 0) {
 //            debug(x, y);
@@ -343,9 +358,9 @@ int main() {
 //            debug(lastAns);
             std::cout << lastAns << '\n';
         } else if (opt == 1) {
-            modify(x, y - value[i]);
+            modify(x, y - value[x]);
 
-            value[i] = y;
+            value[x] = y;
         }
     }
 
