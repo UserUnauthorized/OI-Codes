@@ -169,26 +169,13 @@ typedef std::list<int> EdgeList;
 typedef std::vector<EdgeList> EdgeSet;
 
 int main() {
-    EdgeSet edge;
-
-    std::vector<bool> visited;
-    ValueVector value, depth, leftBound, rightBound, father, size, node, weight;
-
-    std::vector<TreeArrayPair> tree;
-
     std::cin >> N_ >> M_;
+    EdgeSet edge(N + 1);
 
-    visited.resize(N + 1);
-    value.resize(N + 1);
-    depth.resize(N + 1);
-    leftBound.resize(N + 1);
-    rightBound.resize(N + 1);
-    father.resize(N + 1);
-    size.resize(N + 1);
-    node.resize(2 * N + 1);
-    weight.resize(N + 1);
-    edge.resize(N + 1);
-    tree.resize(N + 1);
+    std::vector<bool> visited(N + 1);
+    ValueVector value(N + 1), depth(N + 1), dfn(N + 1), father(N + 1), size(N + 1), node(2 * N + 1), weight(N + 1);
+
+    std::vector<TreeArrayPair> tree(N + 1);
 
     for (int i = 1; i <= N; ++i)
         std::cin >> value[i];
@@ -209,8 +196,7 @@ int main() {
     std::function<void(int, int)> dfs = [&](int x, int from) {
         static int dfsCount = 0;
 
-        leftBound[x] = ++dfsCount;
-//        debug(x, leftBound[x]);
+        dfn[x] = ++dfsCount;
         node[dfsCount] = x;
         size[x] = 1;
         depth[x] = depth[from] + 1;
@@ -222,10 +208,9 @@ int main() {
             dfs(v, x);
 
             size[x] += size[v];
-        }
 
-        rightBound[x] = ++dfsCount;
-        node[dfsCount] = x;
+            node[++dfsCount] = x;
+        }
     };
 
     dfs(1, 0);
@@ -236,24 +221,15 @@ int main() {
         stSource[i] = depth[node[i]];
 
     ST st(N * 2 + 1, stSource);
-//    debug(node);
-//    debug(leftBound);
-//    debug(rightBound);
-//    debug(depth);
-//    debug(stSource);
-//    debug(leftBound, depth, stSource);
+
     std::function<int(int, int)> LCA = [&](int a, int b) {
-        if (leftBound[a] > leftBound[b])
+        if (dfn[a] > dfn[b])
             std::swap(a, b);
-//        int const result = st.query(leftBound[a], leftBound[b]);
-//        debug(a, b, result);
-        return node[st.query(leftBound[a], leftBound[b])];
+
+        return node[st.query(dfn[a], dfn[b])];
     };
 
     std::function<valueType(int, int)> distance = [&](int a, int b) {
-//        int const lca = LCA(a, b);
-
-//        debug(a, b, lca);
         return depth[a] + depth[b] - 2 * depth[LCA(a, b)];
     };
 
@@ -280,8 +256,6 @@ int main() {
     };
 
     std::function<void(int, valueType)> build = [&](int x, valueType sum) {
-//        debug(x);
-
         visited[x] = true;
 
         size[x] = sum;
@@ -297,39 +271,29 @@ int main() {
             weight[0] = MAX;
 
             calcSize(iter, x, root, size[iter]);
-//            debug(x, iter, root);
+
             build(root, size[iter]);
 
             father[root] = x;
-//            debug(iter);
         }
     };
 
     std::function<void(int, valueType)> modify = [&](int x, valueType key) {
-        debug(x, key);
-        for (int i = x; i != 0; i = father[i]) {
-            int const dis = distance(x, i);
-            debug(x, i, dis);
+        for (int i = x; i != 0; i = father[i])
             tree[i][0].insert(distance(x, i), key);
-        }
 
-
-        for (int i = x; father[i] != 0; i = father[i]) {
-            int const dis = distance(x, father[i]);
-            debug(x, i, father[i], dis);
+        for (int i = x; father[i] != 0; i = father[i])
             tree[i][1].insert(distance(x, father[i]), key);
-        }
-
     };
 
     std::function<valueType(int, valueType)> query = [&](int x, valueType key) -> valueType {
         valueType result = 0;
 
         result += tree[x][0].sum(key);
-//        debug(x, result);
+
         for (int i = x; father[i] != 0; i = father[i]) {
             valueType const dis = distance(x, father[i]);
-//            debug(i, father[i], dis);
+
             if (key >= dis)
                 result += tree[father[i]][0].sum(key - dis) - tree[i][1].sum(key - dis);
         }
@@ -341,20 +305,19 @@ int main() {
 
     for (int i = 1; i <= N; ++i)
         modify(i, value[i]);
-    debug(father);
+
     valueType lastAns = 0;
     for (int i = 1; i <= M; ++i) {
         int opt, x, y;
 
         std::cin >> opt >> x >> y;
 
-//        x ^= lastAns;
-//        y ^= lastAns;
+        x ^= lastAns;
+        y ^= lastAns;
 
         if (opt == 0) {
-//            debug(x, y);
             lastAns = query(x, y);
-//            debug(lastAns);
+
             std::cout << lastAns << '\n';
         } else if (opt == 1) {
             modify(x, y - value[x]);
