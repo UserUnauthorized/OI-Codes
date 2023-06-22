@@ -53,6 +53,7 @@ public:
                 primeList.push_back(i);
                 minFactorList[i] = i;
                 mobius[i] = -1;
+                data[i] = 1;
             }
 
             for (auto const &iter: primeList) {
@@ -63,16 +64,20 @@ public:
 
                 minFactorList[t] = iter;
 
-                if (i % iter == 0)
+                if (i % iter == 0) {
+                    mobius[t] = 0;
+                    data[t] = mobius[i];
                     break;
+                }
 
                 mobius[t] = -mobius[i];
+                data[t] = -data[i] + mobius[i];
             }
         }
 
-        for (auto const &i: primeList)
-            for(valueType j = 1; i * j <= size; ++j)
-                data[i * j] += mobius[j];
+//        for (auto const &i: primeList)
+//            for(valueType j = 1; i * j <= size; ++j)
+//                data[i * j] += mobius[j];
 
         std::partial_sum(data.begin(), data.end(), sum.begin());
     }
@@ -97,7 +102,7 @@ int main() {
 
     typedef std::function<valueType(valueType, valueType)> solveFunction;
 
-    solveFunction solve = [&Euler] (valueType N, valueType M) ->valueType {
+    solveFunction solve = [&Euler](valueType N, valueType M) -> valueType {
         if (N > M)
             std::swap(N, M);
 
@@ -105,7 +110,7 @@ int main() {
 
         valueType l = 1, r;
 
-        while(l <= N) {
+        while (l <= N) {
             r = std::min(N / (N / l), M / (M / l));
 
             result += (Euler.ans(r) - Euler.ans(l - 1)) * (N / l) * (M / l);
@@ -116,7 +121,7 @@ int main() {
         return result;
     };
 
-    for(int i = 1; i <= T; ++i) {
+    for (int i = 1; i <= T; ++i) {
         valueType N, M;
 
         std::cin >> N >> M;
