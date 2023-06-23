@@ -10,3 +10,5 @@ add_compile_definitions(CLION)
 add_compile_definitions(LOCAL)
 
 add_executable(P2257 Luogu/P2257.cpp)
+add_executable(48.1 HZ/48.1.cpp)
+add_executable(48.3 HZ/48.3.cpp)
