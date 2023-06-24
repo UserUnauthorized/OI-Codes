@@ -1,32 +1,6 @@
 //HZ - 48.3
 #include <bits/stdc++.h>
 
-namespace DEBUG {
-    template<typename T>
-    inline void _debug(const char *format, T t) {
-        std::cerr << format << '=' << t << std::endl;
-    }
-
-    template<class First, class... Rest>
-    inline void _debug(const char *format, First first, Rest... rest) {
-        while (*format != ',') std::cerr << *format++;
-        std::cerr << '=' << first << ",";
-        _debug(format + 1, rest...);
-    }
-
-    template<typename T>
-    std::ostream &operator<<(std::ostream &os, const std::vector<T> &V) {
-        os << "[ ";
-        for (const auto &vv: V) os << vv << ", ";
-        os << "]";
-        return os;
-    }
-
-#define debug(...) _debug(#__VA_ARGS__, __VA_ARGS__)
-}  // namespace DEBUG
-
-using namespace DEBUG;
-
 typedef long long valueType;
 constexpr valueType maxN = 1e7 + 5;
 
@@ -39,18 +13,21 @@ private:
     valueType size;
     container minFactorList;
     container primeList;
-    container preCount, nowCount, data, sum;
+    container preCount, nowCount, factorCount, data, sum;
 
 public:
     explicit LineSieve(valueType _size_) : size(_size_), minFactorList(_size_ + 1), preCount(_size_ + 1, 0),
-                                           nowCount(_size_ + 1, 0), data(_size_ + 1), sum(_size_ + 1) {
+                                           nowCount(_size_ + 1, 0), factorCount(_size_ + 1), data(_size_ + 1),
+                                           sum(_size_ + 1) {
         primeList.reserve((size_t) std::floor(std::log((long double) (_size_ + 1))));
 
         for (valueType i = 2; i <= size; ++i) {
             if (minFactorList[i] == 0) {
                 primeList.push_back(i);
                 minFactorList[i] = i;
-                preCount[i] = nowCount[i] = 1;
+                nowCount[i] = 1;
+                preCount[i] = 0;
+                factorCount[i] = 1;
                 data[i] = 1;
             }
 
@@ -64,19 +41,21 @@ public:
 
                 if (i % iter == 0) {
                     nowCount[t] = nowCount[i] + 1;
-                    preCount[t] = minFactorList[i] == i ? preCount[i] + 1 : preCount[i];
+                    preCount[t] = preCount[i];
+                    factorCount[t] = factorCount[i];
 
                     break;
                 } else {
                     nowCount[t] = 1;
-                    preCount[t] = nowCount[i] == preCount[i] ? nowCount[i] : -1;
+                    preCount[t] = (nowCount[i] == preCount[i] || preCount[i] == 0) ? nowCount[i] : -1;
+                    factorCount[t] = factorCount[i] + 1;
                 }
             }
         }
 
-        for(int i = 2; i <= size; ++i)
-            if(nowCount[i] == preCount[i])
-                data[i] = (nowCount[i] & 1) == 1 ? 1 : -1;
+        for (int i = 2; i <= size; ++i)
+            if (nowCount[i] == preCount[i] || preCount[i] == 0)
+                data[i] = (factorCount[i] & 1) == 1 ? 1 : -1;
             else
                 data[i] = 0;
 
