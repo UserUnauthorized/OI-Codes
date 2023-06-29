@@ -9,5 +9,4 @@ include_directories(LocalInclude)
 add_compile_definitions(CLION)
 add_compile_definitions(LOCAL)
 
-add_executable(48.6 HZ/48.6.cpp)
 add_executable(48.5 HZ/48.5.cpp)
