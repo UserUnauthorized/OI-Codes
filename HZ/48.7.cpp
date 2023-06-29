@@ -100,7 +100,7 @@ int main() {
     typedef std::function<valueType(valueType, valueType)> solveFunction;
 
     solveFunction calc = [&Inv](valueType N, valueType M) -> valueType {
-        return N * (N + 1) % MOD * Inv(2) % MOD * M % MOD * (M + 1) % MOD * Inv(2) % MOD;
+        return (valueType)((__int128)N * (N + 1) * Inv(2) * M % MOD * (M + 1) * Inv(2) % MOD);
     };
 
     solveFunction Func = [&Euler, &calc](valueType N, valueType M) -> valueType {
@@ -119,7 +119,7 @@ int main() {
             l = r + 1;
         }
 
-        return (valueType) ((result % MOD + MOD) % MOD);
+        return (valueType) (result % MOD);
     };
 
     solveFunction solve = [&calc, &Func](valueType N, valueType M) -> valueType {
@@ -133,7 +133,7 @@ int main() {
         while (l <= N) {
             r = std::min(N / (N / l), M / (M / l));
 
-            result = (result + ((calc(1, r) - calc(1, l - 1)) * Func(N / l, M / l)) % MOD) % MOD;
+            result = (result + ((__int128)(calc(1, r) - calc(1, l - 1)) * Func(N / l, M / l))) % MOD;
 
             l = r + 1;
         }
