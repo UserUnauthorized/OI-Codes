@@ -9,4 +9,4 @@ include_directories(LocalInclude)
 add_compile_definitions(CLION)
 add_compile_definitions(LOCAL)
 
-add_executable(48.2 HZ/48.2.cpp)
+add_executable(P4213 Luogu/P4213.cpp)
