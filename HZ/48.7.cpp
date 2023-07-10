@@ -33,23 +33,22 @@ public:
 class LineSieve {
 public:
     typedef std::vector<valueType> container;
+    typedef std::vector<bool> bitset;
 
 private:
     valueType size;
-    container minFactorList;
+    bitset isPrime;
     container primeList;
-    container mobius, data;
+    container data;
 
 public:
-    explicit LineSieve(valueType _size_) : size(_size_), minFactorList(_size_ + 1), mobius(_size_ + 1),
-                                           data(_size_ + 1) {
+    explicit LineSieve(valueType _size_) : size(_size_), isPrime(_size_ + 1, true),data(_size_ + 1) {
         primeList.reserve((size_t) std::floor(std::log((long double) (_size_ + 1))));
-        mobius[1] = 1;
+        data[1] = 1;
         for (valueType i = 2; i <= size; ++i) {
-            if (minFactorList[i] == 0) {
+            if (isPrime[i]) {
                 primeList.push_back(i);
-                minFactorList[i] = i;
-                mobius[i] = -1;
+                data[i] = (i - i * i) % MOD + MOD;
             }
 
             for (auto const &iter: primeList) {
@@ -58,23 +57,25 @@ public:
                 if (t > size)
                     break;
 
-                minFactorList[t] = iter;
+                isPrime[t] = false;
 
                 if (i % iter == 0) {
-                    mobius[t] = 0;
+                    data[t] = data[i] * iter % MOD;
 
                     break;
                 } else {
-                    mobius[t] = -mobius[i];
+                    data[t] = data[i] * data[iter] % MOD;
                 }
             }
-
-            data[i] = mobius[i] * i * i % MOD;
         }
 
-        data[1] = 1;
-        for (valueType i = 2; i <= size; ++i)
-            data[i] = (data[i] + data[i - 1]) % MOD;
+        typedef std::function<valueType(const valueType &, const valueType &)> ModPlus;
+
+        ModPlus Op = [](const valueType &a, const valueType &b) -> valueType {
+            return (a + b) % MOD;
+        };
+
+        std::partial_sum(data.begin(), data.end(), data.begin(), Op);
     }
 
 
@@ -103,7 +104,7 @@ int main() {
         return (valueType)((__int128)N * (N + 1) * Inv(2) * M % MOD * (M + 1) * Inv(2) % MOD);
     };
 
-    solveFunction Func = [&Euler, &calc](valueType N, valueType M) -> valueType {
+    solveFunction solve = [&Euler, &calc](valueType N, valueType M) -> valueType {
         if (N > M)
             std::swap(N, M);
 
@@ -119,26 +120,7 @@ int main() {
             l = r + 1;
         }
 
-        return (valueType) (result % MOD);
-    };
-
-    solveFunction solve = [&calc, &Func](valueType N, valueType M) -> valueType {
-        if (N > M)
-            std::swap(N, M);
-
-        __int128 result = 0;
-
-        valueType l = 1, r;
-
-        while (l <= N) {
-            r = std::min(N / (N / l), M / (M / l));
-
-            result = (result + ((__int128)(calc(1, r) - calc(1, l - 1)) * Func(N / l, M / l))) % MOD;
-
-            l = r + 1;
-        }
-
-        return (valueType) ((result % MOD + MOD) % MOD);
+        return (valueType) ((result % MOD) + MOD) % MOD;
     };
 
     for (int i = 1; i <= T; ++i) {
