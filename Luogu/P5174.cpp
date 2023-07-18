@@ -6,30 +6,6 @@ typedef std::vector<valueType> ValueVector;
 
 constexpr valueType MOD = 1e9 + 7;
 
-class Inverse {
-private:
-    valueType size;
-
-    ValueVector data;
-
-public:
-    explicit Inverse(valueType N) : size(N), data(N, 0) {
-        data[1] = 1;
-
-        for (valueType i = 2; i < N; ++i)
-            data[i] = (long long) (MOD - MOD / i) * data[MOD % i] % MOD;
-    }
-
-    valueType operator()(valueType i) const {
-        i %= MOD;
-
-        if (i < size)
-            return data[i];
-
-        return (MOD - MOD / i) * operator()(MOD % i) % MOD;
-    }
-};
-
 int main() {
 	valueType R;
 	
@@ -37,12 +13,12 @@ int main() {
 	
 	valueType const N = std::floor(std::sqrt((long double)R));
 	
-	Inverse Inv(10);
-	
 	typedef std::function<valueType(valueType)> solveFunction;
 	
-	solveFunction sum = [&Inv](valueType n) -> valueType {
-		return n * (n + 1) % MOD * (2 * n + 1) % MOD * Inv(6) % MOD;
+	solveFunction sum = [](valueType n) -> valueType {
+		static constexpr valueType Inv6 = 166666668;
+		
+		return n * (n + 1) % MOD * (2 * n + 1) % MOD * Inv6 % MOD;
 	};
 		
 	valueType result = sum(N);
