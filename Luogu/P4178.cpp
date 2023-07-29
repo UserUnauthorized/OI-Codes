@@ -66,7 +66,7 @@ private:
 
     static const sizeType constexpr shifting = 5;
 
-    valueType lowBit(valueType x) {
+    static valueType lowBit(valueType x) {
         return x & -x;
     }
 
@@ -215,7 +215,7 @@ void calcDist(int x, int from, int &bufferSize) {
 void dfs(int x, int from) {
     std::queue<valueType> tag;
 
-    std::function<void(valueType)> sure = [&tag](valueType i) mutable {
+    std::function<void(valueType)> sure = [&tag](valueType i) {
         if (i > K)
             return;
 
