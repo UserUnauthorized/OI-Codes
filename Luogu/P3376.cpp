@@ -66,6 +66,7 @@ public:
 
         while (bfs(S, T)) {
             IterVector begin = start;
+
             result += dfs(S, T, std::numeric_limits<valueType>::max(), begin);
         }
 
