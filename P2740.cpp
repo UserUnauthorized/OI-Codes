@@ -1,7 +1,4 @@
-//Luogu - P3376
-//Luogu - B3606
-//Luogu - B3607
-//LOJ - 101
+//Luogu - P2740
 #include <bits/stdc++.h>
 
 typedef long long valueType;
@@ -122,9 +119,9 @@ private:
 };
 
 int main() {
-    valueType N, M, S, T;
+    valueType N, M;
 
-    std::cin >> N >> M >> S >> T;
+    std::cin >> M >> N;
 
     Dinic Graph(N);
 
@@ -138,7 +135,7 @@ int main() {
 
     Graph.init();
 
-    std::cout << Graph.maxFlow(S, T) << std::endl;
+    std::cout << Graph.maxFlow(1, N) << std::endl;
 
     return 0;
 }
