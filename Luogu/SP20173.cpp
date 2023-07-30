@@ -182,9 +182,9 @@ int main() {
     std::cin >> T;
 
     for (valueType i = 0; i < T; ++i) {
-        valueType N, K;
+        valueType N, K = 2;
 
-        std::cin >> N >> K;
+        std::cin >> N;
 
         Min_25 min_25(N, K);
 
