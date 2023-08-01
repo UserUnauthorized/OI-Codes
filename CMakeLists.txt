@@ -10,3 +10,4 @@ add_compile_definitions(CLION)
 add_compile_definitions(LOCAL)
 
 add_executable(P3324 P3324.cpp)
+add_executable(P4311 Luogu/P4311.cpp)
