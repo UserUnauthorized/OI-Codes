@@ -16,3 +16,6 @@ add_executable(P2197 Luogu/P2197.cpp)
 add_executable(1850D CodeForces/1850D.cpp)
 add_executable(1850F CodeForces/1850F.cpp)
 add_executable(AT_arc096_c AtCoder/AT_arc096_c.cpp)
+add_executable(P4859 Luogu/P4859.cpp)
+
+add_executable(51.4 HZ/51.4.cpp)
