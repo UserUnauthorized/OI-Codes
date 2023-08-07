@@ -21,21 +21,6 @@ namespace DEBUG {
         os << "]";
         return os;
     }
-
-    std::ostream &operator<<(std::ostream &os, __int128 V) {
-        if (V < 0) {
-            os << '-';
-            V = -V;
-        }
-
-        if (V > 9)
-            os << V / 10;
-
-        os << (int) (V % 10);
-
-        return os;
-    }
-
 #define debug(...) _debug(#__VA_ARGS__, __VA_ARGS__)
 }  // namespace DEBUG
 
@@ -142,7 +127,7 @@ void calcDist(int x, int from, valueType &bufferSize, valueType &maxDepth) {
     for (auto const &iter: edge[x]) {
         int const to = iter.first;
 
-        int const w = iter.second;
+        valueType const w = iter.second;
 
         if (to == from || visited[to])
             continue;
