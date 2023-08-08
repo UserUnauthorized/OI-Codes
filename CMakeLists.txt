@@ -19,3 +19,7 @@ add_executable(AT_arc096_c AtCoder/AT_arc096_c.cpp)
 add_executable(P4859 Luogu/P4859.cpp)
 
 add_executable(51.4 HZ/51.4.cpp)
+add_executable(P4827 Luogu/P4827.cpp)
+
+add_executable(73.5 HZ/73.5.cpp)
+add_executable(SP7363 Luogu/SP7363.cpp)

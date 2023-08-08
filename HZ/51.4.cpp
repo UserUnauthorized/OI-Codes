@@ -1,31 +1,6 @@
 //HZ - 51.4
 #include<bits/stdc++.h>
 
-namespace DEBUG {
-    template<typename T>
-    inline void _debug(const char *format, T t) {
-        std::cerr << format << '=' << t << std::endl;
-    }
-
-    template<class First, class... Rest>
-    inline void _debug(const char *format, First first, Rest... rest) {
-        while (*format != ',') std::cerr << *format++;
-        std::cerr << '=' << first << ",";
-        _debug(format + 1, rest...);
-    }
-
-    template<typename T>
-    std::ostream &operator<<(std::ostream &os, const std::vector<T> &V) {
-        os << "[ ";
-        for (const auto &vv: V) os << vv << ", ";
-        os << "]";
-        return os;
-    }
-#define debug(...) _debug(#__VA_ARGS__, __VA_ARGS__)
-}  // namespace DEBUG
-
-using namespace DEBUG;
-
 typedef long long valueType;
 
 constexpr valueType MAX = INT_MAX >> 1;
@@ -40,7 +15,7 @@ typedef std::array<OutEdgeList, maxN> EdgeSet;
 
 std::array<valueType, maxK> exist;
 std::array<std::array<valueType, maxK>, 2> F, G;
-std::array<valueType, maxN> buffer, dist, size, weight;
+std::array<valueType, maxN> dist, size, weight;
 valueType ans = 0;
 std::bitset<maxN> visited;
 
@@ -48,7 +23,7 @@ EdgeSet edge;
 
 void calcSize(int x, int from, int &root, valueType const &sum);
 
-void calcDist(int x, int from, valueType &bufferSize, valueType &maxDepth);
+void calcDist(int x, int from, valueType &maxDepth);
 
 void dfs(int x, int from);
 
@@ -75,7 +50,6 @@ int main() {
     weight[root] = MAX;
 
     calcSize(1, -1, root, N);
-    calcSize(root, -1, root, N);
 
     dfs(root, -1);
 
@@ -112,10 +86,8 @@ void calcSize(int x, int from, int &root, valueType const &sum) {
         root = x;
 }
 
-void calcDist(int x, int from, valueType &bufferSize, valueType &maxDepth) {
+void calcDist(int x, int from, valueType &maxDepth) {
     maxDepth = std::max(maxDepth, std::abs(dist[x]));
-
-    buffer[++bufferSize] = x;
 
     if (exist[dist[x] + shifting] > 0)
         ++G[1][dist[x] + shifting];
@@ -134,7 +106,7 @@ void calcDist(int x, int from, valueType &bufferSize, valueType &maxDepth) {
 
         dist[to] = dist[x] + w;
 
-        calcDist(to, x, bufferSize, maxDepth);
+        calcDist(to, x, maxDepth);
     }
 
     --exist[dist[x] + shifting];
@@ -155,11 +127,9 @@ void dfs(int x, int from) {
 
         dist[to] = w;
 
-        valueType bufferSize = 0;
-
         valueType thisDepth = 0;
 
-        calcDist(to, x, bufferSize, thisDepth);
+        calcDist(to, x, thisDepth);
 
         maxDepth = std::max(maxDepth, thisDepth);
 
@@ -218,7 +188,6 @@ void dfs(int x, int from) {
         weight[root] = MAX;
 
         calcSize(to, x, root, sum);
-        calcSize(root, -1, root, sum);
 
         dfs(root, x);
     }
