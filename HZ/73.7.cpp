@@ -61,7 +61,27 @@ T1 Pow(T1 a, T2 b, const T3 &mod = MOD) {
 typedef std::list<valueType> EdgeList;
 typedef std::vector<EdgeList> EdgeSet;
 
+void Uncompress(std::istream &is, std::stringstream &os) {
+    int N, k, L, i, now, A, B, Q, tmp;
+    is >> N >> k >> L;
+    os << N << " " << k << "\n";
+    is >> now >> A >> B >> Q;
+    for (i = 1; i < N; i++) {
+        now = (now * A + B) % Q;
+        tmp = (i < L) ? i : L;
+        os << i - now % tmp << " " << i + 1 << "\n";
+    }
+}
+
 int main() {
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+    std::cout.tie(nullptr);
+
+    std::stringstream ss;
+    Uncompress(std::cin, ss);
+    std::cin.rdbuf(ss.rdbuf());
+
     valueType N, K;
 
     std::cin >> N >> K;

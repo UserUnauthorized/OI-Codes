@@ -23,3 +23,4 @@ add_executable(P4827 Luogu/P4827.cpp)
 
 add_executable(73.5 HZ/73.5.cpp)
 add_executable(SP7363 Luogu/SP7363.cpp)
+add_executable(73.7 HZ/73.7.cpp)
