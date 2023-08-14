@@ -10,3 +10,4 @@ add_compile_definitions(CLION)
 add_compile_definitions(LOCAL)
 
 add_executable(AT_arc131_c AtCoder/AT_arc131_c.cpp)
+add_executable(1779C CodeForces/1779C.cpp)
