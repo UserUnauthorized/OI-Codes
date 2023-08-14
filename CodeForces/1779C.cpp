@@ -32,7 +32,7 @@ int main() {
                 ++ans;
 
                 afterSum -= 2 * afterQueue.top();
-
+//                std::cerr << afterQueue.top() << std::endl;
                 afterQueue.pop();
             }
         }
@@ -50,7 +50,7 @@ int main() {
                 ++ans;
 
                 beforeSum -= 2 * beforeQueue.top();
-
+//                std::cerr << beforeQueue.top() << std::endl;
                 beforeQueue.pop();
             }
         }
