@@ -2,7 +2,6 @@
 #include <bits/stdc++.h>
 
 typedef long long valueType;
-typedef std::set<valueType> ValueSet;
 typedef std::vector<valueType> ValueVector;
 typedef std::vector<ValueVector> ValueMatrix;
 
