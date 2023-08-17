@@ -53,10 +53,10 @@ int main() {
 
         std::cout << "YES" << '\n';
 
-        for(valueType i = 0; i < K; ++i) {
+        for (valueType i = 0; i < K; ++i) {
             std::cout << ans[i].size() << ' ';
 
-            for(auto const &value: ans[i])
+            for (auto const &value: ans[i])
                 std::cout << value << ' ';
 
             std::cout << '\n';
