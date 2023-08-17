@@ -11,3 +11,4 @@ add_compile_definitions(LOCAL)
 
 add_executable(1513D CodeForces/1513D.cpp)
 add_executable(1762D CodeForces/1762D.cpp)
+add_executable(803C CodeForces/803C.cpp)
