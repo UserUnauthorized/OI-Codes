@@ -9,4 +9,4 @@ include_directories(LocalInclude)
 add_compile_definitions(CLION)
 add_compile_definitions(LOCAL)
 
-add_executable(1656D CodeForces/1656D.cpp)
+add_executable(1823F CodeForces/1823F.cpp)
