@@ -10,3 +10,4 @@ add_compile_definitions(CLION)
 add_compile_definitions(LOCAL)
 
 add_executable(1823F CodeForces/1823F.cpp)
+add_executable(AT_abc297_g AtCoder/AT_abc297_g.cpp)
