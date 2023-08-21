@@ -2,7 +2,7 @@
 #define OI_CODES_MODOPER_H
 
 typedef long long valueType;
-//valueType MOD;
+valueType MOD;
 
 bool ModOperSafeModOption = false;
 
