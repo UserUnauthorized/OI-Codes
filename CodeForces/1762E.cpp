@@ -161,7 +161,6 @@ int main() {
 
     std::cin >> N;
 
-    // ======================================== preWork - BEGIN ========================================
     Inverse Inv(N);
 
     ValueVector Fact(N + 1, 1), InvFact(N + 1, 1);
@@ -181,8 +180,6 @@ int main() {
 
         return mul(Fact[n], mul(InvFact[m], InvFact[n - m]));
     };
-
-    // ========================================= preWork - END =========================================
 
     valueType ans = 0;
 
