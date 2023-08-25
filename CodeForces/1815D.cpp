@@ -3,24 +3,12 @@
 
 typedef long long valueType;
 typedef std::pair<valueType, valueType> ValuePair;
+typedef std::map<valueType, ValuePair> Memory;
 
 constexpr valueType MOD = 998244353;
 
-#define ModOperSafeModOption false
-
 template<typename T1, typename T2, typename T3 = valueType>
 void Inc(T1 &a, T2 b, const T3 &mod = MOD) {
-#if ModOperSafeModOption
-    a %= mod;
-    b %= mod;
-
-    if (a < 0)
-        a += mod;
-
-    if (b < 0)
-        b += mod;
-#endif // ModOperSafeModOption
-
     a = a + b;
 
     if (a >= mod)
@@ -29,17 +17,6 @@ void Inc(T1 &a, T2 b, const T3 &mod = MOD) {
 
 template<typename T1, typename T2, typename T3 = valueType>
 void Dec(T1 &a, T2 b, const T3 &mod = MOD) {
-#if ModOperSafeModOption
-    a %= mod;
-    b %= mod;
-
-    if (a < 0)
-        a += mod;
-
-    if (b < 0)
-        b += mod;
-#endif // ModOperSafeModOption
-
     a = a - b;
 
     if (a < 0)
@@ -48,81 +25,26 @@ void Dec(T1 &a, T2 b, const T3 &mod = MOD) {
 
 template<typename T1, typename T2, typename T3 = valueType>
 T1 sum(T1 a, T2 b, const T3 &mod = MOD) {
-#if ModOperSafeModOption
-    a %= mod;
-    b %= mod;
-
-    if (a < 0)
-        a += mod;
-
-    if (b < 0)
-        b += mod;
-#endif // ModOperSafeModOption
-
     return a + b >= mod ? a + b - mod : a + b;
 }
 
 template<typename T1, typename T2, typename T3 = valueType>
 T1 sub(T1 a, T2 b, const T3 &mod = MOD) {
-#if ModOperSafeModOption
-    a %= mod;
-    b %= mod;
-
-    if (a < 0)
-        a += mod;
-
-    if (b < 0)
-        b += mod;
-#endif // ModOperSafeModOption
-
     return a - b < 0 ? a - b + mod : a - b;
 }
 
 template<typename T1, typename T2, typename T3 = valueType>
 T1 mul(T1 a, T2 b, const T3 &mod = MOD) {
-#if ModOperSafeModOption
-    a %= mod;
-    b %= mod;
-
-    if (a < 0)
-        a += mod;
-
-    if (b < 0)
-        b += mod;
-#endif // ModOperSafeModOption
-
     return (long long) a * b % mod;
 }
 
 template<typename T1, typename T2, typename T3 = valueType>
 void Mul(T1 &a, T2 b, const T3 &mod = MOD) {
-#if ModOperSafeModOption
-    a %= mod;
-    b %= mod;
-
-    if (a < 0)
-        a += mod;
-
-    if (b < 0)
-        b += mod;
-#endif // ModOperSafeModOption
-
     a = (long long) a * b % mod;
 }
 
 template<typename T1, typename T2, typename T3 = valueType>
 T1 pow(T1 a, T2 b, const T3 &mod = MOD) {
-#if ModOperSafeModOption
-    a %= mod;
-    b %= mod;
-
-    if (a < 0)
-        a += mod;
-
-    if (b < 0)
-        b += mod;
-#endif // ModOperSafeModOption
-
     T1 result = 1;
 
     while (b > 0) {
@@ -136,21 +58,26 @@ T1 pow(T1 a, T2 b, const T3 &mod = MOD) {
     return result;
 }
 
+Memory memory;
+
 ValuePair solve(valueType n) {
+    if (memory.count(n))
+        return memory[n];
+
     if (n == 0)
-        return std::make_pair(0, 1);
+        return memory[n] = std::make_pair(0, 1);
 
     if (n == 1)
-        return std::make_pair(1, 1);
+        return memory[n] = std::make_pair(1, 1);
 
     if (n & 1) {
         auto const result = solve(n >> 1);
 
-        return std::make_pair(sum(mul(result.first, 2), result.second), result.second);
+        return memory[n] = std::make_pair(sum(mul(result.first, 2), result.second), result.second);
     } else {
         auto const A = solve(n / 2), B = solve(n / 2 - 1);
 
-        return std::make_pair(mul(sum(A.first, B.first), 2), sum(A.second, B.second));
+        return memory[n] = std::make_pair(mul(sum(A.first, B.first), 2), sum(A.second, B.second));
     }
 }
 
@@ -171,6 +98,8 @@ int main() {
         } else if (M == 1) {
             std::cout << (N % MOD) << '\n';
         } else if (M == 2) {
+            memory.clear();
+
             std::cout << (solve(N).first % MOD) << '\n';
         } else {
             if (N & 1) {
