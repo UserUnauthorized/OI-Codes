@@ -61,6 +61,19 @@ public:
             start[i] = G[i].begin();
     }
 
+    void reset() {
+        if (__builtin_expect(!Initialized, false))
+            throw std::runtime_error("Dinic: reset before init");
+
+        for (valueType i = 1; i <= N; ++i)
+            for (auto &iter: G[i])
+                iter.flow = 0;
+
+        std::fill(depth.begin(), depth.end(), 0);
+
+        Initialized = false;
+    }
+
     valueType maxFlow(valueType S, valueType T) {
         if (__builtin_expect(!Initialized, false))
             throw std::runtime_error("Dinic: maxFlow before init");
