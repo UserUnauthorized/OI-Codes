@@ -28,7 +28,26 @@ int run(const std::string &);
 
 constexpr std::chrono::milliseconds TimeLimit(1000);
 
-void color(int color) {
+enum COLOR : int {
+    BLACK = 0,
+    BLUE = 1,
+    GREEN = 2,
+    CYAN = 3,
+    RED = 4,
+    MAGENTA = 5,
+    BROWN = 6,
+    LIGHTGRAY = 7,
+    DARKGRAY = 8,
+    LIGHTBLUE = 9,
+    LIGHTGREEN = 10,
+    LIGHTCYAN = 11,
+    LIGHTRED = 12,
+    LIGHTMAGENTA = 13,
+    YELLOW = 14,
+    WHITE = 15
+};
+
+void color(COLOR color) {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     SetConsoleTextAttribute(hConsole, color);
 }
@@ -55,27 +74,27 @@ int main() {
         std::chrono::duration<double, std::milli> const time = end - start;
 
         if (code != 0) {
-            color(13);
+            color(LIGHTMAGENTA);
             char str[100];
             sprintf(str, "Runtime Error, Case #%d", t);
             std::cout << str;
 
             return 0;
         } else if (end - start > TimeLimit) {
-            color(14);
+            color(YELLOW);
             printf("Time Limit Exceeded, Case #%d, Time %.0lfms\n", t, time.count());
 
             if (end - start > TimeLimit * 10)
                 return 0;
         } else if (run(judgeOrder)) {
-            color(12);
+            color(LIGHTRED);
             char str[100];
             sprintf(str, "Wrong Answer, Case #%d", t);
             std::cout << str;
 
             return 0;
         } else {
-            color(10);
+            color(LIGHTGREEN);
             char str[100];
             sprintf(str, "Accepted, Case #%d, Time %.0lfms\n\n", t, time.count());
             std::cout << str;
