@@ -10,3 +10,4 @@ add_compile_definitions(CLION)
 add_compile_definitions(LOCAL)
 
 add_executable(P5038 Luogu/P5038.cpp)
+add_executable(1174E CodeForces/1174E.cpp)
