@@ -163,7 +163,7 @@ public:
 
                 Mobius[i] = -1;
 
-                Power[i] = pow(i, M);
+                Power[i] = ::pow(i, M);
             }
 
             for (auto const &iter: prime) {
@@ -219,7 +219,7 @@ int main() {
         for (auto const &iter: sieve.fact(i)) {
             Inc(ans[i], sub(sieve.pow(i / iter), sieve.pow(i / iter - 1)));
 
-            Mul(F[i / iter], i / iter);
+            Inc(F[i / iter], sub(sieve.pow(i / iter), sieve.pow(i / iter - 1)));
         }
 
         F[i] = sieve(i);
@@ -229,7 +229,8 @@ int main() {
 
     valueType result = 0;
 
-    for (valueType i = 1; i <= K; ++i) {
+    for (valueType i = 1; i <= K; ++i)
+        Inc(result, ans[i] ^ i);
 
-    }
+    std::cout << result << std::endl;
 }
