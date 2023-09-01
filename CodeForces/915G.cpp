@@ -1,7 +1,7 @@
 //Codeforces - 915G
 #include <bits/stdc++.h>
 
-typedef long long valueType;
+typedef int valueType;
 typedef std::vector<valueType> ValueVector;
 typedef std::vector<ValueVector> ValueMatrix;
 typedef std::vector<bool> bitset;
@@ -184,6 +184,9 @@ public:
                     Mobius[t] = -Mobius[i];
                 }
             }
+
+            if (Mobius[i] < 0)
+                Mobius[i] += MOD;
         }
 
         for (valueType i = 1; i <= N; ++i)
@@ -217,7 +220,7 @@ int main() {
         ans[i] = ans[i - 1];
 
         for (auto const &iter: sieve.fact(i)) {
-            Inc(ans[i], sub(sieve.pow(i / iter), sieve.pow(i / iter - 1)));
+            Inc(ans[i], mul(sieve(iter), sub(sieve.pow(i / iter), sieve.pow(i / iter - 1))));
 
             Inc(F[i / iter], sub(sieve.pow(i / iter), sieve.pow(i / iter - 1)));
         }
