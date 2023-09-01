@@ -11,3 +11,5 @@ add_compile_definitions(LOCAL)
 
 add_executable(P5038 Luogu/P5038.cpp)
 add_executable(1174E CodeForces/1174E.cpp)
+add_executable(P4859 Luogu/P4859.cpp)
+add_executable(1626F CodeForces/1626F.cpp)
