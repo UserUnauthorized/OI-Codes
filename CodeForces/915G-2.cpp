@@ -1,4 +1,4 @@
-//Codeforces - 915G
+//Codeforces - 915G - 2
 #include <bits/stdc++.h>
 
 typedef int valueType;
@@ -54,12 +54,11 @@ private:
     valueType N, M;
     container prime;
     bitset isPrime;
-    container Mobius, Power;
-    ValueMatrix Factor;
+    container Mobius, Power, Func, minFact;
 
 public:
-    LineSieve(valueType n, valueType m) : N(n), M(m), prime(), isPrime(n + 1, true), Mobius(n + 1, 1), Factor(n + 1),
-                                          Power(n + 1) {
+    LineSieve(valueType n, valueType m) : N(n), M(m), prime(), isPrime(n + 1, true), Mobius(n + 1, 1), Power(n + 1),
+                                          Func(n + 1), minFact(n + 1) {
         Mobius[1] = 1;
         Power[0] = 0;
         Power[1] = 1;
@@ -94,28 +93,47 @@ public:
 
             if (Mobius[i] < 0)
                 Mobius[i] += MOD;
+
+            Power[i] = sub(Power[i], Power[i - 1]);
         }
 
-        for (valueType i = 1; i <= N; ++i) {
-            if (Mobius[i] == 0)
-                continue;
+        Func[1] = 1;
+        minFact[1] = 1;
 
-            for (valueType j = i; j <= N; j += i) {
-                Factor[j].push_back(i);
+        for (valueType i = 2; i <= N; ++i) {
+            if (isPrime[i]) {
+                Func[i] = sub(Power[i], 1);
+                minFact[i] = i;
+            }
+
+            for (auto const &iter: prime) {
+                valueType const t = i * iter;
+
+                if (t > N || iter > i)
+                    break;
+
+                if (i % iter == 0) {
+                    minFact[t] = iter * minFact[i];
+
+                    if (minFact[i] == i) {
+                        Func[t] = sub(Power[t], Power[i]);
+                    } else {
+                        Func[t] = mul(Func[minFact[t]], Func[t / minFact[t]]);
+                    }
+                } else {
+                    Func[t] = mul(Func[i], Func[iter]);
+                    minFact[t] = iter;
+                }
             }
         }
     }
 
     valueType operator()(valueType n) const {
-        return Mobius[n];
+        return Func[n];
     }
 
     valueType pow(valueType n) const {
         return Power[n];
-    }
-
-    const ValueVector &fact(valueType n) const {
-        return Factor[n];
     }
 };
 
@@ -131,8 +149,7 @@ int main() {
     for (valueType i = 1; i <= K; ++i) {
         ans[i] = ans[i - 1];
 
-        for (auto const &iter: sieve.fact(i))
-            Inc(ans[i], mul(sieve(iter), sub(sieve.pow(i / iter), sieve.pow(i / iter - 1))));
+        Inc(ans[i], sieve(i));
     }
 
     valueType result = 0;
