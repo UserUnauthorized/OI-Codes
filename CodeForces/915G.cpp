@@ -59,9 +59,9 @@ private:
 
 public:
     LineSieve(valueType n, valueType m) : N(n), M(m), prime(), isPrime(n + 1, true), Mobius(n + 1, 1), Factor(n + 1),
-                                          Power(n + 1, 1) {
-        isPrime[0] = isPrime[1] = false;
+                                          Power(n + 1) {
         Mobius[1] = 1;
+        Power[0] = 0;
         Power[1] = 1;
 
         for (valueType i = 2; i <= N; ++i) {
@@ -121,20 +121,13 @@ int main() {
 
     LineSieve const sieve(K, N);
 
-    ValueVector ans(K + 1, 0), F(K + 1, 0);
+    ValueVector ans(K + 1, 0);
 
     for (valueType i = 1; i <= K; ++i) {
         ans[i] = ans[i - 1];
 
-        for (auto const &iter: sieve.fact(i)) {
+        for (auto const &iter: sieve.fact(i))
             Inc(ans[i], mul(sieve(iter), sub(sieve.pow(i / iter), sieve.pow(i / iter - 1))));
-
-            Inc(F[i / iter], sub(sieve.pow(i / iter), sieve.pow(i / iter - 1)));
-        }
-
-        F[i] = sieve(i);
-
-        Inc(ans[i], F[i]);
     }
 
     valueType result = 0;
