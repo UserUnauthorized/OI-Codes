@@ -17,6 +17,14 @@ void Inc(T1 &a, T2 b, const T3 &mod = MOD) {
 }
 
 template<typename T1, typename T2, typename T3 = valueType>
+void Dec(T1 &a, T2 b, const T3 &mod = MOD) {
+    a = a - b;
+
+    if (a < 0)
+        a += mod;
+}
+
+template<typename T1, typename T2, typename T3 = valueType>
 T1 sub(T1 a, T2 b, const T3 &mod = MOD) {
     return a - b < 0 ? a - b + mod : a - b;
 }
@@ -54,20 +62,17 @@ private:
     valueType N, M;
     container prime;
     bitset isPrime;
-    container Mobius, Power, Func, minFact;
+    container Power;
 
 public:
-    LineSieve(valueType n, valueType m) : N(n), M(m), prime(), isPrime(n + 1, true), Mobius(n + 1, 1), Power(n + 1),
-                                          Func(n + 1), minFact(n + 1) {
-        Mobius[1] = 1;
+    LineSieve(valueType n, valueType m) : N(n), M(m), prime(), isPrime(n + 1, true), Power(n + 1) {
+        prime.reserve(n / 10);
         Power[0] = 0;
         Power[1] = 1;
 
         for (valueType i = 2; i <= N; ++i) {
             if (isPrime[i]) {
                 prime.push_back(i);
-
-                Mobius[i] = -1;
 
                 Power[i] = ::pow(i, M);
             }
@@ -82,58 +87,18 @@ public:
 
                 Power[t] = mul(Power[i], Power[iter]);
 
-                if (i % iter == 0) {
-                    Mobius[t] = 0;
-
+                if (i % iter == 0)
                     break;
-                } else {
-                    Mobius[t] = -Mobius[i];
-                }
-            }
-
-            if (Mobius[i] < 0)
-                Mobius[i] += MOD;
-
-            Power[i] = sub(Power[i], Power[i - 1]);
-        }
-
-        Func[1] = 1;
-        minFact[1] = 1;
-
-        for (valueType i = 2; i <= N; ++i) {
-            if (isPrime[i]) {
-                Func[i] = sub(Power[i], 1);
-                minFact[i] = i;
-            }
-
-            for (auto const &iter: prime) {
-                valueType const t = i * iter;
-
-                if (t > N || iter > i)
-                    break;
-
-                if (i % iter == 0) {
-                    minFact[t] = iter * minFact[i];
-
-                    if (minFact[i] == i) {
-                        Func[t] = sub(Power[t], Power[i]);
-                    } else {
-                        Func[t] = mul(Func[minFact[t]], Func[t / minFact[t]]);
-                    }
-                } else {
-                    Func[t] = mul(Func[i], Func[iter]);
-                    minFact[t] = iter;
-                }
             }
         }
-    }
-
-    valueType operator()(valueType n) const {
-        return Func[n];
     }
 
     valueType pow(valueType n) const {
         return Power[n];
+    }
+
+    const container &Prime() const {
+        return prime;
     }
 };
 
@@ -144,18 +109,24 @@ int main() {
 
     LineSieve const sieve(K, N);
 
-    ValueVector ans(K + 1, 0);
+    ValueVector const &P = sieve.Prime();
 
-    for (valueType i = 1; i <= K; ++i) {
-        ans[i] = ans[i - 1];
+    ValueVector F(K + 1, 0);
 
-        Inc(ans[i], sieve(i));
-    }
+    for (valueType i = 1; i <= K; ++i)
+        F[i] = sub(sieve.pow(i), sieve.pow(i - 1));
+
+    for (auto const &iter: P)
+        for (valueType i = K / iter; i >= 1; --i)
+            Dec(F[i * iter], F[i]);
+
+    for (valueType i = 1; i <= K; ++i)
+        Inc(F[i], F[i - 1]);
 
     valueType result = 0;
 
     for (valueType i = 1; i <= K; ++i)
-        Inc(result, ans[i] ^ i);
+        Inc(result, F[i] ^ i);
 
     std::cout << result << std::endl;
 }
