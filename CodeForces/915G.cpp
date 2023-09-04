@@ -54,13 +54,13 @@ private:
     valueType N, M;
     container prime;
     bitset isPrime;
-    container Mobius, Power;
+    container mobius, Power;
     ValueMatrix Factor;
 
 public:
-    LineSieve(valueType n, valueType m) : N(n), M(m), prime(), isPrime(n + 1, true), Mobius(n + 1, 1), Factor(n + 1),
+    LineSieve(valueType n, valueType m) : N(n), M(m), prime(), isPrime(n + 1, true), mobius(n + 1, 1), Factor(n + 1),
                                           Power(n + 1) {
-        Mobius[1] = 1;
+        mobius[1] = 1;
         Power[0] = 0;
         Power[1] = 1;
 
@@ -68,7 +68,7 @@ public:
             if (isPrime[i]) {
                 prime.push_back(i);
 
-                Mobius[i] = -1;
+                mobius[i] = -1;
 
                 Power[i] = ::pow(i, M);
             }
@@ -84,20 +84,20 @@ public:
                 Power[t] = mul(Power[i], Power[iter]);
 
                 if (i % iter == 0) {
-                    Mobius[t] = 0;
+                    mobius[t] = 0;
 
                     break;
                 } else {
-                    Mobius[t] = -Mobius[i];
+                    mobius[t] = -mobius[i];
                 }
             }
 
-            if (Mobius[i] < 0)
-                Mobius[i] += MOD;
+            if (mobius[i] < 0)
+                mobius[i] += MOD;
         }
 
         for (valueType i = 1; i <= N; ++i) {
-            if (Mobius[i] == 0)
+            if (mobius[i] == 0)
                 continue;
 
             for (valueType j = i; j <= N; j += i) {
@@ -107,7 +107,7 @@ public:
     }
 
     valueType operator()(valueType n) const {
-        return Mobius[n];
+        return mobius[n];
     }
 
     valueType pow(valueType n) const {

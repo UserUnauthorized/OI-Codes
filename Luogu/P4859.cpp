@@ -67,13 +67,13 @@ public:
     typedef ValueVector container;
 
 private:
-    valueType size;
+    valueType N;
     container data;
 public:
-    explicit Inverse(valueType n) : size(n), data(size + 1, 0) {
+    explicit Inverse(valueType n) : N(n), data(N + 1, 0) {
         data[1] = 1;
 
-        for (valueType i = 2; i <= size; ++i)
+        for (valueType i = 2; i <= N; ++i)
             data[i] = mul((MOD - MOD / i), data[MOD % i]);
     }
 
