@@ -10,3 +10,4 @@ add_compile_definitions(CLION)
 add_compile_definitions(LOCAL)
 
 add_executable(653G CodeForces/653G.cpp)
+add_executable(P1646 Luogu/P1646.cpp)
