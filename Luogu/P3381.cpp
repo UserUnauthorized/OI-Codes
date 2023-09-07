@@ -14,31 +14,34 @@ private:
         valueType to;
         valueType cap;
         valueType flow;
+        valueType cost;
         iterator pair;
 
-        Edge() : to(-1), cap(-1), flow(-1), pair() {};
+        Edge() : to(-1), cap(-1), flow(-1), cost(0), pair() {};
 
-        Edge(valueType to, valueType cap, iterator pair = iterator()) : to(to), cap(cap), flow(0), pair(pair) {};
+        Edge(valueType to, valueType cap, valueType c, iterator pair = iterator()) : to(to), cap(cap), flow(0), cost(c),
+                                                                                     pair(pair) {};
     };
 
     typedef std::vector<Edge::container> Graph;
     typedef std::vector<Edge::iterator> IterVector;
+    typedef std::vector<bool> bitset;
 
     valueType N;
     Graph G;
-    ValueVector depth;
+    ValueVector dist;
     IterVector start;
     bool Initialized;
 
 public:
-    explicit MCMF(valueType N) : N(N), G(N + 1), depth(N + 1, 0), start(N + 1), Initialized(false) {};
+    explicit MCMF(valueType N) : N(N), G(N + 1), dist(N + 1, 0), start(N + 1), Initialized(false) {};
 
-    void addEdge(valueType from, valueType to, valueType cap) {
+    void addEdge(valueType from, valueType to, valueType cap, valueType cost) {
         if (__builtin_expect(Initialized, false))
             throw std::runtime_error("MCMF: addEdge after init");
 
-        G[from].emplace_back(to, cap);
-        G[to].emplace_back(from, 0);
+        G[from].emplace_back(to, cap, cost);
+        G[to].emplace_back(from, 0, -cost);
         G[from].back().pair = std::prev(G[to].end());
         G[to].back().pair = std::prev(G[from].end());
     }
@@ -49,7 +52,7 @@ public:
 
         Initialized = true;
 
-        std::fill(depth.begin(), depth.end(), 0);
+        std::fill(dist.begin(), dist.end(), 0);
 
         for (valueType i = 1; i <= N; ++i)
             start[i] = G[i].begin();
@@ -63,12 +66,12 @@ public:
             for (auto &iter: G[i])
                 iter.flow = 0;
 
-        std::fill(depth.begin(), depth.end(), 0);
+        std::fill(dist.begin(), dist.end(), 0);
 
         Initialized = false;
     }
 
-    valueType maxFlow(valueType S, valueType T) {
+    std::pair<valueType, valueType> maxFlow(valueType S, valueType T) {
         if (__builtin_expect(!Initialized, false))
             throw std::runtime_error("MCMF: maxFlow before init");
 
@@ -77,51 +80,66 @@ public:
         while (bfs(S, T)) {
             IterVector begin = start;
 
-            result += dfs(S, T, std::numeric_limits<valueType>::max(), begin);
+            bitset visited(N + 1, false);
+
+            result += dfs(S, T, std::numeric_limits<valueType>::max(), begin, visited);
         }
 
-        return result;
+        return std::make_pair(result, result * dist[T]);
     }
 
 private:
     bool bfs(valueType S, valueType T) {
-        std::fill(depth.begin(), depth.end(), 0);
+        std::fill(dist.begin(), dist.end(), std::numeric_limits<valueType>::max());
+
+        bitset visited(N + 1, false);
 
         std::queue<valueType> Q;
 
         Q.push(S);
-        depth[S] = 1;
+        dist[S] = 0;
+        visited[S] = true;
 
         while (!Q.empty()) {
             valueType const u = Q.front();
 
+            visited[u] = false;
             Q.pop();
 
             for (auto const &e: G[u]) {
-                if ((e.cap > e.flow) && (!depth[e.to])) {
-                    depth[e.to] = depth[u] + 1;
-                    Q.push(e.to);
+                if ((e.cap > e.flow) && (dist[e.to] > dist[u] + e.cost)) {
+                    dist[e.to] = dist[u] + e.cost;
+
+                    if (!visited[e.to]) {
+                        Q.push(e.to);
+                        visited[e.to] = true;
+                    }
                 }
             }
         }
 
-        return depth[T] > 0;
+        return dist[T] != std::numeric_limits<valueType>::max();
     }
 
-    valueType dfs(valueType u, valueType T, valueType flow, IterVector &Begin) {
+    valueType dfs(valueType u, valueType T, valueType flow, IterVector &Begin, bitset &visited) {
         if (u == T || flow == 0)
             return flow;
 
         valueType result = 0;
 
         for (auto &e = Begin[u]; e != G[u].end(); ++e) {
-            if (e->cap > e->flow && depth[e->to] == depth[u] + 1) {
-                valueType const f = dfs(e->to, T, std::min(flow - result, e->cap - e->flow), Begin);
+            if (!visited[e->to] && e->cap > e->flow && dist[e->to] == dist[u] + e->cost) {
+                valueType const f = dfs(e->to, T, std::min(flow - result, e->cap - e->flow), Begin, visited);
+
+                if (f == 0)
+                    continue;
 
                 e->flow += f;
                 e->pair->flow -= f;
 
                 result += f;
+
+                visited[e->to] = false;
 
                 if (result == flow)
                     return flow;
@@ -131,3 +149,27 @@ private:
         return result;
     }
 };
+
+int main() {
+    valueType N, M, S, T;
+
+    std::cin >> N >> M >> S >> T;
+
+    MCMF Graph(N);
+
+    for (valueType i = 0; i < M; ++i) {
+        valueType u, v, w, c;
+
+        std::cin >> u >> v >> w >> c;
+
+        Graph.addEdge(u, v, w, c);
+    }
+
+    Graph.init();
+
+    auto const ans = Graph.maxFlow(S, T);
+
+    std::cout << ans.first << ' ' << ans.second << std::endl;
+
+    return 0;
+}
