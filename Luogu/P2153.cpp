@@ -1,10 +1,6 @@
-#ifndef OI_CODES_MCMF_DINIC_H
-#define OI_CODES_MCMF_DINIC_H
-
-#include <vector>
-#include <stdexcept>
-#include <queue>
-#include <limits>
+//HZ - 56.11
+//Luogu - P2153
+#include <bits/stdc++.h>
 
 typedef long long valueType;
 typedef std::vector<valueType> ValueVector;
@@ -168,4 +164,34 @@ private:
     }
 };
 
-#endif //OI_CODES_MCMF_DINIC_H
+int main() {
+    valueType N, M;
+
+    std::cin >> N >> M;
+
+    valueType const size = 2 * N + 10;
+
+    valueType S = 1 << 1 | 1, T = N << 1;
+
+    MCMF mcmf(size);
+
+    constexpr valueType INF = std::numeric_limits<valueType>::max() >> 3;
+
+    for (valueType i = 0; i < M; ++i) {
+        valueType u, v, w;
+
+        std::cin >> u >> v >> w;
+
+        mcmf.addEdge(u << 1 | 1, v << 1, INF, w);
+//        mcmf.addEdge(v << 1 | 1, u << 1, INF, w);
+    }
+
+    for (valueType i = 1; i <= N; ++i)
+        mcmf.addEdge(i << 1, i << 1 | 1, 1, 0);
+
+    mcmf.init();
+
+    auto const result = mcmf.maxFlow(S, T);
+
+    std::cout << result.first << ' ' << result.second << std::endl;
+}

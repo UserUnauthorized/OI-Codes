@@ -149,8 +149,11 @@ private:
 
                 result += f;
 
-                if (result == flow)
+                if (result == flow) {
+                    visited[u] = false;
+
                     return flow;
+                }
             }
         }
 
