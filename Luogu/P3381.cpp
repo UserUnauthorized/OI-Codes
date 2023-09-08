@@ -36,7 +36,7 @@ private:
 public:
     explicit MCMF(valueType N) : N(N), G(N + 1), dist(N + 1, 0), start(N + 1), Initialized(false) {};
 
-    void addEdge(valueType from, valueType to, valueType cap, valueType cost) {
+    Edge::iterator addEdge(valueType from, valueType to, valueType cap, valueType cost) {
         if (__builtin_expect(Initialized, false))
             throw std::runtime_error("MCMF: addEdge after init");
 
@@ -44,6 +44,8 @@ public:
         G[to].emplace_back(from, 0, -cost);
         G[from].back().pair = std::prev(G[to].end());
         G[to].back().pair = std::prev(G[from].end());
+
+        return std::prev(G[from].end());
     }
 
     void init() {
@@ -75,17 +77,20 @@ public:
         if (__builtin_expect(!Initialized, false))
             throw std::runtime_error("MCMF: maxFlow before init");
 
-        valueType result = 0;
+        std::pair<valueType, valueType> result(0, 0);
 
         while (bfs(S, T)) {
             IterVector begin = start;
 
             bitset visited(N + 1, false);
 
-            result += dfs(S, T, std::numeric_limits<valueType>::max(), begin, visited);
+            valueType const flow = dfs(S, T, std::numeric_limits<valueType>::max(), begin, visited);
+
+            result.first += flow;
+            result.second += flow * dist[T];
         }
 
-        return std::make_pair(result, result * dist[T]);
+        return result;
     }
 
 private:
@@ -127,24 +132,29 @@ private:
 
         valueType result = 0;
 
-        for (auto &e = Begin[u]; e != G[u].end(); ++e) {
+        visited[u] = true;
+
+        for (auto &e = Begin[u]; e != G[u].end() && flow > 0; ++e) {
             if (!visited[e->to] && e->cap > e->flow && dist[e->to] == dist[u] + e->cost) {
                 valueType const f = dfs(e->to, T, std::min(flow - result, e->cap - e->flow), Begin, visited);
 
-                if (f == 0)
+                if (f == 0) {
+                    dist[e->to] = std::numeric_limits<valueType>::max();
+
                     continue;
+                }
 
                 e->flow += f;
                 e->pair->flow -= f;
 
                 result += f;
 
-                visited[e->to] = false;
-
                 if (result == flow)
                     return flow;
             }
         }
+
+        visited[u] = false;
 
         return result;
     }
