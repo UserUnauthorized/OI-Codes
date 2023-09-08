@@ -196,7 +196,7 @@ public:
             current = current->son(key);
         }
 
-        /*if(currnet == NULL)
+        /*if(current == NULL)
             exit(1)*/
         --current->size;
         --current->count;
