@@ -1,8 +1,9 @@
 #ifndef OI_CODES_DSU_H
 #define OI_CODES_DSU_H
 
-#include<vector>
-#include<algorithm>
+#include <vector>
+#include <algorithm>
+#include <numeric>
 
 class DSU {
 public:
