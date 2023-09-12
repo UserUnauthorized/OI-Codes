@@ -9,5 +9,4 @@ include_directories(LocalInclude)
 add_compile_definitions(CLION)
 add_compile_definitions(LOCAL)
 
-add_executable(P3381 Luogu/P3381.cpp)
-add_executable(P2153 Luogu/P2153.cpp)
+add_executable(1737E CodeForces/1737E.cpp)
