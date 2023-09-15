@@ -11,3 +11,4 @@ add_compile_definitions(LOCAL)
 
 add_executable(1737E CodeForces/1737E.cpp)
 add_executable(AT_abc238_d AtCoder/AT_abc238_d.cpp)
+add_executable(AT_abc313_f AtCoder/AT_abc313_f.cpp)
