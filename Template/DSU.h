@@ -16,7 +16,7 @@ private:
     std::vector<int> father, size;
 
 public:
-    DSU(valueType n) : N(n), father(N, 0), size(N, 0) {
+    explicit DSU(valueType n = 0) : N(n), father(N, 0), size(N, 0) {
         std::iota(father.begin(), father.end(), 0);
 
         std::fill(size.begin(), size.end(), 1);
