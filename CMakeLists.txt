@@ -9,7 +9,4 @@ include_directories(LocalInclude)
 add_compile_definitions(CLION)
 add_compile_definitions(LOCAL)
 
-add_executable(1737E CodeForces/1737E.cpp)
-add_executable(tenka1_2018_d AtCoder/tenka1_2018_d.cpp)
-add_executable(arc118_c AtCoder/arc118_c.cpp)
-add_executable(763 UOJ/763.cpp)
+add_executable(P5043 Luogu/P5043.cpp)
