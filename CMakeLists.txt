@@ -9,6 +9,4 @@ include_directories(LocalInclude)
 add_compile_definitions(CLION)
 add_compile_definitions(LOCAL)
 
-add_executable(P5043 Luogu/P5043.cpp)
-add_executable(P3812 Luogu/P3812.cpp)
-add_executable(arc161_a AtCoder/arc161_a.cpp)
+add_executable(arc125_b AtCoder/arc125_b.cpp)
