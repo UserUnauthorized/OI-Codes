@@ -10,3 +10,5 @@ add_compile_definitions(CLION)
 add_compile_definitions(LOCAL)
 
 add_executable(arc125_b AtCoder/arc125_b.cpp)
+add_executable(arc124_c AtCoder/arc124_c.cpp)
+add_executable(arc135_c AtCoder/arc135_c.cpp)
